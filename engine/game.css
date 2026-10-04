@@ -43,19 +43,101 @@ code, pre, textarea, .mono, .sequence-button { font-variant-ligatures: none; fon
 .map-node.locked .node-dot { border-color: #b8b2a4; background: #f1eee6; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(32,118,210,.08); } }
 
-.main-wrap { width: min(1180px, calc(100% - 32px)); margin: 20px auto 40px; }
+.main-wrap { width: min(1180px, calc(100% - 32px)); margin: 20px auto 40px; padding-bottom: 90px; }
 
-/* ----- robot Bit ----- */
-.bit-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; }
-.bit-svg { width: 54px; height: 62px; flex: 0 0 auto; }
-.bit-bubble {
-  position: relative; padding: 11px 14px; background: #fff; border: 2px solid var(--ink);
-  border-radius: 4px 16px 16px 16px; line-height: 1.5; max-width: 820px;
-  box-shadow: 3px 3px 0 rgba(23,48,79,.12);
+/* ----- robot Bit nổi ở góc (đi theo khi cuộn) ----- */
+.bit-svg { width: 100%; height: 100%; }
+.bit-dock {
+  position: fixed; right: 18px; bottom: 18px; z-index: 900;
+  display: flex; align-items: flex-end; gap: 10px; pointer-events: none;
 }
-.feedback .bit-row { margin: 0; }
-.feedback .bit-svg { width: 38px; height: 44px; }
-.feedback .bit-bubble { border-width: 1px; box-shadow: none; white-space: pre-line; background: rgba(255,255,255,.75); }
+.bit-face {
+  pointer-events: auto; width: 74px; height: 84px; padding: 6px; border: 3px solid var(--ink); border-radius: 22px;
+  background: #fff; box-shadow: 0 10px 24px rgba(23,48,79,.25); cursor: pointer; flex: 0 0 auto;
+  animation: bob 3s ease-in-out infinite;
+}
+.bit-dock.jump .bit-face { animation: hop .5s ease, bob 3s ease-in-out .5s infinite; }
+@keyframes bob { 50% { transform: translateY(-5px); } }
+@keyframes hop { 30% { transform: translateY(-16px) rotate(-6deg); } 60% { transform: translateY(0) rotate(4deg); } }
+.bit-bubble-dock {
+  pointer-events: auto; position: relative; max-width: min(360px, calc(100vw - 130px));
+  padding: 12px 30px 12px 14px; background: #fff; border: 2px solid var(--ink); border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 10px 24px rgba(23,48,79,.2); line-height: 1.5; font-size: .92rem; white-space: pre-line;
+  animation: pop .25s ease;
+}
+.bit-bubble-dock.happy { border-color: var(--green); }
+.bit-bubble-dock.sad { border-color: var(--red); background: #fff8f8; }
+.bit-bubble-dock.wow { border-color: var(--purple); }
+.bit-close { position: absolute; top: 4px; right: 6px; border: 0; background: transparent; font-size: 1.1rem; color: var(--muted); cursor: pointer; }
+@keyframes pop { from { transform: scale(.85); opacity: 0; } }
+
+/* ----- kết quả ngay dưới nút ----- */
+.action-row { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin-top: 14px; }
+.primary-button.big { padding: 13px 22px; font-size: 1.05rem; }
+.primary-button:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(.5); }
+.result-line {
+  display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+  border: 2px solid; line-height: 1.5; white-space: pre-line; animation: pop .2s ease;
+}
+.result-line.good { background: var(--green-soft); border-color: #7dc6ab; color: #135a44; }
+.result-line.bad { background: var(--red-soft); border-color: #e7a0a6; color: #78333a; }
+.result-line.info { background: var(--blue-soft); border-color: #8db4dc; color: #234d7b; }
+.result-icon { font-size: 1.3rem; line-height: 1.2; }
+.result-text { flex: 1; }
+.mini-cta { margin-left: 8px; padding: 5px 12px; border-radius: 999px; border: 2px solid var(--green); background: #fff; color: #135a44; font-weight: 800; cursor: pointer; }
+.hint-btn { padding: 9px 13px; border-radius: 11px; border: 1px dashed #b9a6e6; background: #f8f5ff; color: #5b3fa8; font-weight: 800; cursor: pointer; }
+.hint-btn:disabled { opacity: .5; cursor: default; }
+.hint-item { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: #fff8c9; border: 1px solid #dccb75; font-size: .9rem; animation: pop .2s ease; }
+.section-count { margin-left: auto; font-size: .82rem; color: var(--muted); font-weight: 700; }
+.choice-option.right { border-color: var(--green); background: var(--green-soft); }
+.choice-option.wrong { border-color: var(--red); background: var(--red-soft); }
+.mono-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* ----- đề bài code gọn ----- */
+.task-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+.task-grid .requirement-box { margin: 0; }
+.target-box { padding: 12px 14px; border-radius: 14px; border: 2px solid #26384f; background: #f4f7fb; }
+.target-box .expected-output { margin-top: 6px; }
+.code-editor { min-height: 0 !important; resize: none; }
+.console-output { min-height: 120px !important; }
+.stdin-box { font-size: 1rem; }
+
+/* ----- bảng giải mã lệnh (không lặp nhãn) ----- */
+.gm { margin: 18px 0; border: 2px solid #b9c8d8; border-radius: 18px; overflow: hidden; background: #fff; }
+.gm-title { padding: 12px 15px; background: linear-gradient(90deg, #eaf4ff, #f4efff); font-weight: 950; letter-spacing: .03em; }
+.gm-head, .gm-row { display: grid; grid-template-columns: minmax(170px, .8fr) minmax(0, 1.4fr); gap: 14px; align-items: center; padding: 10px 15px; }
+.gm-head.with-sb, .gm-row.with-sb { grid-template-columns: minmax(170px, .8fr) minmax(0, 1.2fr) minmax(150px, .8fr); }
+.gm-head { background: #f6f8fb; border-bottom: 1px solid #dfe5ee; font-size: .75rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.gm-row { border-bottom: 1px dashed #ddd7ca; }
+.gm-row:last-child { border-bottom: 0; }
+.gm-row.focus { background: #fffaf0; }
+.gm-row > code { display: block; padding: 9px 11px; border-radius: 10px; background: #172232; color: #e9f7ff; font-size: .86rem; overflow-x: auto; white-space: pre; }
+.gm-row > div { color: #40516a; line-height: 1.5; }
+.gm-row small { display: block; margin-top: 3px; color: #6b778c; }
+.gm-sb { overflow-x: auto; }
+.sb-svg { max-width: 100%; height: auto; display: block; }
+.sb-fig { margin: 12px 0; display: inline-block; }
+.sb-fig figcaption { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+pre.sb, pre.sb-fallback { margin: 0; padding: 6px 10px; border-radius: 8px; background: #fff7e6; color: #8a5a00; font-size: .8rem; white-space: pre-wrap; }
+
+/* ----- code + màn hình cạnh nhau, ô đoán trước ----- */
+.pair-view { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; align-items: stretch; margin: 16px 0; }
+.pair-view .code-demo { margin: 0; }
+.screen-card { border-radius: 17px; overflow: hidden; border: 2px solid #24334c; background: #101722; }
+.screen-head { padding: 10px 14px; background: #1d2a40; color: #b8c7dc; font-size: .78rem; font-weight: 800; }
+.screen-head code { background: #2d3b52; color: #ffe6a6; padding: 1px 6px; border-radius: 5px; }
+.screen-card pre { margin: 0; padding: 16px; color: #c9f7dc; white-space: pre-wrap; line-height: 1.5; }
+.guess { margin: 14px 0; padding: 12px 14px; border-left: 5px solid var(--purple); border-radius: 12px; background: #f5f0ff; }
+.guess summary { cursor: pointer; list-style: none; line-height: 1.55; }
+.guess summary::-webkit-details-marker { display: none; }
+.guess-btn { display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 999px; background: var(--purple); color: #fff; font-size: .78rem; font-weight: 800; }
+.guess[open] .guess-btn { display: none; }
+.guess > div { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #c9b8ef; }
+.mini-label { font-size: .75rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+.seq-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.seq-wrap .sequence-pool { flex-direction: column; align-items: flex-start; margin: 0; }
+.node-prog { position: absolute; transform: translate(20px, -18px); font-size: .62rem; background: var(--blue); color: #fff; border-radius: 999px; padding: 1px 5px; }
+.node-dot { position: relative; }
 
 /* ----- điểm dừng ----- */
 .gate-hero {
@@ -161,6 +243,11 @@ code, pre, textarea, .mono, .sequence-button { font-variant-ligatures: none; fon
   .node-label { font-size: .66rem; }
   .map-node { min-width: 60px; }
   .map-link { width: 18px; }
+  .task-grid, .pair-view, .seq-wrap { grid-template-columns: 1fr; }
+  .gm-head { display: none; }
+  .gm-row, .gm-row.with-sb { grid-template-columns: 1fr; gap: 6px; }
+  .bit-face { width: 58px; height: 66px; border-radius: 18px; }
+  .bit-dock { right: 10px; bottom: 10px; }
 }
 @media (max-width: 520px) {
   .new-student-button { display: none; }

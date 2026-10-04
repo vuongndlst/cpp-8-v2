@@ -17,9 +17,8 @@ _Web/
 
 ## Mã mở khoá (chỉ thầy biết — hiện trên slide)
 
-| Bài | Điểm dừng 1 | Điểm dừng 2 (mở BOSS) |
-|---|---|---|
-| 1 | `BITNOI` | `SANBO` |
+Mã của từng bài ghi trong `README.md` của bài đó (thư mục giáo viên trên OneDrive) và trên slide —
+**không ghi trong bất kỳ file nào của thư mục `_Web/`** vì repo web công khai.
 
 Mã không phân biệt hoa/thường. Trong `lesson.js` chỉ lưu dạng băm; đổi mã thì tính lại băm:
 

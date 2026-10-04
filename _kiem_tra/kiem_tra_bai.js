@@ -18,14 +18,18 @@ vm.runInContext(fs.readFileSync(path.join(root, "engine", "JSCPP.es5.min.js"), "
 ctx.CPP = {
   stripComments: c => String(c).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, ""),
 };
+vm.runInContext(fs.readFileSync(path.join(root, "engine", "kit.js"), "utf8"), ctx);
 vm.runInContext(fs.readFileSync(path.join(root, bai, "lesson.js"), "utf8"), ctx);
 const L = ctx.LESSON;
 const sol = require(path.join(__dirname, `dap_an_${bai}.js`));
 
 const norm = v => String(v).replace(/\r\n/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/[ \t]+$/g, "").replace(/\n+$/g, "").replace(/^\n+/, "");
-function jscpp(code, input) {
+// echo = true: số nhập bằng cin được in lại như màn hình Programiz (giống engine.js)
+function jscpp(code, input, echo = true) {
   let out = "";
-  try { ctx.JSCPP.run(code, input || "", { stdio: { write: s => { out += s; } }, maxTimeout: 2000 }); return { ok: true, out }; }
+  const stdio = { write: s => { out += s; } };
+  if (echo) stdio.echo = t => { out += t + "\n"; };
+  try { ctx.JSCPP.run(code, input || "", { stdio, maxTimeout: 2000 }); return { ok: true, out }; }
   catch (e) { return { ok: false, out, err: String(e.message || e).split("\n")[0] }; }
 }
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cpp8-"));
@@ -58,9 +62,9 @@ for (const step of L.steps) {
       if (!c.options.some(o => (typeof o === "string" ? o : o.text) === c.answer)) fail("đáp án không có trong lựa chọn");
       if (c.code) {
         const prog = `#include <iostream>\nusing namespace std;\n\nint main() {\n${c.code}\n    return 0;\n}`;
-        const r = jscpp(prog), g = gpp(prog);
+        const r = jscpp(prog, c.input), g = gpp(prog, c.input), r0 = jscpp(prog, c.input, false);
         if (!r.ok || norm(r.out) !== norm(c.answer)) fail(`JSCPP ra ${JSCPP_out(r)} ≠ đáp án`);
-        if (!g.ok || norm(g.out) !== norm(c.answer)) fail(`g++ ra ${JSON.stringify(g.out)} ≠ đáp án`);
+        if (!g.ok || norm(g.out) !== norm(r0.out)) fail(`g++ ra ${JSON.stringify(g.out)} ≠ JSCPP`);
       }
       continue;
     }
@@ -84,8 +88,8 @@ for (const step of L.steps) {
     const v = verdict(c, code);
     if (v !== "ĐẠT") fail(`đáp án mẫu: ${v}`); else console.log("  đáp án mẫu: ĐẠT");
     for (const t of c.tests || [{ input: "", expected: c.expected }]) {
-      const g = gpp(code, t.input);
-      if (!g.ok || norm(g.out) !== norm(t.expected)) fail(`g++ khác: ${JSON.stringify(g.out)}`);
+      const g = gpp(code, t.input), r0 = jscpp(code, t.input, false);
+      if (!g.ok || norm(g.out) !== norm(r0.out)) fail(`g++ khác JSCPP: ${JSON.stringify(g.out)}`);
     }
   }
 }

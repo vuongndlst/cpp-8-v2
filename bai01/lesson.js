@@ -1,19 +1,12 @@
 /* Bài 1 — Nhập môn C++: cấu trúc chương trình và xuất dữ liệu
    Câu chuyện: Bit mất giọng — con dạy robot Bit "nói" bằng cout.
-   Mã mở khoá (đưa lên slide, KHÔNG đưa cho học sinh trước): Điểm dừng 1 = BITNOI · Điểm dừng 2 = SANBO
+   Mã mở khoá: chỉ ghi trong README của bài (thư mục giáo viên) — KHÔNG ghi trong web công khai.
 */
 "use strict";
 
-const W3 = slug => `https://www.w3schools.com/cpp/cpp_${slug}.asp`;
-const readMore = (title, sub, links) => `
-  <div class="read-more-box">
-    <div><strong>${title}</strong><span>${sub}</span></div>
-    <div class="resource-links">${links.map(([slug, label]) => `<a href="${W3(slug)}" target="_blank" rel="noopener">${label} ↗</a>`).join("")}</div>
-  </div>`;
-const demo = (code, label) => `
-  <div class="code-demo"><div class="code-demo-header"><span><span class="window-dots">● ● ●</span> &nbsp; ${label}</span><span>main.cpp</span></div>
-  <pre><code>${code.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</code></pre></div>`;
-const noSemicolon = (code, pattern) => !new RegExp(pattern).test(window.CPP.stripComments(code));
+const { demo, giaiMa, codeVaManHinh, doan, meo, docThem } = window.KIT;
+const readMore = (title, _sub, links) => docThem(links, title);
+const noSemicolon = (code, pattern) => window.KIT.khongCo(code, pattern);
 
 window.LESSON = {
   id: "bai01",
@@ -42,33 +35,27 @@ window.LESSON = {
       bit: "Chào bạn! Mình là <strong>Bit</strong>. Mình muốn chào cả lớp mà chưa biết nói. Bạn dạy mình viết chương trình C++ đầu tiên nhé!",
       objectives: ["Biết chương trình bắt đầu chạy ở đâu", "Hiểu cout dùng để xuất ra màn hình", "Sửa và chạy một chương trình ngắn"],
       lesson: `
-        <div class="learning-path"><span>👀 XEM</span><span>→</span><span>💡 HIỂU</span><span>→</span><span>✏️ SỬA</span><span>→</span><span>▶ CHẠY</span><span>→</span><span>🔎 SO SÁNH</span></div>
         <div class="note-card blue short-note">
           <h3>💡 C++ là gì?</h3>
-          <p>C++ là một <strong>ngôn ngữ lập trình</strong>. Con viết chỉ dẫn bằng code; máy tính làm theo từng dòng, từ trên xuống dưới.</p>
+          <p>C++ là một <strong>ngôn ngữ lập trình</strong>: con viết chỉ dẫn bằng code, máy làm theo <strong>từng dòng, từ trên xuống</strong> — giống một chuỗi khối Scratch.</p>
         </div>
-        ${demo(`#include <iostream>
+        ${codeVaManHinh(`#include <iostream>
 using namespace std;
 
 int main() {
     cout << "Xin chao, C++!";
     return 0;
-}`, "Chương trình đầu tiên")}
-        <div class="meaning-panel">
-          <div class="meaning-title">🔍 GIẢI MÃ TỪNG LỆNH</div>
-          <div class="command-row"><code>#include &lt;iostream&gt;</code>
-            <div><strong>Để làm gì?</strong> Nạp thư viện nhập/xuất để dùng được <code>cout</code>.<small>Hiểu đơn giản: "chuẩn bị công cụ để đưa chữ ra màn hình".</small></div></div>
-          <div class="command-row"><code>using namespace std;</code>
-            <div><strong>Để làm gì?</strong> Cho phép viết <code>cout</code> thay vì <code>std::cout</code>.<small>Bây giờ con xem đây là một dòng thiết lập quen thuộc.</small></div></div>
-          <div class="command-row"><code>int main() { ... }</code>
-            <div><strong>Để làm gì?</strong> Hàm chính: máy bắt đầu chạy từ đây, làm các lệnh nằm trong <code>{ }</code>.<small>Giống khối "khi bấm lá cờ xanh" trong Scratch.</small></div></div>
-          <div class="command-row focus"><code>cout &lt;&lt; "Xin chao";</code>
-            <div><strong>Để làm gì?</strong> Đưa nội dung ra màn hình. Chữ đặt trong dấu ngoặc kép.<small>Giống khối "nói ..." trong Scratch. Đọc là: "xuất dòng chữ Xin chao ra màn hình".</small></div></div>
-          <div class="command-row"><code>return 0;</code>
-            <div><strong>Để làm gì?</strong> Kết thúc hàm <code>main()</code>.<small>Con chỉ cần nhớ: nó nằm ngay trước dấu <code>}</code> cuối cùng.</small></div></div>
-        </div>
-        <div class="think-box"><strong>🧠 Đoán trước khi chạy:</strong> nếu đổi <code>"Xin chao, C++!"</code> thành <code>"Chao lop 8!"</code>, phần nào của kết quả sẽ thay đổi?</div>
-        ${readMore("📚 Muốn hiểu thêm?", "Đọc ngắn rồi quay lại làm nhiệm vụ.", [["intro", "C++ là gì?"], ["getstarted", "Bắt đầu với C++"], ["syntax", "Cú pháp"]])}
+}`, "Xin chao, C++!", "Chương trình đầu tiên")}
+        ${giaiMa("🔍 GIẢI MÃ TỪNG LỆNH", [
+          { code: "#include <iostream>", y: "Nạp công cụ nhập/xuất để dùng được <code>cout</code>." },
+          { code: "using namespace std;", y: "Cho phép viết gọn <code>cout</code> thay vì <code>std::cout</code>.", nho: "Bây giờ con xem đây là dòng thiết lập quen thuộc." },
+          { code: "int main() {\n  ...\n}", y: "Chương trình <strong>bắt đầu chạy từ đây</strong>; các lệnh nằm trong <code>{ }</code>.", sb: "when flag clicked" },
+          { code: 'cout << "Xin chao";', y: "Đưa chữ ra màn hình. Chữ đặt trong ngoặc kép.", nho: "Đọc là: “in dòng chữ Xin chao ra màn hình”.", sb: "say [Xin chao]", nhan: true },
+          { code: "return 0;", y: "Kết thúc <code>main()</code> — nằm ngay trước dấu <code>}</code> cuối." }
+        ])}
+        ${doan("đổi <code>\"Xin chao, C++!\"</code> thành <code>\"Chao lop 8!\"</code> thì phần nào trên màn hình thay đổi?",
+          "Chỉ dòng chữ trên màn hình đổi thành <code>Chao lop 8!</code>. Khung chương trình giữ nguyên.")}
+        ${readMore("📚 Đọc thêm trên W3Schools", "", [["intro", "C++ là gì?"], ["getstarted", "Bắt đầu với C++"], ["syntax", "Cú pháp"]])}
       `,
       challenges: [
         {
@@ -108,15 +95,11 @@ int main() {
       bit: "Mình nói được rồi, nhưng chữ cứ <strong>dính thành một hàng</strong>! Bạn chỉ mình cách in số và cách xuống dòng với.",
       objectives: ["Dùng cout và <<", "Phân biệt chữ với số khi xuất", "Dùng endl hoặc \\n để xuống dòng"],
       lesson: `
-        <div class="meaning-panel">
-          <div class="meaning-title">📣 ĐỌC MỘT LỆNH <code>cout</code></div>
-          <div class="command-row focus"><code>cout &lt;&lt; "Xin chao";</code>
-            <div><strong>cout</strong> = màn hình. <strong>&lt;&lt;</strong> = "đưa vào". Chữ phải nằm trong <code>" "</code>.</div></div>
-          <div class="command-row"><code>cout &lt;&lt; 14;</code>
-            <div>Số in trực tiếp, không cần ngoặc kép.<small>Màn hình hiện <strong>14</strong>.</small></div></div>
-          <div class="command-row"><code>cout &lt;&lt; "Tuoi: " &lt;&lt; 14;</code>
-            <div>Nối nhiều phần bằng nhiều dấu <code>&lt;&lt;</code>.<small>Màn hình hiện <strong>Tuoi: 14</strong>.</small></div></div>
-        </div>
+        ${giaiMa("📣 ĐỌC MỘT LỆNH cout", [
+          { code: 'cout << "Xin chao";', y: "<strong>cout</strong> = màn hình, <strong>&lt;&lt;</strong> = “đưa vào”. Chữ nằm trong <code>\" \"</code>.", nho: "Màn hình: Xin chao", sb: "say [Xin chao]", nhan: true },
+          { code: "cout << 14;", y: "Số in thẳng, không cần ngoặc kép.", nho: "Màn hình: 14", sb: "say (14)" },
+          { code: 'cout << "Tuoi: " << 14;', y: "Nối nhiều phần bằng nhiều dấu <code>&lt;&lt;</code>.", nho: "Màn hình: Tuoi: 14", sb: "say (join [Tuoi: ] (14))" }
+        ])}
         <div class="comparison-board">
           <article class="compare-card before"><h4>Chưa xuống dòng</h4>
             <div class="console-mini">Ten cua minh la:MinhTuoi: 14</div>
@@ -128,22 +111,11 @@ Minh
 Tuoi: 14</div>
             <p>Thêm <code>endl</code> hoặc <code>\\n</code> đúng chỗ muốn xuống dòng.</p></article>
         </div>
-        ${demo(`#include <iostream>
-using namespace std;
-
-int main() {
-    cout << "Ten cua minh la:" << endl;
-    cout << "Minh" << endl;
-    cout << "Tuoi: " << 14;
-    return 0;
-}`, "Cùng ví dụ, thêm endl")}
-        <div class="line-by-line">
-          <div><span>1</span><code>cout &lt;&lt; "Ten cua minh la:" &lt;&lt; endl;</code><p>In chữ, rồi xuống dòng.</p></div>
-          <div><span>2</span><code>cout &lt;&lt; "Minh" &lt;&lt; endl;</code><p>In <strong>Minh</strong>, rồi xuống dòng.</p></div>
-          <div><span>3</span><code>cout &lt;&lt; "Tuoi: " &lt;&lt; 14;</code><p>In chữ <strong>Tuoi: </strong> và số <strong>14</strong> trên cùng dòng.</p></div>
-        </div>
-        <div class="tip-strip">✨ <strong>Nhớ:</strong> <code>endl</code> và <code>\\n</code> đều tạo dòng mới. <code>\\n</code> phải nằm <em>trong</em> ngoặc kép: <code>"Xin chao\\n"</code>.</div>
-        ${readMore("📚 Đọc thêm đúng nội dung này", "Có nút “Try it Yourself” để con tự thử.", [["output", "Xuất chữ"], ["output_numbers", "Xuất số"], ["new_lines", "Xuống dòng"]])}
+        ${codeVaManHinh(`cout << "Ten cua minh la:" << endl;
+cout << "Minh" << endl;
+cout << "Tuoi: " << 14;`, "Ten cua minh la:\nMinh\nTuoi: 14", "Cùng ví dụ, thêm endl")}
+        ${meo("<strong>Nhớ:</strong> <code>endl</code> và <code>\\n</code> đều tạo dòng mới. <code>\\n</code> phải nằm <em>trong</em> ngoặc kép: <code>\"Xin chao\\n\"</code>.")}
+        ${readMore("📚 Đọc thêm trên W3Schools", "", [["output", "Xuất chữ"], ["output_numbers", "Xuất số"], ["new_lines", "Xuống dòng"]])}
       `,
       challenges: [
         {
@@ -189,7 +161,7 @@ int main() {
     {
       kind: "gate", id: "gate-1", nav: "Điểm dừng 1",
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
-      codeHash: "4F25E32D",
+      codeHash: "8B2ED1A6",
       todo: [
         "Thầy hỏi: <strong>con hiểu gì</strong> về khung chương trình và <code>cout</code>? Con nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
@@ -225,17 +197,12 @@ int main() {
       bit: "Ối, có <strong>bọ</strong> chui vào code của mình! Bạn làm thám tử: đọc thông báo lỗi, tìm đúng chỗ và sửa giúp mình.",
       objectives: ["Hiểu câu lệnh và dấu ;", "C++ phân biệt chữ hoa/thường", "Dùng comment đúng mục đích"],
       lesson: `
-        <div class="meaning-panel">
-          <div class="meaning-title">🕵️ 4 DẤU HIỆU CẦN NHÌN KHI SĂN BỌ</div>
-          <div class="command-row"><code>câu lệnh;</code>
-            <div>Mỗi <strong>câu lệnh</strong> (statement) kết thúc bằng dấu <code>;</code>.<small>Quên <code>;</code> → máy báo lỗi cú pháp, thường chỉ vào dòng <em>ngay sau</em> chỗ thiếu.</small></div></div>
-          <div class="command-row"><code>cout ≠ Cout</code>
-            <div>C++ <strong>phân biệt chữ hoa và chữ thường</strong>.<small><code>cout</code> và <code>Cout</code> là hai tên khác nhau.</small></div></div>
-          <div class="command-row"><code>{ ... }</code>
-            <div>Ngoặc nhọn bao một khối code. Lệnh của <code>main()</code> phải nằm bên trong.</div></div>
-          <div class="command-row focus"><code>// ...   /* ... */</code>
-            <div><strong>Comment</strong> là ghi chú cho người đọc, máy bỏ qua.<small><code>//</code> cho một dòng; <code>/* ... */</code> cho nhiều dòng.</small></div></div>
-        </div>
+        ${giaiMa("🕵️ 4 DẤU HIỆU CẦN NHÌN KHI SĂN BỌ", [
+          { code: "câu lệnh;", y: "Mỗi <strong>câu lệnh</strong> kết thúc bằng dấu <code>;</code>.", nho: "Quên ; → máy báo lỗi, thường chỉ vào dòng NGAY SAU chỗ thiếu." },
+          { code: "cout ≠ Cout", y: "C++ <strong>phân biệt chữ hoa và chữ thường</strong>.", nho: "cout và Cout là hai tên khác nhau." },
+          { code: "{ ... }", y: "Ngoặc nhọn bao một khối code; lệnh của <code>main()</code> nằm bên trong." },
+          { code: "// một dòng\n/* nhiều dòng */", y: "<strong>Comment</strong>: ghi chú cho người đọc, máy bỏ qua.", nho: "Không bao giờ hiện ra màn hình.", nhan: true }
+        ])}
         <div class="debug-routine"><strong>🔧 Khi chương trình báo lỗi:</strong>
           <span>1. Đọc dòng ⚠ LỖI</span><span>→</span><span>2. Kiểm tra ;</span><span>→</span><span>3. Kiểm tra hoa/thường</span><span>→</span><span>4. Kiểm tra " " và { }</span><span>→</span><span>5. Chạy lại</span></div>
         <div class="example-pair">
@@ -361,7 +328,7 @@ int main() {
     {
       kind: "gate", id: "gate-2", nav: "Điểm dừng 2",
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
-      codeHash: "D7039DAF",
+      codeHash: "196207DA",
       todo: [
         "Thầy hỏi: <strong>khi chương trình báo lỗi, con làm gì?</strong> Con nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",

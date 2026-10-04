@@ -1,8 +1,9 @@
 /* C++ Journey 8 — V2 engine (dùng chung cho Bài 1–5)
-   - Nội dung từng bài nằm trong window.LESSON (bai0N/lesson.js)
+   - Nội dung từng bài: window.LESSON (bai0N/lesson.js), khối nội dung dùng chung: engine/kit.js
    - Học sinh: localStorage, mỗi bài một khoá riêng
-   - Chạy C++: JSCPP (lưu sẵn trong engine/, không phụ thuộc CDN)
-   - Lớp trò chơi: bản đồ, ổ khoá theo mã, đặt cược, săn bọ, combo, BOSS có thanh máu, huy hiệu
+   - Chạy C++: JSCPP (lưu sẵn, đã vá để vọng số nhập giống Programiz)
+   - Robot Bit nổi ở góc màn hình, đi theo khi cuộn, nói lời dẫn và phản hồi (gọi học sinh là "bạn")
+   - Lớp trò chơi: bản đồ, ổ khoá theo mã, đặt cược, săn bọ, combo, pháo giấy, BOSS có thanh máu, huy hiệu
 */
 "use strict";
 
@@ -35,9 +36,7 @@ function hashText(s) {
 
 // Mã mở khoá: so sánh băm, không phân biệt hoa/thường, bỏ khoảng trắng.
 function codeHash(code) { return hashText("cpp8v2|" + String(code).toUpperCase().replace(/\s+/g, "")); }
-
 function studentKey(student) { return hashText(`${student.name}|${student.className}`.toLowerCase()); }
-
 function safeGet(key) { try { return localStorage.getItem(key); } catch { return null; } }
 function safeSet(key, val) { try { localStorage.setItem(key, val); } catch { /* bỏ qua */ } }
 
@@ -49,28 +48,23 @@ function stripComments(code) {
   return String(code).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 }
 
-window.CPP = { stripComments, normalizeOutput }; // lesson.js dùng trong các quy tắc kiểm tra
+window.CPP = { stripComments, normalizeOutput }; // lesson.js / kit.js dùng trong quy tắc kiểm tra
 
 /* ---------- lưu trạng thái ---------- */
 function freshState(student) {
   return { student, active: STEPS[0].id, passed: {}, attempts: {}, drafts: {}, inputs: {}, gates: {},
     xp: 0, combo: 0, bets: {}, startedAt: new Date().toISOString(), completedAt: null };
 }
-
 function storageKey() { return `${PREFIX}:${L.id}:${studentKey(state.student)}`; }
-
 function save() {
   if (!state) return;
   safeSet(storageKey(), JSON.stringify(state));
   safeSet(`${PREFIX}:lastStudent`, JSON.stringify(state.student));
 }
-
 function load(student) {
   state = freshState(student);
   const raw = safeGet(storageKey());
-  if (raw) {
-    try { state = { ...state, ...JSON.parse(raw), student }; } catch { /* dữ liệu hỏng: làm lại */ }
-  }
+  if (raw) { try { state = { ...state, ...JSON.parse(raw), student }; } catch { /* dữ liệu hỏng: làm lại */ } }
   save();
 }
 
@@ -79,24 +73,22 @@ function stepDone(step) {
   if (step.kind === "gate") return Boolean(state.gates[step.id]);
   return step.challenges.filter(c => !c.advanced).every(c => state.passed[c.id]);
 }
-
-function stepUnlocked(index) {
-  return STEPS.slice(0, index).every(stepDone);
-}
-
+function stepUnlocked(index) { return STEPS.slice(0, index).every(stepDone); }
 function bossStep() { return STEPS.find(s => s.kind === "boss"); }
 function allRequiredDone() { return REQUIRED.every(id => state.passed[id]) && STEPS.every(stepDone); }
 function isGold() {
-  const boss = bossStep();
-  return allRequiredDone() && boss.challenges.filter(c => c.advanced).every(c => state.passed[c.id]);
+  return allRequiredDone() && bossStep().challenges.filter(c => c.advanced).every(c => state.passed[c.id]);
 }
+function activeStep() { return STEPS.find(s => s.id === state.active); }
 
 /* ---------- chạy C++ ---------- */
 function runCpp(code, input = "") {
-  if (!window.JSCPP) return { ok: false, output: "", error: "Không tải được trình chạy C++. Con tải lại trang (F5)." };
+  if (!window.JSCPP) return { ok: false, output: "", error: "Không tải được trình chạy C++. Tải lại trang (F5)." };
   let output = "";
   try {
-    const exitCode = window.JSCPP.run(code, input, { stdio: { write: s => { output += s; } }, maxTimeout: 2000 });
+    // echo: số đọc bằng cin được in lại kèm xuống dòng, giống màn hình Programiz (JSCPP đã vá, xem _Web/README.md)
+    const exitCode = window.JSCPP.run(code, input, {
+      stdio: { write: s => { output += s; }, echo: tok => { output += tok + "\n"; } }, maxTimeout: 2000 });
     return { ok: true, output, exitCode };
   } catch (e) {
     return { ok: false, output, error: friendlyError(String(e && e.message ? e.message : e), code) };
@@ -109,17 +101,19 @@ function friendlyError(msg, code) {
   const line = lineMatch ? Number(lineMatch[1]) : null;
   const lineText = line ? ` ở khoảng dòng ${line}` : "";
   if (/Parsing Failure/i.test(msg)) {
-    return `Lỗi cú pháp${lineText}.\n👉 Thường gặp: thiếu dấu ; ở cuối dòng phía trên, thiếu dấu " hoặc thiếu ngoặc { }.` +
+    return `Lỗi cú pháp${lineText}.\n👉 Thường gặp: thiếu dấu ; ở cuối dòng phía trên, thiếu dấu " hoặc thiếu ngoặc { } ( ).` +
       (line ? `\n👉 Xem dòng ${line} và dòng ngay trước nó.` : "");
   }
   const notExist = msg.match(/variable (\w+) does not exist/);
   if (notExist) {
-    const name = notExist[1];
-    const lower = name.toLowerCase();
+    const name = notExist[1], lower = name.toLowerCase();
     const tip = ["cout", "cin", "endl"].includes(lower) && name !== lower
       ? `C++ phân biệt chữ hoa/thường: phải viết ${lower}, không phải ${name}.`
-      : `Kiểm tra lại cách viết tên "${name}" (chữ hoa/thường) hoặc con đã khai báo nó chưa.`;
+      : `Kiểm tra cách viết tên "${name}" (chữ hoa/thường, đúng từng chữ) và đã khai báo biến này chưa.`;
     return `Máy không biết tên "${name}"${lineText}.\n👉 ${tip}`;
+  }
+  if (/already declared|redefin/i.test(msg)) {
+    return `Một biến bị khai báo hai lần${lineText}.\n👉 Mỗi tên biến chỉ khai báo (int ...) một lần; lần sau chỉ gán giá trị.`;
   }
   if (/Time limit exceeded/i.test(msg)) {
     return "Chương trình chạy mãi không dừng (quá 2 giây).\n👉 Kiểm tra điều kiện và bước tăng/giảm của vòng lặp.";
@@ -155,48 +149,67 @@ function beep(kind) {
   } catch { /* trình duyệt chặn âm thanh: bỏ qua */ }
 }
 
-function confetti() {
+// Pháo giấy: nhỏ (bắn từ nút vừa bấm) mỗi lần đúng; lớn khi mở khoá / hạ BOSS.
+function confetti(origin = null, big = false) {
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) return;
   const c = document.createElement("canvas");
   c.className = "confetti-layer";
   c.width = innerWidth; c.height = innerHeight;
   document.body.appendChild(c);
   const ctx = c.getContext("2d");
   const colors = ["#2076d2", "#ef8a17", "#7451c7", "#168f67", "#f4c542", "#d94c55"];
-  const parts = Array.from({ length: 160 }, () => ({
-    x: Math.random() * c.width, y: -20 - Math.random() * c.height * 0.5,
-    vx: (Math.random() - 0.5) * 4, vy: 2 + Math.random() * 4, r: 4 + Math.random() * 6,
-    a: Math.random() * Math.PI, va: (Math.random() - 0.5) * 0.3, col: colors[Math.floor(Math.random() * colors.length)]
-  }));
-  const t0 = performance.now();
+  const ox = origin ? origin.x : c.width / 2, oy = origin ? origin.y : c.height * 0.35;
+  const n = big ? 200 : 70;
+  const parts = Array.from({ length: n }, () => {
+    const a = big ? Math.random() * Math.PI * 2 : -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+    const v = (big ? 6 : 5) + Math.random() * (big ? 8 : 6);
+    return { x: big ? Math.random() * c.width : ox, y: big ? -20 - Math.random() * 200 : oy,
+      vx: big ? (Math.random() - 0.5) * 4 : Math.cos(a) * v, vy: big ? 2 + Math.random() * 4 : Math.sin(a) * v,
+      r: 5 + Math.random() * 6, a: Math.random() * 6, va: (Math.random() - 0.5) * 0.3,
+      col: colors[Math.floor(Math.random() * colors.length)] };
+  });
+  const t0 = performance.now(), dur = big ? 2800 : 1500;
   (function frame(t) {
     ctx.clearRect(0, 0, c.width, c.height);
     parts.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.a += p.va;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.vx *= 0.99; p.a += p.va;
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
+      ctx.globalAlpha = Math.max(0, 1 - (t - t0) / dur);
       ctx.fillStyle = p.col; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore();
     });
-    if (t - t0 < 2600) requestAnimationFrame(frame); else c.remove();
+    if (t - t0 < dur) requestAnimationFrame(frame); else c.remove();
   })(t0);
 }
 
-/* ---------- robot Bit ---------- */
+/* ---------- robot Bit (nổi ở góc, đi theo khi cuộn) ---------- */
 function bitSvg(mood = "happy") {
   const mouth = mood === "sad" ? '<path d="M24 44 q8 -6 16 0" stroke="#17304f" stroke-width="3" fill="none" stroke-linecap="round"/>'
     : mood === "wow" ? '<circle cx="32" cy="43" r="4" fill="#17304f"/>'
     : '<path d="M24 41 q8 7 16 0" stroke="#17304f" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  const eyes = mood === "sad"
+    ? '<path d="M18 30 h10 M36 30 h10" stroke="#17304f" stroke-width="4" stroke-linecap="round"/>'
+    : '<circle cx="23" cy="31" r="5" fill="#17304f"/><circle cx="41" cy="31" r="5" fill="#17304f"/><circle cx="25" cy="29" r="1.6" fill="#fff"/><circle cx="43" cy="29" r="1.6" fill="#fff"/>';
   return `<svg class="bit-svg" viewBox="0 0 64 72" aria-hidden="true">
     <line x1="32" y1="4" x2="32" y2="14" stroke="#17304f" stroke-width="3"/>
-    <circle cx="32" cy="5" r="4" fill="#ef8a17"/>
+    <circle cx="32" cy="5" r="4" fill="${mood === "sad" ? "#d94c55" : "#ef8a17"}"/>
     <rect x="8" y="14" width="48" height="40" rx="12" fill="#eaf4ff" stroke="#17304f" stroke-width="3"/>
-    <circle cx="23" cy="31" r="5" fill="#17304f"/><circle cx="41" cy="31" r="5" fill="#17304f"/>
-    <circle cx="25" cy="29" r="1.6" fill="#fff"/><circle cx="43" cy="29" r="1.6" fill="#fff"/>
-    ${mouth}
+    ${eyes}${mouth}
     <rect x="18" y="56" width="28" height="12" rx="5" fill="#2076d2" stroke="#17304f" stroke-width="3"/>
   </svg>`;
 }
 
-function bitSays(text, mood) {
-  return `<div class="bit-row">${bitSvg(mood)}<div class="bit-bubble">${text}</div></div>`;
+let bitTimer = null, bitLast = "";
+function bitSay(html, mood = "happy", ms = 0) {
+  const dock = $("#bitDock"), bubble = $("#bitBubble");
+  if (!dock) return;
+  bitLast = html;
+  $("#bitText").innerHTML = html;
+  $("#bitFace").innerHTML = bitSvg(mood);
+  bubble.className = `bit-bubble-dock ${mood}`;
+  dock.classList.remove("jump"); void dock.offsetWidth; dock.classList.add("jump");
+  clearTimeout(bitTimer);
+  if (ms) bitTimer = setTimeout(() => bubble.classList.add("hidden"), ms);
 }
 
 /* ---------- khung trang ---------- */
@@ -219,9 +232,16 @@ function shell() {
   <nav class="journey-map" id="journeyMap" aria-label="Bản đồ hành trình"></nav>
   <main class="main-wrap"><div id="stepContainer"></div></main>
   <footer class="site-footer">
-    <p>C++ Journey 8 · Bài ${L.number} · Học bằng cách dự đoán, sửa code, chạy thử và vượt BOSS.</p>
+    <p>C++ Journey 8 · Bài ${L.number} · Khối Scratch vẽ bằng scratchblocks (MIT).</p>
     <button id="resetBtn" class="text-button danger-link" type="button">Xoá toàn bộ dữ liệu & làm từ đầu</button>
   </footer>
+  <div class="bit-dock" id="bitDock">
+    <div class="bit-bubble-dock hidden" id="bitBubble" role="status" aria-live="polite">
+      <button class="bit-close" type="button" aria-label="Ẩn lời Bit">×</button>
+      <div id="bitText"></div>
+    </div>
+    <button class="bit-face" id="bitFace" type="button" title="Bit — bấm để nghe lại">${bitSvg()}</button>
+  </div>
   <dialog id="identityDialog" class="modal">
     <form id="identityForm" method="dialog" class="modal-card">
       <div class="sticker">START</div>
@@ -266,15 +286,21 @@ function shell() {
 }
 
 /* ---------- bản đồ ---------- */
+function stepProgress(step) {
+  if (step.kind === "gate") return "";
+  const req = step.challenges.filter(c => !c.advanced);
+  return `${req.filter(c => state.passed[c.id]).length}/${req.length}`;
+}
 function renderMap() {
   const map = $("#journeyMap");
   map.innerHTML = `<div class="map-track">${STEPS.map((step, i) => {
     const unlocked = stepUnlocked(i), done = stepDone(step), active = state.active === step.id;
     const icon = step.kind === "gate" ? (done ? "🔓" : "⏸") : step.kind === "boss" ? "👾" : done ? "✓" : step.number;
     const cls = ["map-node", step.kind, done ? "done" : "", active ? "active" : "", unlocked ? "" : "locked"].join(" ");
+    const prog = unlocked && !done && step.kind !== "gate" ? `<span class="node-prog">${stepProgress(step)}</span>` : "";
     return `${i ? `<span class="map-link ${unlocked ? "lit" : ""}"></span>` : ""}
       <button class="${cls}" type="button" data-step="${step.id}" ${unlocked ? "" : "disabled"}>
-        <span class="node-dot">${unlocked ? icon : "🔒"}</span>
+        <span class="node-dot">${unlocked ? icon : "🔒"}${prog}</span>
         <span class="node-label">${esc(step.nav)}</span>
       </button>`;
   }).join("")}</div>`;
@@ -285,7 +311,7 @@ function renderMap() {
 function go(stepId) {
   state.active = stepId;
   save();
-  renderAll();
+  renderAll(true);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -295,8 +321,23 @@ function updateTop() {
   $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇";
 }
 
+/* ---------- khối Scratch (scratchblocks, tiếng Việt) ---------- */
+function renderScratch(root) {
+  const sb = window.scratchblocks;
+  $$("pre.sb", root).forEach(pre => {
+    if (!sb) { pre.classList.add("sb-fallback"); return; }
+    try {
+      const doc = sb.parse(pre.textContent, { languages: ["en"] });
+      if (sb.allLanguages && sb.allLanguages.vi) doc.translate(sb.allLanguages.vi);
+      const svg = sb.render(doc, { style: "scratch3", scale: 0.8 });
+      svg.classList.add("sb-svg");
+      pre.replaceWith(svg);
+    } catch { pre.classList.add("sb-fallback"); }
+  });
+}
+
 /* ---------- trang từng bước ---------- */
-function renderAll() {
+function renderAll(entering = false) {
   const idx = STEPS.findIndex(s => s.id === state.active);
   if (idx < 0 || !stepUnlocked(idx)) {
     const last = [...STEPS].reverse().find(s => stepUnlocked(STEPS.indexOf(s)));
@@ -308,8 +349,15 @@ function renderAll() {
   }
   updateTop();
   renderMap();
-  const step = STEPS.find(s => s.id === state.active);
+  const step = activeStep();
   if (step.kind === "gate") renderGate(step); else renderStage(step);
+  renderScratch($("#stepContainer"));
+  if (entering || !bitLast) {
+    const msg = step.kind === "gate"
+      ? (stepDone(step) ? "Đã mở khoá! Đi tiếp thôi bạn ơi." : "Dừng lại một chút nhé! Nhìn lên bảng, nghe thầy chốt rồi cùng luyện tập với bạn bên cạnh.")
+      : step.bit;
+    if (msg) bitSay(msg, step.kind === "boss" ? "wow" : "happy", 12000);
+  }
 }
 
 function renderStage(step) {
@@ -323,14 +371,14 @@ function renderStage(step) {
     <header class="stage-hero">
       <div class="stage-kicker">${esc(step.kicker)}</div>
       <h2>${esc(step.title)}</h2>
-      ${step.bit ? bitSays(step.bit) : ""}
-      ${step.objectives ? `<div class="stage-objectives">${step.objectives.map(o => `<span>✓ ${esc(o)}</span>`).join("")}</div>` : ""}
+      ${step.objectives ? `<div class="stage-objectives">${step.objectives.map(o => `<span>🎯 ${esc(o)}</span>`).join("")}</div>` : ""}
       ${isBoss ? bossBar(step) : ""}
     </header>
     <div class="lesson-body">
       ${step.lesson || ""}
       <section class="challenge-section">
-        <h3 class="section-heading"><span class="doodle">${isBoss ? "👾" : "⚡"}</span>${isBoss ? "Hạ BOSS" : "Nhiệm vụ của chặng"}</h3>
+        <h3 class="section-heading"><span class="doodle">${isBoss ? "👾" : "⚡"}</span>${isBoss ? "Hạ BOSS" : "Nhiệm vụ của chặng"}
+          <span class="section-count">${required.filter(c => state.passed[c.id]).length}/${required.length} xong</span></h3>
         <div class="challenge-list">${required.map(renderChallenge).join("")}</div>
       </section>
       ${advanced.length ? `<section class="challenge-section advanced-section">
@@ -339,7 +387,7 @@ function renderStage(step) {
       </section>` : ""}
       <div class="stage-footer">
         <div class="stage-complete-note" id="stageNote"></div>
-        ${next ? `<button id="nextBtn" class="primary-button" type="button">${next.kind === "gate" ? "Đến điểm dừng ⏸" : next.kind === "boss" ? "Vào BOSS 👾" : `Sang Chặng ${next.number} →`}</button>`
+        ${next ? `<button id="nextBtn" class="primary-button big" type="button">${nextLabel(next)}</button>`
                : `<button id="certBtn" class="certificate-button" type="button">🏆 Mở chứng chỉ</button>`}
       </div>
     </div>
@@ -348,6 +396,10 @@ function renderStage(step) {
   $("#nextBtn")?.addEventListener("click", () => { if (stepDone(step)) go(next.id); });
   $("#certBtn")?.addEventListener("click", openCertificate);
   refreshFooter(step);
+}
+
+function nextLabel(next) {
+  return next.kind === "gate" ? "Đến điểm dừng ⏸" : next.kind === "boss" ? "Vào BOSS 👾" : `Sang Chặng ${next.number} →`;
 }
 
 function bossBar(step) {
@@ -364,8 +416,10 @@ function refreshFooter(step) {
   const done = stepDone(step);
   const next = $("#nextBtn");
   if (next) next.disabled = !done;
+  const req = step.challenges.filter(c => !c.advanced);
+  const cnt = $(".section-count");
+  if (cnt) cnt.textContent = `${req.filter(c => state.passed[c.id]).length}/${req.length} xong`;
   if (step.kind === "boss") {
-    const req = step.challenges.filter(c => !c.advanced);
     const hit = req.filter(c => state.passed[c.id]).length;
     const hp = Math.round(100 * (1 - hit / req.length));
     if ($("#hpBar")) { $("#hpBar").style.width = `${hp}%`; $("#hpText").textContent = `${hp}%`; }
@@ -381,8 +435,7 @@ function refreshFooter(step) {
 
 function renderGate(step) {
   const done = stepDone(step);
-  const idx = STEPS.indexOf(step);
-  const next = STEPS[idx + 1];
+  const next = STEPS[STEPS.indexOf(step) + 1];
   $("#stepContainer").innerHTML = `
   <article class="stage-page gate-page">
     <div class="gate-hero ${done ? "open" : ""}">
@@ -394,16 +447,14 @@ function renderGate(step) {
       </div>
     </div>
     <div class="lesson-body">
-      <ol class="gate-steps">
-        ${step.todo.map((t, i) => `<li><span>${i + 1}</span><div>${t}</div></li>`).join("")}
-      </ol>
+      <ol class="gate-steps">${step.todo.map((t, i) => `<li><span>${i + 1}</span><div>${t}</div></li>`).join("")}</ol>
       <div class="unlock-box">
         ${done
-          ? `<button id="gateNext" class="primary-button" type="button">${next.kind === "boss" ? "Vào BOSS 👾" : `Sang Chặng ${next.number} →`}</button>`
+          ? `<button id="gateNext" class="primary-button big" type="button">${nextLabel(next)}</button>`
           : `<label for="gateCode"><strong>🔑 Mã mở khoá</strong> <span class="muted">(thầy hiện trên slide sau phần luyện tập)</span></label>
              <div class="unlock-row"><input id="gateCode" type="text" autocomplete="off" placeholder="Nhập mã…" maxlength="20" />
              <button id="gateBtn" class="primary-button" type="button">Mở khoá</button></div>
-             <div id="gateMsg" class="feedback hidden" role="status"></div>`}
+             <div id="gateMsg" class="result-line hidden" role="status"></div>`}
       </div>
       ${step.challenges && step.challenges.length ? `
       <section class="challenge-section bonus-section">
@@ -415,14 +466,14 @@ function renderGate(step) {
   step.challenges?.forEach(bindChallenge);
   $("#gateNext")?.addEventListener("click", () => go(next.id));
   const tryCode = () => {
-    const val = $("#gateCode").value;
-    if (codeHash(val) === step.codeHash) {
+    if (codeHash($("#gateCode").value) === step.codeHash) {
       state.gates[step.id] = true;
-      save(); beep("unlock");
-      renderAll();
+      save(); beep("unlock"); confetti(null, true);
+      renderAll(true);
     } else {
       const m = $("#gateMsg");
-      m.className = "feedback bad"; m.textContent = "Mã chưa đúng. Chờ thầy hiện mã trên slide nhé.";
+      m.className = "result-line bad"; m.textContent = "❌ Mã chưa đúng. Chờ thầy hiện mã trên slide nhé.";
+      bitSay("Mã này chưa đúng rồi. Chờ thầy hiện mã trên slide nhé!", "sad", 5000);
       beep("bad");
     }
   };
@@ -433,49 +484,52 @@ function renderGate(step) {
 /* ---------- nhiệm vụ ---------- */
 function renderChallenge(c) {
   const passed = Boolean(state.passed[c.id]);
-  const xpTag = c.bonus ? "+XP" : c.advanced ? "🥇 NÂNG CAO" : "1 SAO";
-  let body = "";
+  const tag = c.bonus ? "+XP" : c.advanced ? "🥇 NÂNG CAO" : "1 SAO";
+  let body = "", actions = "";
 
   if (c.type === "choice") {
     const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
     body = `
-      ${c.code ? codeBlock(c.code) : ""}
+      ${c.code ? codeBlock(c.code, c.input) : ""}
       ${c.bet && !passed && !state.bets[c.id] ? betRow(c) : ""}
-      <div class="choice-grid">${opts.map((o, i) => `
+      <div class="choice-grid ${c.mono ? "mono-grid" : ""}">${opts.map((o, i) => `
         <label class="choice-option"><input type="radio" name="${c.id}" value="${i}" />
-        <span class="${c.mono ? "mono" : ""}">${esc(o.text)}</span></label>`).join("")}</div>
-      <button class="primary-button" data-act="choice" type="button">Kiểm tra đáp án</button>`;
+        <span class="${c.mono ? "mono" : ""}">${esc(o.text)}</span></label>`).join("")}</div>`;
+    actions = `<button class="primary-button" data-act="choice" type="button">Kiểm tra đáp án</button>`;
   }
 
   if (c.type === "sequence") {
-    const shuffled = c.shuffle || c.answer;
+    const items = c.shuffle || c.answer;
     body = `
-      <div class="sequence-pool">${shuffled.map((it, i) => `<button type="button" class="sequence-button ${c.mono ? "mono" : ""}" data-i="${i}">${esc(it)}</button>`).join("")}</div>
-      <div class="sequence-answer ${c.mono ? "as-code" : ""}" aria-live="polite"><span class="muted">Bấm lần lượt từng dòng theo thứ tự đúng.</span></div>
-      <div class="code-actions">
-        <button class="primary-button" data-act="seq-check" type="button">Kiểm tra</button>
-        <button class="secondary-button" data-act="seq-reset" type="button">Làm lại</button>
+      <div class="seq-wrap">
+        <div><div class="mini-label">Các dòng (bấm theo thứ tự)</div>
+          <div class="sequence-pool">${items.map((it, i) => `<button type="button" class="sequence-button ${c.mono ? "mono" : ""}" data-i="${i}">${esc(it)}</button>`).join("")}</div></div>
+        <div><div class="mini-label">Chương trình của bạn</div>
+          <div class="sequence-answer ${c.mono ? "as-code" : ""}" aria-live="polite"><span class="muted">Chưa có dòng nào.</span></div></div>
       </div>`;
+    actions = `<button class="primary-button" data-act="seq-check" type="button">Kiểm tra</button>
+      <button class="secondary-button" data-act="seq-undo" type="button">↶ Bỏ dòng cuối</button>
+      <button class="secondary-button" data-act="seq-reset" type="button">Làm lại</button>`;
   }
 
   if (c.type === "code") {
     const draft = state.drafts[c.id] ?? c.starter;
     const needInput = Boolean(c.tests && c.tests.some(t => t.input));
     const inputVal = state.inputs[c.id] ?? (c.tests && c.tests[0] ? c.tests[0].input || "" : "");
-    const expectedBlock = c.expected != null
-      ? `<div class="expected-wrap"><div class="expected-label">Kết quả cần đạt</div><pre class="expected-output">${esc(c.expected)}</pre></div>` : "";
-    const testsBlock = c.tests && c.tests.length > 1
-      ? `<div class="expected-wrap"><div class="expected-label">Các ca kiểm thử</div><table class="test-table">
-          <tr><th>Nhập</th><th>Output mong đợi</th></tr>
-          ${c.tests.map(t => `<tr><td><code>${esc(t.input || "(không nhập)")}</code></td><td><pre>${esc(t.expected)}</pre></td></tr>`).join("")}
-        </table></div>` : (c.tests && c.tests[0] ? `<div class="expected-wrap"><div class="expected-label">Kết quả cần đạt</div><pre class="expected-output">${esc(c.tests[0].expected)}</pre></div>` : "");
+    const tests = c.tests || [{ input: "", expected: c.expected }];
+    const target = tests.length > 1
+      ? `<table class="test-table"><tr><th>Nhập</th><th>Màn hình cần đạt</th></tr>
+          ${tests.map(t => `<tr><td><code>${esc(t.input || "(không)")}</code></td><td><pre>${esc(t.expected)}</pre></td></tr>`).join("")}</table>`
+      : `<pre class="expected-output">${esc(tests[0].expected)}</pre>`;
     body = `
-      <div class="requirement-box">
-        <div class="requirement-title">🎯 YÊU CẦU</div>
-        <ul>${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
-        ${expectedBlock}${testsBlock}
+      <div class="task-grid">
+        <div class="requirement-box">
+          <div class="requirement-title">🎯 YÊU CẦU</div>
+          <ul>${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+        </div>
+        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các ca kiểm thử" : "Màn hình cần đạt"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
       </div>
-      ${c.bugs ? `<div class="bug-board" data-bugs>${c.bugs.map((b, i) => `<span class="bug" data-bug="${i}" title="${esc(b.label)}">🐛 <small>${esc(b.label)}</small></span>`).join("")}</div>` : ""}
+      ${c.bugs ? `<div class="bug-board">${c.bugs.map((b, i) => `<span class="bug" data-bug="${i}">🐛 <small>${esc(b.label)}</small></span>`).join("")}</div>` : ""}
       <div class="code-lab">
         <div class="editor-shell">
           <div class="editor-toolbar"><span>main.cpp</span>
@@ -484,54 +538,70 @@ function renderChallenge(c) {
           <textarea class="code-editor" spellcheck="false" aria-label="Trình soạn thảo C++">${esc(draft)}</textarea></div>
         </div>
         <div class="console-shell">
-          ${needInput ? `<div class="console-toolbar"><span>📥 DỮ LIỆU NHẬP</span><small>các số cách nhau dấu cách</small></div>
-            <textarea class="stdin-box" rows="2" spellcheck="false" aria-label="Dữ liệu nhập">${esc(inputVal)}</textarea>` : ""}
-          <div class="console-toolbar"><span>🖥 KẾT QUẢ</span></div>
-          <pre class="console-output">Bấm “▶ Chạy code” để xem kết quả.</pre>
+          ${needInput ? `<div class="console-toolbar"><span>📥 DỮ LIỆU NHẬP</span><small>cách nhau dấu cách</small></div>
+            <input class="stdin-box" type="text" spellcheck="false" aria-label="Dữ liệu nhập" value="${esc(inputVal)}" />` : ""}
+          <div class="console-toolbar"><span>🖥 MÀN HÌNH</span></div>
+          <pre class="console-output">Bấm “▶ Chạy” để xem.</pre>
         </div>
-      </div>
-      <div class="code-actions">
-        <button class="secondary-button" data-act="run" type="button">▶ Chạy code</button>
-        <button class="primary-button" data-act="check" type="button">⭐ Kiểm tra & nhận sao</button>
       </div>`;
+    actions = `<button class="secondary-button" data-act="run" type="button">▶ Chạy</button>
+      <button class="primary-button" data-act="check" type="button">⭐ Kiểm tra & nhận sao</button>`;
   }
 
-  const hints = (c.hints || (c.hint ? [c.hint] : [])).map((h, i) =>
-    `<details class="hint-box"><summary>🛟 Gợi ý ${i + 1}${i ? " (rõ hơn)" : ""}</summary><p>${esc(h)}</p></details>`).join("");
+  const hints = c.hints || (c.hint ? [c.hint] : []);
+  const hintBlock = hints.length && !passed
+    ? `<button class="hint-btn" type="button" data-act="hint">🛟 Cần gợi ý?</button>` : "";
 
   return `
   <article class="challenge-card ${passed ? "passed" : ""} ${c.advanced ? "advanced" : ""} ${c.bonus ? "bonus" : ""}" data-card="${c.id}">
     <header class="challenge-header">
-      <div class="challenge-title-wrap"><div class="challenge-icon">${c.icon || "⭐"}</div>
+      <div class="challenge-title-wrap"><div class="challenge-icon">${passed ? "✅" : c.icon || "⭐"}</div>
         <div><h4>${esc(c.title)}</h4><p>${c.prompt}</p></div></div>
-      <span class="challenge-badge">${passed ? "⭐ ĐÃ XONG" : xpTag}</span>
+      <span class="challenge-badge">${passed ? "⭐ ĐÃ XONG" : tag}</span>
     </header>
-    <div class="challenge-content">${body}${hints}<div class="feedback hidden" data-feedback role="status"></div></div>
+    <div class="challenge-content">
+      ${body}
+      <div class="action-row">${actions}${hintBlock}</div>
+      <div class="result-line hidden" data-result role="status"></div>
+      <div class="hint-list" data-hints></div>
+    </div>
   </article>`;
 }
 
-function codeBlock(code) {
-  return `<div class="code-demo"><div class="code-demo-header"><span><span class="window-dots">● ● ●</span></span><span>main.cpp</span></div><pre><code>${esc(code)}</code></pre></div>`;
+function codeBlock(code, input) {
+  return `<div class="code-demo"><div class="code-demo-header"><span><span class="window-dots">● ● ●</span></span><span>main.cpp${input ? ` · nhập: ${esc(input)}` : ""}</span></div><pre><code>${esc(code)}</code></pre></div>`;
 }
 
 function betRow(c) {
   const chips = [0, 5, 10, 20];
   return `<div class="bet-row" data-bet>
-    <span>🎲 <strong>Đặt cược</strong> vào dự đoán của con:</span>
+    <span>🎲 <strong>Đặt cược</strong> vào dự đoán:</span>
     ${chips.map(v => `<button type="button" class="bet-chip ${v === 0 ? "on" : ""}" data-v="${v}" ${v > state.xp ? "disabled" : ""}>${v ? `${v} XP` : "Không cược"}</button>`).join("")}
     <small class="muted">Đúng: được thêm số XP đã cược · Sai: mất số XP đó</small>
   </div>`;
 }
 
-function feedback(card, type, msg, mood) {
-  const el = $("[data-feedback]", card);
-  el.className = `feedback ${type}`;
-  el.innerHTML = bitSays(msg, mood || (type === "good" ? "happy" : type === "bad" ? "sad" : "wow"));
+// Kết quả hiện NGAY DƯỚI NÚT bấm; Bit ở góc nói lời ngắn.
+function result(card, type, msg, extraHtml = "") {
+  const el = $("[data-result]", card);
+  el.className = `result-line ${type}`;
+  el.innerHTML = `<span class="result-icon">${type === "good" ? "✅" : type === "bad" ? "❌" : "💡"}</span><div class="result-text">${esc(msg)}${extraHtml}</div>`;
+  el.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 function bindChallenge(c) {
   const card = $(`[data-card="${c.id}"]`);
   if (!card) return;
+
+  const hints = c.hints || (c.hint ? [c.hint] : []);
+  let shown = 0;
+  $('[data-act="hint"]', card)?.addEventListener("click", e => {
+    if (shown >= hints.length) return;
+    $("[data-hints]", card).insertAdjacentHTML("beforeend", `<div class="hint-item"><strong>Gợi ý ${shown + 1}:</strong> ${esc(hints[shown])}</div>`);
+    shown++;
+    e.target.textContent = shown < hints.length ? "🛟 Gợi ý rõ hơn" : "🛟 Hết gợi ý";
+    e.target.disabled = shown >= hints.length;
+  });
 
   if (c.type === "choice") {
     let wager = 0;
@@ -539,9 +609,9 @@ function bindChallenge(c) {
       $$(".bet-chip", card).forEach(x => x.classList.remove("on"));
       chip.classList.add("on"); wager = Number(chip.dataset.v);
     }));
-    $('[data-act="choice"]', card).addEventListener("click", () => {
+    $('[data-act="choice"]', card).addEventListener("click", ev => {
       const sel = $(`input[name="${c.id}"]:checked`, card);
-      if (!sel) return feedback(card, "info", "Bạn chọn một đáp án trước nhé.");
+      if (!sel) return result(card, "info", "Chọn một đáp án trước nhé.");
       const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
       const picked = opts[Number(sel.value)];
       const right = picked.text === c.answer;
@@ -552,7 +622,9 @@ function bindChallenge(c) {
         if (wager) { state.xp = Math.max(0, state.xp + (right ? wager : -wager)); betMsg = right ? ` 🎲 Thắng cược +${wager} XP!` : ` 🎲 Thua cược −${wager} XP.`; }
         $("[data-bet]", card)?.remove();
       }
-      if (right) pass(c, card, (c.why || "Chính xác!") + betMsg);
+      $$(".choice-option", card).forEach(l => l.classList.remove("right", "wrong"));
+      sel.closest(".choice-option").classList.add(right ? "right" : "wrong");
+      if (right) pass(c, card, (c.why || "Chính xác!") + betMsg, ev.currentTarget);
       else { miss(card, (picked.why || "Chưa đúng. Đọc lại phần giải thích phía trên rồi thử lại.") + betMsg); updateTop(); }
     });
   }
@@ -562,37 +634,36 @@ function bindChallenge(c) {
     let picked = [];
     const box = $(".sequence-answer", card);
     const draw = () => {
-      box.innerHTML = picked.length ? picked.map((i, n) => `<span class="picked ${c.mono ? "mono" : ""}">${c.mono ? "" : `${n + 1}. `}${esc(items[i])}</span>`).join(c.mono ? "" : "<span>→</span>")
-        : `<span class="muted">Bấm lần lượt từng dòng theo thứ tự đúng.</span>`;
+      box.innerHTML = picked.length
+        ? picked.map((i, n) => `<span class="picked ${c.mono ? "mono" : ""}">${c.mono ? "" : `${n + 1}. `}${esc(items[i])}</span>`).join("")
+        : `<span class="muted">Chưa có dòng nào.</span>`;
+      $$(".sequence-button", card).forEach(b => b.classList.toggle("selected", picked.includes(Number(b.dataset.i))));
     };
     $$(".sequence-button", card).forEach(btn => btn.addEventListener("click", () => {
-      picked.push(Number(btn.dataset.i)); btn.classList.add("selected"); draw();
+      if (!picked.includes(Number(btn.dataset.i))) { picked.push(Number(btn.dataset.i)); draw(); }
     }));
-    $('[data-act="seq-reset"]', card).addEventListener("click", () => {
-      picked = []; $$(".sequence-button", card).forEach(b => b.classList.remove("selected")); draw();
-      $("[data-feedback]", card).classList.add("hidden");
-    });
-    $('[data-act="seq-check"]', card).addEventListener("click", () => {
-      if (picked.length !== c.answer.length) return feedback(card, "info", "Bạn chọn đủ tất cả các dòng nhé.");
+    $('[data-act="seq-undo"]', card).addEventListener("click", () => { picked.pop(); draw(); });
+    $('[data-act="seq-reset"]', card).addEventListener("click", () => { picked = []; draw(); $("[data-result]", card).classList.add("hidden"); });
+    $('[data-act="seq-check"]', card).addEventListener("click", ev => {
+      if (picked.length !== c.answer.length) return result(card, "info", "Chọn đủ tất cả các dòng nhé.");
       attempt(c.id);
       const order = picked.map(i => items[i]);
       const wrongAt = order.findIndex((v, i) => v !== c.answer[i]);
-      if (wrongAt < 0) pass(c, card, c.why || "Đúng thứ tự!");
-      else miss(card, `Vị trí thứ ${wrongAt + 1} chưa đúng. ${c.hintWrong || "Nghĩ xem dòng nào máy cần đọc trước."}`);
+      if (wrongAt < 0) pass(c, card, c.why || "Đúng thứ tự!", ev.currentTarget);
+      else miss(card, `Dòng thứ ${wrongAt + 1} chưa đúng chỗ. ${c.hintWrong || "Nghĩ xem dòng nào máy cần đọc trước."}`);
     });
   }
 
   if (c.type === "code") {
     const ed = $(".code-editor", card), gut = $(".gutter", card), out = $(".console-output", card), stdin = $(".stdin-box", card);
-    const syncGutter = () => {
+    const sync = () => {
       const n = ed.value.split("\n").length;
-      gut.textContent = Array.from({ length: n }, (_, i) => i + 1).join("\n");
-      gut.scrollTop = ed.scrollTop;
+      ed.rows = Math.max(6, n + 1);
+      gut.textContent = Array.from({ length: Math.max(n, ed.rows) }, (_, i) => i + 1).join("\n");
       updateBugs(c, card, ed.value);
     };
-    syncGutter();
-    ed.addEventListener("input", () => { state.drafts[c.id] = ed.value; save(); syncGutter(); });
-    ed.addEventListener("scroll", () => { gut.scrollTop = ed.scrollTop; });
+    sync();
+    ed.addEventListener("input", () => { state.drafts[c.id] = ed.value; save(); sync(); });
     ed.addEventListener("keydown", e => {
       if (e.key === "Tab") {
         e.preventDefault();
@@ -601,20 +672,22 @@ function bindChallenge(c) {
         ed.selectionStart = ed.selectionEnd = s + 4;
         ed.dispatchEvent(new Event("input"));
       }
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('[data-act="run"]', card).click(); }
     });
     stdin?.addEventListener("input", () => { state.inputs[c.id] = stdin.value; save(); });
     $('[data-act="reset-code"]', card).addEventListener("click", () => {
-      ed.value = c.starter; state.drafts[c.id] = c.starter; save(); syncGutter();
+      ed.value = c.starter; state.drafts[c.id] = c.starter; save(); sync();
       out.textContent = "Đã trả về code ban đầu."; out.classList.remove("error");
     });
     $('[data-act="run"]', card).addEventListener("click", () => {
       showRun(out, runCpp(ed.value, stdin ? stdin.value : ""));
     });
-    $('[data-act="check"]', card).addEventListener("click", () => {
+    $('[data-act="check"]', card).addEventListener("click", ev => {
       attempt(c.id);
-      const verdict = checkCode(c, ed.value, stdin ? stdin.value : "");
-      showRun(out, verdict.run);
-      if (verdict.ok) pass(c, card, verdict.msg); else miss(card, verdict.msg);
+      const v = checkCode(c, ed.value, stdin ? stdin.value : "");
+      if (v.input != null && stdin) stdin.value = v.input;
+      showRun(out, v.run);
+      if (v.ok) pass(c, card, v.msg, ev.currentTarget); else miss(card, v.msg);
     });
   }
 }
@@ -624,7 +697,7 @@ function updateBugs(c, card, code) {
   c.bugs.forEach((b, i) => {
     const el = $(`[data-bug="${i}"]`, card);
     const fixed = b.fixed(code);
-    if (fixed && !el.classList.contains("dead")) { el.classList.add("dead"); el.firstChild.textContent = "💥 "; }
+    if (fixed && !el.classList.contains("dead")) { el.classList.add("dead"); el.firstChild.textContent = "💥 "; beep("good"); }
     if (!fixed && el.classList.contains("dead")) { el.classList.remove("dead"); el.firstChild.textContent = "🐛 "; }
   });
 }
@@ -638,9 +711,9 @@ function firstDiff(actual, expected) {
   const a = actual.split("\n"), e = expected.split("\n");
   for (let i = 0; i < Math.max(a.length, e.length); i++) {
     if ((a[i] ?? "") !== (e[i] ?? "")) {
-      if (a[i] === undefined) return `Output của bạn mới có ${a.length} dòng, cần ${e.length} dòng.`;
-      if (e[i] === undefined) return `Output của bạn có ${a.length} dòng, chỉ cần ${e.length} dòng.`;
-      return `Dòng ${i + 1} chưa khớp:\n  của bạn: "${a[i]}"\n  cần:     "${e[i]}"`;
+      if (a[i] === undefined) return `Màn hình của bạn mới có ${a.length} dòng, cần ${e.length} dòng.`;
+      if (e[i] === undefined) return `Màn hình của bạn có ${a.length} dòng, chỉ cần ${e.length} dòng.`;
+      return `Dòng ${i + 1} chưa khớp:\n• của bạn: "${a[i]}"\n• cần:      "${e[i]}"`;
     }
   }
   return "";
@@ -652,12 +725,12 @@ function checkCode(c, code, currentInput) {
   for (const [n, t] of tests.entries()) {
     const r = runCpp(code, t.input || "");
     lastRun = r;
-    if (!r.ok) return { ok: false, run: r, msg: "Code chưa chạy được. Đọc dòng ⚠ LỖI trong ô KẾT QUẢ rồi sửa (mở 🧰 Bảng lỗi nếu cần)." };
+    if (!r.ok) return { ok: false, run: r, input: t.input, msg: "Code chưa chạy được. Đọc dòng ⚠ LỖI trong ô MÀN HÌNH rồi sửa (mở 🧰 Bảng lỗi nếu cần)." };
     if (t.expected != null) {
       const a = normalizeOutput(r.output), e = normalizeOutput(t.expected);
       if (a !== e) {
-        const where = tests.length > 1 ? `Ca kiểm thử ${n + 1} (nhập: ${t.input || "không"}) sai.\n` : "";
-        return { ok: false, run: r, msg: where + (firstDiff(a, e) || "Output chưa khớp mẫu.") };
+        const where = tests.length > 1 ? `Ca ${n + 1} (nhập ${t.input || "không"}) chưa đúng.\n` : "";
+        return { ok: false, run: r, input: t.input, msg: where + (firstDiff(a, e) || "Màn hình chưa khớp mẫu.") };
       }
     }
   }
@@ -665,14 +738,20 @@ function checkCode(c, code, currentInput) {
     if (!rule.test(code, lastRun.output)) return { ok: false, run: lastRun, msg: rule.msg };
   }
   if (c.bugs && !c.bugs.every(b => b.fixed(code))) {
-    return { ok: false, run: lastRun, msg: "Output đã đúng nhưng vẫn còn bọ trên bảng. Xem con 🐛 nào chưa nổ." };
+    return { ok: false, run: lastRun, msg: "Màn hình đã đúng nhưng vẫn còn bọ trên bảng. Xem con 🐛 nào chưa nổ." };
   }
-  return { ok: true, run: lastRun, msg: c.why || "Chính xác! Output khớp mẫu." };
+  return { ok: true, run: lastRun, msg: c.why || "Chính xác! Màn hình khớp mẫu." + (tests.length > 1 ? ` Đạt cả ${tests.length} ca.` : "") };
 }
 
 function attempt(id) { state.attempts[id] = (state.attempts[id] || 0) + 1; save(); }
 
-function pass(c, card, msg) {
+function nextOpenCard(card) {
+  const all = $$(".challenge-card", $("#stepContainer"));
+  const i = all.indexOf(card);
+  return [...all.slice(i + 1), ...all.slice(0, i)].find(el => !el.classList.contains("passed") && !el.classList.contains("advanced") && !el.classList.contains("bonus"));
+}
+
+function pass(c, card, msg, btn) {
   const first = !state.passed[c.id];
   let extra = "";
   if (first) {
@@ -688,23 +767,40 @@ function pass(c, card, msg) {
     saveBadge();
   }
   save();
-  feedback(card, "good", esc(msg) + extra);
   card.classList.add("passed");
   $(".challenge-badge", card).textContent = "⭐ ĐÃ XONG";
+  $(".challenge-icon", card).textContent = "✅";
+  $('[data-act="hint"]', card)?.remove();
+
+  const step = activeStep();
+  const nextCard = nextOpenCard(card);
+  const stageNowDone = step.kind !== "gate" && stepDone(step);
+  let cta = "";
+  if (nextCard) cta = `<button class="mini-cta" type="button" data-go-next>Nhiệm vụ còn lại →</button>`;
+  else if (stageNowDone && step.kind !== "boss") cta = `<button class="mini-cta" type="button" data-go-step>${nextLabel(STEPS[STEPS.indexOf(step) + 1])}</button>`;
+  result(card, "good", msg + extra, cta);
+  $("[data-go-next]", card)?.addEventListener("click", () => nextCard.scrollIntoView({ block: "start", behavior: "smooth" }));
+  $("[data-go-step]", card)?.addEventListener("click", () => go(STEPS[STEPS.indexOf(step) + 1].id));
+
+  const r = btn ? btn.getBoundingClientRect() : null;
+  confetti(r ? { x: r.left + r.width / 2, y: r.top } : null, false);
   beep("good");
+  const cheers = ["Tuyệt vời!", "Quá đỉnh!", "Chuẩn luôn!", "Bạn giỏi quá!", "Xuất sắc!"];
+  bitSay(`<strong>${cheers[Math.floor(Math.random() * cheers.length)]}</strong> ${esc(msg)}${extra}`, "happy", 6000);
   updateTop();
   renderMap();
-  const step = STEPS.find(s => s.id === state.active);
   if (step.kind !== "gate") refreshFooter(step);
   if (step.kind === "boss" && first && allRequiredDone()) {
-    beep("win"); confetti();
-    if (!c.advanced) setTimeout(openCertificate, 900);
+    beep("win"); confetti(null, true);
+    bitSay("<strong>BOSS gục rồi!</strong> Lưu chứng chỉ để nộp nhé. Còn sức thì thử nhiệm vụ nâng cao để lấy huy hiệu vàng!", "wow");
+    if (!c.advanced) setTimeout(openCertificate, 1200);
   }
 }
 
 function miss(card, msg) {
   state.combo = 0; save(); updateTop();
-  feedback(card, "bad", esc(msg));
+  result(card, "bad", msg);
+  bitSay("Chưa đúng rồi — đọc dòng ❌ ngay dưới nút nhé. Sửa từng chỗ một, bạn làm được!", "sad", 6000);
   beep("bad");
 }
 
@@ -741,29 +837,23 @@ function drawCertificate() {
   for (let y = 0; y < H; y += 42) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
   ctx.strokeStyle = "#17304f"; ctx.lineWidth = 12; rr(ctx, 40, 40, W - 80, H - 80, 28); ctx.stroke();
   ctx.strokeStyle = gold ? "#d9a400" : "#2076d2"; ctx.lineWidth = 4; rr(ctx, 66, 66, W - 132, H - 132, 22); ctx.stroke();
-
   ctx.fillStyle = "#173b78"; rr(ctx, 120, 130, 170, 115, 24); ctx.fill();
   ctx.fillStyle = "#fff"; ctx.font = "900 58px Segoe UI, Arial"; ctx.textAlign = "center"; ctx.fillText("C++", 205, 207);
-
-  // Huy hiệu
   ctx.beginPath(); ctx.arc(W - 210, 190, 72, 0, Math.PI * 2);
   ctx.fillStyle = gold ? "#ffd44d" : "#dfe6ee"; ctx.fill();
   ctx.lineWidth = 6; ctx.strokeStyle = gold ? "#b47700" : "#8a97a8"; ctx.stroke();
   ctx.font = "64px Segoe UI Emoji, Apple Color Emoji, sans-serif"; ctx.fillText(L.badge.icon, W - 210, 213);
   ctx.font = "800 20px Segoe UI, Arial"; ctx.fillStyle = gold ? "#7d5600" : "#4f5d70";
   ctx.fillText(gold ? "HUY HIỆU VÀNG" : "HUY HIỆU BẠC", W - 210, 292);
-
   ctx.fillStyle = "#17304f"; ctx.font = "900 30px Segoe UI, Arial"; ctx.fillText("CHỨNG CHỈ HOÀN THÀNH", W / 2, 165);
-  ctx.fillStyle = "#2076d2"; ctx.font = "900 54px Segoe UI, Arial"; ctx.fillText(`BÀI ${L.number}: ${L.title.toUpperCase()}`, W / 2, 235);
+  ctx.fillStyle = "#2076d2"; fit(ctx, `BÀI ${L.number}: ${L.title.toUpperCase()}`, W / 2, 235, 980, 54, 34, "#2076d2");
   ctx.fillStyle = "#61708a"; ctx.font = "500 26px Segoe UI, Arial"; ctx.fillText(`C++ Journey 8 · ${L.story}`, W / 2, 285);
-
   ctx.fillStyle = "#17304f"; ctx.font = "500 25px Segoe UI, Arial"; ctx.fillText("Chứng nhận học sinh", W / 2, 385);
-  ctx.fillStyle = "#6547bb"; fit(ctx, state.student.name, W / 2, 460, 1100, 56, 36);
+  fit(ctx, state.student.name, W / 2, 460, 1100, 56, 36, "#6547bb");
   ctx.strokeStyle = "#d1c8b7"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(260, 490); ctx.lineTo(W - 260, 490); ctx.stroke();
   ctx.fillStyle = "#17304f"; ctx.font = "700 28px Segoe UI, Arial"; ctx.fillText(`Lớp ${state.student.className}`, W / 2, 545);
   ctx.font = "500 25px Segoe UI, Arial";
   ctx.fillText(`đã vượt 4 chặng, hạ BOSS · ${state.xp} XP${gold ? " · hoàn thành cả nhiệm vụ nâng cao" : ""}`, W / 2, 600);
-
   ctx.font = "700 20px Segoe UI, Arial";
   L.skills.forEach((b, i) => {
     const w = 295, x = 195 + (i % 3) * 410, y = 672 + Math.floor(i / 3) * 78;
@@ -771,7 +861,6 @@ function drawCertificate() {
     ctx.strokeStyle = i % 2 ? "#ef8a17" : "#2076d2"; ctx.lineWidth = 2; rr(ctx, x, y, w, 52, 26); ctx.stroke();
     ctx.fillStyle = "#17304f"; ctx.textAlign = "center"; ctx.fillText(b, x + w / 2, y + 34);
   });
-
   const date = new Date(state.completedAt || Date.now()).toLocaleDateString("vi-VN");
   ctx.fillStyle = "#61708a"; ctx.font = "500 19px Segoe UI, Arial"; ctx.textAlign = "left";
   ctx.fillText(`Ngày hoàn thành: ${date}`, 120, 965);
@@ -779,7 +868,7 @@ function drawCertificate() {
   ctx.textAlign = "right";
   const issuer = [CFG.schoolName, CFG.teacherName ? `GV: ${CFG.teacherName}` : ""].filter(Boolean).join(" · ");
   ctx.fillText(issuer || "Tạo trực tiếp từ tiến độ trên web", W - 120, 965);
-  ctx.fillText("Nộp kèm: link Programiz bài cá nhân + ảnh output", W - 120, 1000);
+  ctx.fillText(L.certNote || "Nộp kèm: link Programiz bài cá nhân + ảnh output", W - 120, 1000);
 }
 
 function rr(ctx, x, y, w, h, r) {
@@ -789,9 +878,10 @@ function rr(ctx, x, y, w, h, r) {
   ctx.arcTo(x, y + h, x, y, k); ctx.arcTo(x, y, x + w, y, k); ctx.closePath();
 }
 
-function fit(ctx, text, x, y, maxW, size, min) {
+function fit(ctx, text, x, y, maxW, size, min, color) {
   while (size > min) { ctx.font = `900 ${size}px Segoe UI, Arial`; if (ctx.measureText(text).width <= maxW) break; size -= 2; }
-  ctx.textAlign = "center"; ctx.fillText(text, x, y);
+  ctx.font = `900 ${size}px Segoe UI, Arial`;
+  ctx.fillStyle = color; ctx.textAlign = "center"; ctx.fillText(text, x, y);
 }
 
 function fileSafe(s) {
@@ -814,7 +904,7 @@ function printPdf() {
   drawCertificate();
   const data = $("#certCanvas").toDataURL("image/png");
   const win = window.open("", "_blank");
-  if (!win) return alert("Trình duyệt đang chặn cửa sổ in. Con cho phép popup rồi thử lại.");
+  if (!win) return alert("Trình duyệt đang chặn cửa sổ in. Cho phép popup rồi thử lại.");
   win.document.write(`<!doctype html><html><head><title>Chứng chỉ Bài ${L.number}</title><style>html,body{margin:0}body{display:grid;place-items:center;min-height:100vh}img{max-width:100%}@page{size:A4 landscape;margin:0}@media print{img{width:100vw}}</style></head><body><img src="${data}"/></body></html>`);
   win.document.close(); win.focus(); setTimeout(() => win.print(), 300);
 }
@@ -844,17 +934,22 @@ function boot() {
     if (name.length < 2 || !CLASSES.includes(className)) return;
     load({ name, className });
     $("#identityDialog").close();
-    renderAll();
+    renderAll(true);
   });
   $("#identityDialog").addEventListener("cancel", e => e.preventDefault());
   $("#studentBtn").addEventListener("click", askIdentity);
   $("#newStudentBtn").addEventListener("click", clearAll);
   $("#resetBtn").addEventListener("click", clearAll);
   $("#errorsBtn").addEventListener("click", () => $("#errorsDialog").showModal());
-  $("#soundBtn").addEventListener("click", () => { safeSet(`${PREFIX}:sound`, soundOn() ? "off" : "on"); if (state) updateTop(); else $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇"; });
+  $("#soundBtn").addEventListener("click", () => { safeSet(`${PREFIX}:sound`, soundOn() ? "off" : "on"); $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇"; });
   $$("[data-close]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
   $("#savePng").addEventListener("click", savePng);
   $("#printPdf").addEventListener("click", printPdf);
+  $(".bit-close").addEventListener("click", () => $("#bitBubble").classList.add("hidden"));
+  $("#bitFace").addEventListener("click", () => {
+    const b = $("#bitBubble");
+    if (b.classList.contains("hidden") && bitLast) { b.classList.remove("hidden"); } else b.classList.add("hidden");
+  });
   $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇";
   askIdentity();
 }
