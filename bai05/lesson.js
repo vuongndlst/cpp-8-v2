@@ -3,7 +3,7 @@
    Mã mở khoá: chỉ ghi trong README của bài (thư mục giáo viên) — KHÔNG ghi trong web công khai.
 */
 "use strict";
-const { giaiMa, codeVaManHinh, meo, docThem, khongCo } = window.KIT;
+const { giaiMa, codeVaManHinh, meo, docThem, khongCo, cuPhap } = window.KIT;
 const H = "#include <iostream>\nusing namespace std;\n\nint main() {\n";
 const E = "    return 0;\n}";
 const prog = (...dong) => H + dong.map(d => "    " + d).join("\n") + "\n" + E;
@@ -36,6 +36,9 @@ window.LESSON = {
       bit: "Chào bạn! Hôm nay mình đi lại cả hành trình để về đích. <strong>Trạm 1</strong>: in ra màn hình cho chuẩn từng chữ!",
       objectives: ["Khung chương trình", "cout, chữ và số, endl", "Săn bọ cú pháp"],
       lesson: `
+        ${cuPhap({ ten: "CẦN NHỚ TỪ BÀI 1",
+          mau: ["cout << ‹giá trị 1› << ‹giá trị 2› << endl;", "// ‹ghi chú một dòng›"],
+          quyTac: ["Chữ trong ngoặc kép, số viết trực tiếp, nối bằng <code>&lt;&lt;</code>", "Mỗi lệnh kết thúc bằng <code>;</code>"] })}
         ${giaiMa("📒 TÓM TẮT BÀI 1", [
           { code: "int main() {\n    ...\n    return 0;\n}", y: "Lệnh viết trong <code>main</code>; mỗi lệnh kết thúc bằng <code>;</code>", sb: "when flag clicked" },
           { code: 'cout << "Lop " << 8 << endl;', y: "Chữ trong <code>\" \"</code>, số viết thẳng, nối bằng <code>&lt;&lt;</code>; <code>endl</code> xuống dòng.", sb: "say (join [Lop ] (8))", nhan: true },
@@ -79,9 +82,13 @@ cout << 5 << " bai";`,
       kind: "stage", id: "stage-2", number: 2, nav: "Trạm biến",
       kicker: "TRẠM 2 · BIẾN VÀ cin (BÀI 2)",
       title: "Trạm 2 — Nhớ và hỏi",
-      bit: "<strong>Trạm 2</strong>: hộp nhớ và câu hỏi. Nhớ câu thần chú: <em>Nhập → Xử lý → Xuất</em>!",
+      bit: "<strong>Trạm 2</strong>: biến và lệnh nhập. Nhớ câu thần chú: <em>Nhập → Xử lý → Xuất</em>!",
       objectives: ["Khai báo, gán, gán lại biến", "cin có câu dẫn", "Phép + − *"],
       lesson: `
+        ${cuPhap({ ten: "CẦN NHỚ TỪ BÀI 2",
+          mau: ["int ‹tên biến› = ‹giá trị›;", "‹tên biến› = ‹biểu thức›;", "cin >> ‹tên biến›;"],
+          quyTac: ["Tên biến: chữ cái tiếng Anh, chữ số, dấu <code>_</code>; không bắt đầu bằng số; không dấu cách, không dấu tiếng Việt; không trùng từ khoá",
+                   "Khai báo biến trước khi gán, nhập hay in"] })}
         ${giaiMa("📒 TÓM TẮT BÀI 2", [
           { code: "int soKeo = 5;", y: "Khai báo + gán. Tên camelCase, không dấu cách, không bắt đầu bằng số.", sb: "set [soKeo v] to (5)" },
           { code: "soKeo = soKeo + 2;", y: "Gán lại: giá trị cũ cộng 2.", sb: "change [soKeo v] by (2)" },
@@ -110,7 +117,7 @@ cout << "Ket qua: " << x + 1;`,
         {
           id: "s2-code", type: "code", icon: "🛒",
           title: "Nhiệm vụ 2: Tiền mua vở",
-          prompt: "Mỗi quyển vở giá 8000 đồng. Bạn hỏi số quyển muốn mua, rồi in số tiền phải trả nhé.",
+          prompt: "Mỗi quyển vở giá 8000 đồng. Bạn viết chương trình nhập số quyển muốn mua, rồi in số tiền phải trả nhé.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so quyen: ", "In ra: Tien: <kết quả>"],
           starter: prog("// Nhap -> Xu ly -> Xuat"),
           tests: [
@@ -136,7 +143,7 @@ cout << "Ket qua: " << x + 1;`,
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Đổi giờ ra phút",
-          prompt: "Bạn hỏi số giờ, rồi đổi ra phút giúp mình nhé.",
+          prompt: "Bạn viết chương trình nhập số giờ, rồi đổi ra phút giúp mình nhé.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so gio: ", "In ra: <giờ> gio = <phút> phut"],
           starter: prog("int gio;", "// Viet tiep"),
           tests: [{ input: "2", expected: "Nhap so gio: 2\n2 gio = 120 phut" }],
@@ -152,6 +159,9 @@ cout << "Ket qua: " << x + 1;`,
       bit: "<strong>Trạm 3</strong>: cổng game! Nhớ hai con bọ nguy hiểm: <code>=</code> thay cho <code>==</code> và <code>;</code> sau if.",
       objectives: ["6 phép so sánh", "if và if-else", "Kiểm thử ca biên"],
       lesson: `
+        ${cuPhap({ ten: "CẦN NHỚ TỪ BÀI 3",
+          mau: "if (‹điều kiện›) {\n    ‹các lệnh khi đúng›\n} else {\n    ‹các lệnh khi sai›\n}",
+          quyTac: ["Phép so sánh: <code>&gt; &lt; &gt;= &lt;= == !=</code>", "Không đặt <code>;</code> sau <code>)</code>"] })}
         ${giaiMa("📒 TÓM TẮT BÀI 3", [
           { code: "> < >= <= == !=", y: "So sánh cho ra đúng (1) / sai (0). Bằng là <code>==</code>." },
           { code: "if (dk) {\n    A;\n} else {\n    B;\n}", y: "Đúng làm A, sai làm B — luôn đúng một nhánh.", sb: "if <(diem) > (4)> then\n  say [Dau]\nelse\n  say [Rot]\nend", nhan: true }
@@ -183,7 +193,7 @@ if (t > 18) {
         {
           id: "s3-code", type: "code", icon: "🏊",
           title: "Nhiệm vụ 2: Bể bơi",
-          prompt: "Hồ bơi có hai bể: bạn nào cao từ 140 cm trở lên vào bể lớn, còn lại vào bể nhỏ. Bạn viết máy chỉ đường giúp mình nhé.",
+          prompt: "Hồ bơi có hai bể: bạn nào cao từ 140 cm trở lên vào bể lớn, còn lại vào bể nhỏ. Bạn viết chương trình chỉ đường giúp mình nhé.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Chieu cao: ", "Từ 140 trở lên: Be lon · còn lại: Be nho"],
           starter: prog("int cao;", "// Viet tiep"),
           tests: [
@@ -204,6 +214,9 @@ if (t > 18) {
       bit: "<strong>Trạm 4</strong>: nhà máy robot! Ba phần của for, biến đếm và biến tổng — về đích thôi!",
       objectives: ["Ba phần của for", "Đếm lên, đếm xuống, bước nhảy", "Biến tổng"],
       lesson: `
+        ${cuPhap({ ten: "CẦN NHỚ TỪ BÀI 4",
+          mau: "for (‹khởi tạo›; ‹điều kiện›; ‹bước nhảy›) {\n    ‹thân vòng lặp›\n}",
+          quyTac: ["Ba phần cách nhau bằng <code>;</code>", "Biến tổng: khai báo bằng 0 trước vòng lặp, cộng dồn trong thân, in sau vòng lặp"] })}
         ${giaiMa("📒 TÓM TẮT BÀI 4", [
           { code: "for (int i = 1; i <= n; i++) {\n    ...\n}", y: "Khởi tạo; điều kiện; bước nhảy — lặp n lần.", sb: "repeat (n)\nend", nhan: true },
           { code: "int tong = 0;\n...\ntong = tong + i;", y: "Biến tổng: 0 trước vòng lặp, cộng dồn trong thân.", sb: "change [tong v] by (i)" }
@@ -231,7 +244,7 @@ cout << tong;`,
         {
           id: "s4-code", type: "code", icon: "🔢",
           title: "Nhiệm vụ 2: Bảng nhân rút gọn",
-          prompt: "Bạn hỏi số n, rồi in bảng nhân rút gọn từ n × 1 đến n × 5 nhé.",
+          prompt: "Bạn viết chương trình nhập n, rồi in bảng nhân rút gọn từ n × 1 đến n × 5 nhé.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Mỗi dòng dạng: n x i = kết quả"],
           starter: prog("int n;", "// Viet tiep"),
           tests: [
@@ -309,7 +322,7 @@ if (tong >= 12) {
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Đếm bước chân",
-          prompt: "Bạn hỏi số ngày n. Ngày thứ i đi i × 1000 bước. In tổng số bước, rồi: tổng từ 10000 trở lên in <strong>Dat muc tieu!</strong>, còn lại in <strong>Co len!</strong>",
+          prompt: "Bạn viết chương trình nhập số ngày n. Ngày thứ i đi i × 1000 bước. In tổng số bước, rồi: tổng từ 10000 trở lên in <strong>Dat muc tieu!</strong>, còn lại in <strong>Co len!</strong>",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so ngay: ", "Dòng 2: Tong buoc: <tổng>", "Dòng 3: Dat muc tieu! hoặc Co len!"],
           starter: prog("int n;", "// Nhap -> for cong don -> if-else"),
           tests: [
@@ -323,7 +336,7 @@ if (tong >= 12) {
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Tổng từ a đến b",
-          prompt: "Bạn hỏi hai số a, b (a ≤ b), rồi tính tổng các số từ a đến b giúp mình nhé.",
+          prompt: "Bạn viết chương trình nhập hai số a, b (a ≤ b), rồi tính tổng các số từ a đến b giúp mình nhé.",
           requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Tong: <kết quả>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
@@ -337,7 +350,7 @@ if (tong >= 12) {
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Bảng giá theo số vé",
-          prompt: "Bạn hỏi số n, rồi in bảng giá cho 1 vé, 2 vé, … đến n vé (mỗi vé 20000), mỗi dòng một số vé.",
+          prompt: "Bạn viết chương trình nhập n, rồi in bảng giá cho 1 vé, 2 vé, … đến n vé (mỗi vé 20000), mỗi dòng một số vé.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Mỗi dòng: i ve: <tiền>"],
           starter: prog("int n;", "// Viet tiep"),
           tests: [

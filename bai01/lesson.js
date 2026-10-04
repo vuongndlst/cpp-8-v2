@@ -4,7 +4,7 @@
 */
 "use strict";
 
-const { demo, giaiMa, codeVaManHinh, doan, meo, docThem } = window.KIT;
+const { demo, giaiMa, codeVaManHinh, doan, meo, docThem, cuPhap } = window.KIT;
 const readMore = (title, _sub, links) => docThem(links, title);
 const noSemicolon = (code, pattern) => window.KIT.khongCo(code, pattern);
 
@@ -53,6 +53,12 @@ int main() {
           { code: 'cout << "Xin chao";', y: "Đưa chữ ra màn hình. Chữ đặt trong ngoặc kép.", nho: "Đọc là: “in dòng chữ Xin chao ra màn hình”.", sb: "say [Xin chao]", nhan: true },
           { code: "return 0;", y: "Kết thúc <code>main()</code> — nằm ngay trước dấu <code>}</code> cuối." }
         ])}
+        ${cuPhap({ ten: "KHUNG CHƯƠNG TRÌNH C++",
+          mau: "#include <iostream>\nusing namespace std;\n\nint main() {\n    ‹các lệnh›\n    return 0;\n}",
+          quyTac: ["Mỗi lệnh kết thúc bằng dấu chấm phẩy <code>;</code>",
+                   "Các lệnh viết giữa <code>{</code> và <code>}</code> của <code>main()</code>, thụt vào 4 dấu cách",
+                   "Máy chạy lần lượt từng lệnh, từ trên xuống dưới",
+                   "C++ phân biệt chữ hoa và chữ thường: <code>cout</code> khác <code>Cout</code>"] })}
         ${doan("đổi <code>\"Xin chao, C++!\"</code> thành <code>\"Chao lop 8!\"</code> thì phần nào trên màn hình thay đổi?",
           "Chỉ dòng chữ trên màn hình đổi thành <code>Chao lop 8!</code>. Khung chương trình giữ nguyên.")}
         ${readMore("📚 Đọc thêm trên W3Schools", "", [["intro", "C++ là gì?"], ["getstarted", "Bắt đầu với C++"], ["syntax", "Cú pháp"]])}
@@ -71,8 +77,8 @@ int main() {
         {
           id: "s1-run", type: "code", icon: "🚀",
           title: "Nhiệm vụ 2: Dạy Bit câu chào đầu tiên",
-          prompt: "Bạn giúp mình chào cả lớp nhé: chỉ sửa chữ nằm trong ngoặc kép thành <strong>Chao lop 8!</strong>, rồi bấm ▶ Chạy để nghe mình nói.",
-          requirements: ["Chỉ sửa chữ trong ngoặc kép, giữ nguyên các dòng khác.", "Màn hình hiện đúng câu: Chao lop 8!"],
+          prompt: "Bạn giúp mình chào cả lớp nhé: chỉ sửa nội dung trong dấu ngoặc kép thành <strong>Chao lop 8!</strong>, rồi bấm ▶ Chạy để nghe mình nói.",
+          requirements: ["Chỉ sửa nội dung trong dấu ngoặc kép, giữ nguyên các dòng khác.", "Màn hình hiện đúng câu: Chao lop 8!"],
           starter: `#include <iostream>
 using namespace std;
 
@@ -115,6 +121,13 @@ Tuoi: 14</div>
 cout << "Minh" << endl;
 cout << "Tuoi: " << 14;`, "Ten cua minh la:\nMinh\nTuoi: 14", "Cùng ví dụ, thêm endl")}
         ${meo("<strong>Nhớ:</strong> <code>endl</code> và <code>\\n</code> đều tạo dòng mới. <code>\\n</code> phải nằm <em>trong</em> ngoặc kép: <code>\"Xin chao\\n\"</code>.")}
+        ${cuPhap({ ten: "LỆNH cout",
+          mau: ["cout << ‹giá trị›;", "cout << ‹giá trị 1› << ‹giá trị 2› << ‹…›;"],
+          phan: [["‹giá trị›", "chữ đặt trong ngoặc kép (<code>\"Xin chao\"</code>), số (<code>14</code>) hoặc <code>endl</code>"]],
+          quyTac: ["Chữ phải nằm trong cặp ngoặc kép <code>\" \"</code>; số viết trực tiếp",
+                   "Các phần nối với nhau bằng <code>&lt;&lt;</code>",
+                   "Xuống dòng: <code>endl</code> (ngoài ngoặc kép) hoặc <code>\\n</code> (trong ngoặc kép)"],
+          viDu: 'cout << "Tuoi: " << 14 << endl;\ncout << "Lop 8";', man: "Tuoi: 14\nLop 8" })}
         ${readMore("📚 Đọc thêm trên W3Schools", "", [["output", "Xuất chữ"], ["output_numbers", "Xuất số"], ["new_lines", "Xuống dòng"]])}
       `,
       challenges: [
@@ -138,7 +151,7 @@ cout << "xin chao!";`,
         {
           id: "s2-lines", type: "code", icon: "↩️",
           title: "Nhiệm vụ 2: Tách thành 3 dòng",
-          prompt: "Lời giới thiệu của mình đang dính thành một hàng. Bạn thêm chỗ xuống dòng để màn hình giống hệt ô mẫu nhé.",
+          prompt: "Lời giới thiệu của mình đang dính thành một hàng. Bạn dùng <code>endl</code> để xuống dòng, sao cho màn hình giống hệt ô mẫu nhé.",
           requirements: ["Dòng 1: Ten cua minh la:", "Dòng 2: Minh", "Dòng 3: Tuoi: 14", "Màn hình có đúng 3 dòng, không thừa dòng trống."],
           starter: `#include <iostream>
 using namespace std;
@@ -275,6 +288,11 @@ int main() {
           <h3>💬 Comment giúp bạn nhớ "vì sao"</h3>
           <p><code class="inline-code">// In thong tin hoc sinh</code> không hiện ra màn hình, nhưng giúp bạn và người khác đọc code nhanh hơn.</p>
         </div>
+        ${cuPhap({ ten: "COMMENT (GHI CHÚ)",
+          mau: ["// ‹ghi chú một dòng›", "/* ‹ghi chú\n   nhiều dòng› */"],
+          quyTac: ["Máy bỏ qua comment: không chạy, không in ra màn hình",
+                   "<code>//</code>: từ dấu <code>//</code> đến hết dòng là ghi chú",
+                   "<code>/* … */</code>: mọi thứ nằm giữa <code>/*</code> và <code>*/</code> là ghi chú"] })}
         ${readMore("📚 Ôn nhanh trước BOSS", "Mở mục bạn còn yếu, thử ví dụ rồi quay lại.", [["output", "cout"], ["new_lines", "endl / \\n"], ["comments", "Comment"]])}
       `,
       challenges: [
@@ -408,7 +426,7 @@ int main() {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Hồ sơ của Bit",
           prompt: "Hồ sơ của mình đang lộn xộn. Bạn sửa code để màn hình giống hệt ô mẫu nhé.",
-          requirements: ["In đúng 3 dòng như mẫu.", "Số 8 và 2026 viết thẳng, không để trong ngoặc kép."],
+          requirements: ["In đúng 3 dòng như mẫu.", "Số 8 và 2026 viết trực tiếp, không đặt trong ngoặc kép."],
           starter: `#include <iostream>
 using namespace std;
 

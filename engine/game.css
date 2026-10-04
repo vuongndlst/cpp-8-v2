@@ -267,3 +267,32 @@ pre.sb, pre.sb-fallback { margin: 0; padding: 6px 10px; border-radius: 8px; back
 .type-card { text-align: center; max-width: 440px; }
 .type-bit { width: 84px; height: 96px; margin: 0 auto 4px; animation: hop .6s ease; }
 .type-card p { line-height: 1.6; }
+
+/* ----- thẻ CÚ PHÁP và quy tắc đặt tên ----- */
+.cp-card { margin: 18px 0; border: 2px solid #f2b33d; border-radius: 18px; overflow: hidden; background: #fffdf5; }
+.cp-head { padding: 10px 16px; background: #fff1c2; color: #7d5600; font-weight: 900; letter-spacing: .02em; }
+.cp-body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; padding: 16px; }
+.cp-body.no-vd { grid-template-columns: 1fr; }
+.cp-mau {
+  margin: 0 0 10px; padding: 12px 16px; border-radius: 12px; background: #17304f; color: #e9f1ff;
+  font-size: 1.05rem; line-height: 1.55; white-space: pre; overflow-x: auto; font-weight: 700;
+}
+.cp-mau .ph { color: #ffcf33; font-style: italic; font-weight: 700; }
+.cp-phan { margin: 6px 0 10px; display: grid; gap: 6px; }
+.cp-phan div { display: grid; grid-template-columns: max-content 1fr; gap: 10px; align-items: baseline; }
+.cp-phan dt { font-family: Consolas, monospace; font-weight: 800; color: #b06a00; }
+.cp-phan dt .ph { color: #b06a00; }
+.cp-phan dd { margin: 0; color: #46566f; line-height: 1.5; }
+.cp-label { font-size: .78rem; font-weight: 900; color: #7d5600; text-transform: uppercase; letter-spacing: .04em; margin: 8px 0 6px; }
+.cp-rules { margin: 0; padding-left: 20px; line-height: 1.6; color: var(--ink); }
+.cp-rules li { margin-bottom: 4px; }
+.cp-rules.num { padding-left: 22px; }
+.cp-code, .cp-man { margin: 0 0 8px; padding: 10px 14px; border-radius: 10px; font-size: .9rem; line-height: 1.5; white-space: pre; overflow-x: auto; }
+.cp-code { background: #0f1725; color: #e9f1ff; }
+.cp-man { background: #101722; color: #c9f7dc; }
+.tb-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tb-table td { padding: 6px 8px; border-bottom: 1px solid #f0e2bd; }
+.tb-table tr.ok td:nth-child(2) { color: #135a44; font-weight: 800; white-space: nowrap; }
+.tb-table tr.sai td:nth-child(2) { color: #a3333d; font-weight: 800; white-space: nowrap; }
+@media (max-width: 760px) { .cp-body { grid-template-columns: 1fr; } }
+.cp-mau, .cp-code, .cp-man { -webkit-user-select: none; user-select: none; }

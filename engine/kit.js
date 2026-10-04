@@ -37,6 +37,42 @@
         </div>`).join("")}
       </div>`;
     },
+    // Thẻ CÚ PHÁP: dạng tổng quát của lệnh. Chỗ cần thay viết trong ‹ › (tô màu riêng).
+    // { ten, mau: chuỗi | [chuỗi], phan?: [[‹…›, giải thích]], quyTac?: [html], viDu?: code, man?: màn hình, nhap? }
+    cuPhap: ({ ten, mau, phan = [], quyTac = [], viDu = "", man = "", nhap = "" }) => {
+      const hl = s => esc(s).replace(/‹([^›]*)›/g, '<span class="ph">‹$1›</span>');
+      return `<div class="cp-card">
+        <div class="cp-head">📐 CÚ PHÁP · ${ten}</div>
+        <div class="cp-body ${viDu ? "" : "no-vd"}">
+          <div class="cp-main">
+            ${[].concat(mau).map(m => `<pre class="cp-mau">${hl(m)}</pre>`).join("")}
+            ${phan.length ? `<dl class="cp-phan">${phan.map(([k, v]) => `<div><dt>${hl(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>` : ""}
+            ${quyTac.length ? `<div class="cp-label">Quy tắc</div><ul class="cp-rules">${quyTac.map(r => `<li>${r}</li>`).join("")}</ul>` : ""}
+          </div>
+          ${viDu ? `<div class="cp-vidu"><div class="cp-label">Ví dụ</div><pre class="cp-code">${esc(viDu)}</pre>
+            ${man ? `<div class="cp-label">Màn hình${nhap ? ` (nhập ${esc(nhap)})` : ""}</div><pre class="cp-man">${esc(man)}</pre>` : ""}</div>` : ""}
+        </div></div>`;
+    },
+    // Quy tắc đặt tên biến + ví dụ đúng/sai
+    tenBien: () => `<div class="cp-card ten-bien">
+      <div class="cp-head">🏷️ QUY TẮC ĐẶT TÊN BIẾN</div>
+      <div class="cp-body">
+        <div class="cp-main"><ol class="cp-rules num">
+          <li>Chỉ dùng <strong>chữ cái tiếng Anh</strong> (a–z, A–Z), <strong>chữ số</strong> (0–9) và dấu gạch dưới <code>_</code>.</li>
+          <li><strong>Không bắt đầu bằng chữ số.</strong></li>
+          <li>Không có <strong>dấu cách</strong>, không có <strong>dấu tiếng Việt</strong>, không có ký tự đặc biệt như <code>- @ # !</code></li>
+          <li>Không trùng <strong>từ khoá</strong> của C++: <code>int</code>, <code>return</code>, <code>if</code>, <code>for</code>…</li>
+          <li><strong>Phân biệt chữ hoa, chữ thường</strong>: <code>soKeo</code> và <code>sokeo</code> là hai biến khác nhau.</li>
+          <li>Nên đặt tên <strong>có nghĩa</strong>, viết kiểu <strong>camelCase</strong>: từ đầu viết thường, các từ sau viết hoa chữ cái đầu.</li>
+        </ol></div>
+        <div class="cp-vidu"><div class="cp-label">Ví dụ</div>
+          <table class="tb-table">
+            ${[["soKeo", 1, "camelCase, có nghĩa"], ["diem1", 1, "chữ số đứng sau được"], ["tien_com", 1, "có dấu _ được"],
+               ["so keo", 0, "có dấu cách"], ["2keo", 0, "bắt đầu bằng chữ số"], ["so-keo", 0, "có dấu -"],
+               ["sốKẹo", 0, "có dấu tiếng Việt"], ["int", 0, "trùng từ khoá"]]
+              .map(([t, ok, ly]) => `<tr class="${ok ? "ok" : "sai"}"><td><code>${esc(t)}</code></td><td>${ok ? "✅ Đúng" : "❌ Sai"}</td><td>${ly}</td></tr>`).join("")}
+          </table></div>
+      </div></div>`,
     // Ô "Đoán trước" — bấm mới hiện đáp án
     doan: (cauHoi, dapAn) => `<details class="guess"><summary>🧠 <strong>Đoán trước:</strong> ${cauHoi} <span class="guess-btn">Xem đáp án</span></summary><div>${dapAn}</div></details>`,
     meo: html => `<div class="tip-strip">✨ ${html}</div>`,

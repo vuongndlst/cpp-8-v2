@@ -3,7 +3,7 @@
    Mã mở khoá: chỉ ghi trong README của bài (thư mục giáo viên) — KHÔNG ghi trong web công khai.
 */
 "use strict";
-const { giaiMa, codeVaManHinh, doan, meo, docThem, khongCo } = window.KIT;
+const { giaiMa, codeVaManHinh, doan, meo, docThem, khongCo, cuPhap } = window.KIT;
 const H = "#include <iostream>\nusing namespace std;\n\nint main() {\n";
 const E = "    return 0;\n}";
 const prog = (...dong) => H + dong.map(d => "    " + d).join("\n") + "\n" + E;
@@ -44,7 +44,14 @@ window.LESSON = {
         ${codeVaManHinh(`int diem = 7;
 cout << (diem >= 5) << endl;
 cout << (diem == 10);`, "1\n0", "Máy trả lời đúng (1) / sai (0)")}
-        ${meo("<code>=</code> là <strong>gán</strong> (bỏ số vào hộp) · <code>==</code> là <strong>hỏi</strong> “có bằng không?”.")}
+        ${meo("<code>=</code> là <strong>gán</strong> (đặt giá trị cho biến) · <code>==</code> là <strong>hỏi</strong> “có bằng không?”.")}
+        ${cuPhap({ ten: "BIỂU THỨC SO SÁNH",
+          mau: "‹giá trị 1› ‹phép so sánh› ‹giá trị 2›",
+          phan: [["‹phép so sánh›", "<code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code> <code>==</code> <code>!=</code>"]],
+          quyTac: ["Kết quả là <strong>1</strong> (đúng) hoặc <strong>0</strong> (sai)",
+                   "<code>&gt;=</code> <code>&lt;=</code> <code>==</code> <code>!=</code> viết liền, không có dấu cách ở giữa",
+                   "So sánh bằng dùng <code>==</code> (hai dấu bằng)"],
+          viDu: "cout << (7 > 5);", man: "1" })}
         ${doan("“Từ 12 tuổi trở lên” viết thế nào?", "<code>tuoi &gt;= 12</code> — có cả 12. Còn <code>tuoi &gt; 12</code> thì 12 tuổi bị loại.")}
         ${docThem([["operators_comparison", "Phép so sánh"], ["booleans", "Đúng/sai"]])}
       `,
@@ -99,6 +106,13 @@ if (tuoi >= 12) {
     cout << "Duoc vao!" << endl;
 }
 cout << "Tam biet";`, "Nhap tuoi: 15\nDuoc vao!\nTam biet", "Nhập 15 → điều kiện đúng", "15")}
+        ${cuPhap({ ten: "LỆNH if",
+          mau: "if (‹điều kiện›) {\n    ‹các lệnh khi điều kiện đúng›\n}",
+          quyTac: ["Điều kiện đặt trong ngoặc tròn <code>( )</code>",
+                   "<strong>Không</strong> đặt dấu <code>;</code> ngay sau <code>)</code>",
+                   "Các lệnh trong <code>{ }</code> chỉ chạy khi điều kiện đúng; viết thụt vào 4 dấu cách",
+                   "Điều kiện sai: bỏ qua cả khối <code>{ }</code>, chạy tiếp lệnh sau <code>}</code>"],
+          viDu: 'int tuoi = 13;\nif (tuoi >= 12) {\n    cout << "Duoc vao!";\n}', man: "Duoc vao!" })}
         ${doan("Cùng chương trình, nhập <code>9</code> thì màn hình hiện gì?", "<code>Nhap tuoi: 9</code> rồi <code>Tam biet</code> — điều kiện sai nên bỏ qua dòng Duoc vao!")}
         ${docThem([["conditions", "Lệnh if"]])}
       `,
@@ -190,6 +204,12 @@ if (so >= 10) {
           <article class="note-card orange"><h3>🐛 Bọ 2: dấu <code>;</code> sau if</h3>
             <p><code>if (x &gt; 5);</code> — dấu <code>;</code> làm if kết thúc ngay, thân <code>{ }</code> phía sau <strong>luôn chạy</strong>.</p></article>
         </div>
+        ${cuPhap({ ten: "LỆNH if-else",
+          mau: "if (‹điều kiện›) {\n    ‹các lệnh khi đúng›\n} else {\n    ‹các lệnh khi sai›\n}",
+          quyTac: ["<code>else</code> không có điều kiện riêng",
+                   "Luôn chạy <strong>đúng một</strong> trong hai nhánh",
+                   "Không đặt dấu <code>;</code> sau <code>)</code> hay sau <code>else</code>"],
+          viDu: 'int diem = 4;\nif (diem >= 5) {\n    cout << "Dau";\n} else {\n    cout << "Rot";\n}', man: "Rot" })}
         ${docThem([["conditions_else", "if-else"], ["conditions", "if"]])}
       `,
       challenges: [
@@ -266,7 +286,7 @@ if (so >= 10) {
         {
           id: "s4-code", type: "code", icon: "📝",
           title: "Nhiệm vụ 2: Máy báo đậu/rớt",
-          prompt: "Bạn làm giúp mình máy báo kết quả: điểm từ 5 trở lên in <strong>Dau</strong>, dưới 5 in <strong>Rot</strong>.",
+          prompt: "Bạn viết giúp mình chương trình báo kết quả: điểm từ 5 trở lên in <strong>Dau</strong>, dưới 5 in <strong>Rot</strong>.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap diem: ", "Từ 5 trở lên: in Dau", "Dưới 5: in Rot"],
           starter: prog("int diem;", "// Nhap, roi dung if-else"),
           tests: [
@@ -294,7 +314,7 @@ if (so >= 10) {
         {
           id: "g2-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Số lớn hơn",
-          prompt: "Bạn hỏi hai số rồi in số lớn hơn giúp mình nhé (nếu bằng nhau thì in số đó).",
+          prompt: "Bạn viết chương trình nhập hai số rồi in số lớn hơn giúp mình nhé (nếu bằng nhau thì in số đó).",
           requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Lon hon: <số>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
@@ -340,7 +360,7 @@ cout << "C";`,
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Săn 3 con bọ",
-          prompt: "Rồng làm hỏng máy kiểm tra tuổi chơi game! Bạn sửa hết bọ để máy báo đúng nhé.",
+          prompt: "Rồng làm hỏng chương trình kiểm tra tuổi chơi game! Bạn sửa hết bọ để chương trình báo đúng nhé.",
           requirements: ["Từ 13 tuổi: Du tuoi choi game · dưới 13: Chua du tuoi", "Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int tuoi;", 'cout << "Nhap tuoi: ";', "cin >> tuoi;", "if (tuoi => 13) {", '    cout << "Du tuoi choi game";', "} Else {", '    cout << "Chua du tuoi"', "}"),
           tests: [
@@ -358,7 +378,7 @@ cout << "C";`,
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Vé xe buýt",
-          prompt: "Bạn viết máy bán vé xe buýt: em bé dưới 6 tuổi được miễn phí, còn lại vé giá 7000.",
+          prompt: "Bạn viết chương trình bán vé xe buýt: em bé dưới 6 tuổi được miễn phí, còn lại vé giá 7000.",
           requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap tuoi: ", "Dưới 6: in Mien phi · còn lại: in Gia ve: 7000", "Đúng với mọi ca trong bảng, kể cả ca đúng bằng 6."],
           starter: prog("int tuoi;", "// Viet tiep"),
           tests: [
@@ -372,7 +392,7 @@ cout << "C";`,
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Học bổng",
-          prompt: "Bạn hỏi điểm Toán và điểm Tin. Nếu tổng từ 16 trở lên thì báo có học bổng nhé.",
+          prompt: "Bạn viết chương trình nhập điểm Toán và điểm Tin. Nếu tổng từ 16 trở lên thì báo có học bổng nhé.",
           requirements: ["Hai câu dẫn (gõ đúng từng chữ): Diem Toan: và Diem Tin: ", "Tổng >= 16: Hoc bong · còn lại: Co gang them"],
           starter: prog("int toan, tin;", "// Viet tiep"),
           tests: [
@@ -386,7 +406,7 @@ cout << "C";`,
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Khoảng cách hai số",
-          prompt: "Bạn hỏi hai số a, b rồi in khoảng cách giữa chúng. Khoảng cách thì không bao giờ âm nhé!",
+          prompt: "Bạn viết chương trình nhập hai số a, b rồi in khoảng cách giữa chúng. Khoảng cách thì không bao giờ âm nhé!",
           requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Khoang cach: <số>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
