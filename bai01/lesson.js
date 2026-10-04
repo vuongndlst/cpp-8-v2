@@ -39,7 +39,7 @@ window.LESSON = {
       kind: "stage", id: "stage-1", number: 1, nav: "Khởi động",
       kicker: "CHẶNG 1 · KHUNG CHƯƠNG TRÌNH",
       title: "Chương trình C++ đầu tiên của Bit",
-      bit: "Chào con! Mình là <strong>Bit</strong>. Mình muốn chào cả lớp mà chưa biết nói. Con dạy mình viết chương trình C++ đầu tiên nhé!",
+      bit: "Chào bạn! Mình là <strong>Bit</strong>. Mình muốn chào cả lớp mà chưa biết nói. Bạn dạy mình viết chương trình C++ đầu tiên nhé!",
       objectives: ["Biết chương trình bắt đầu chạy ở đâu", "Hiểu cout dùng để xuất ra màn hình", "Sửa và chạy một chương trình ngắn"],
       lesson: `
         <div class="learning-path"><span>👀 XEM</span><span>→</span><span>💡 HIỂU</span><span>→</span><span>✏️ SỬA</span><span>→</span><span>▶ CHẠY</span><span>→</span><span>🔎 SO SÁNH</span></div>
@@ -105,7 +105,7 @@ int main() {
       kind: "stage", id: "stage-2", number: 2, nav: "cout & xuống dòng",
       kicker: "CHẶNG 2 · XUẤT DỮ LIỆU",
       title: "Điều khiển chữ hiện ra màn hình",
-      bit: "Mình nói được rồi, nhưng chữ cứ <strong>dính thành một hàng</strong>! Con chỉ mình cách in số và cách xuống dòng với.",
+      bit: "Mình nói được rồi, nhưng chữ cứ <strong>dính thành một hàng</strong>! Bạn chỉ mình cách in số và cách xuống dòng với.",
       objectives: ["Dùng cout và <<", "Phân biệt chữ với số khi xuất", "Dùng endl hoặc \\n để xuống dòng"],
       lesson: `
         <div class="meaning-panel">
@@ -179,7 +179,7 @@ int main() {
     return 0;
 }`,
           expected: "Ten cua minh la:\nMinh\nTuoi: 14",
-          why: "Đúng 3 dòng! Con đã điều khiển được chỗ xuống dòng.",
+          why: "Đúng 3 dòng! Bạn đã điều khiển được chỗ xuống dòng.",
           hints: ["3 dòng thì cần 2 lần xuống dòng: sau dòng 1 và sau dòng 2.", "Thêm << endl vào cuối lệnh cout thứ nhất và thứ hai, trước dấu ;."]
         }
       ]
@@ -222,7 +222,7 @@ int main() {
       kind: "stage", id: "stage-3", number: 3, nav: "Thám tử code",
       kicker: "CHẶNG 3 · CÚ PHÁP & SĂN BỌ",
       title: "Đọc dấu hiệu lỗi và sửa chương trình",
-      bit: "Ối, có <strong>bọ</strong> chui vào code của mình! Con làm thám tử: đọc thông báo lỗi, tìm đúng chỗ và sửa giúp mình.",
+      bit: "Ối, có <strong>bọ</strong> chui vào code của mình! Bạn làm thám tử: đọc thông báo lỗi, tìm đúng chỗ và sửa giúp mình.",
       objectives: ["Hiểu câu lệnh và dấu ;", "C++ phân biệt chữ hoa/thường", "Dùng comment đúng mục đích"],
       lesson: `
         <div class="meaning-panel">
@@ -277,7 +277,7 @@ int main() {
             { label: "Cout viết hoa", fixed: code => noSemicolon(code, "\\bCout\\b") },
             { label: "thiếu ; sau \"C++\"", fixed: code => /"C\+\+"[^;\n]*;/.test(code) }
           ],
-          why: "Hết bọ! Con đã sửa đủ 3 lỗi: hai dấu ; và chữ hoa/thường.",
+          why: "Hết bọ! Bạn đã sửa đủ 3 lỗi: hai dấu ; và chữ hoa/thường.",
           hints: ["Có 3 lỗi thuộc 2 quy tắc vừa học: dấu ; và chữ hoa/thường.", "Xem dòng using namespace std, dòng Cout, và dòng cout << \"C++\"."]
         }
       ]
@@ -288,7 +288,7 @@ int main() {
       kind: "stage", id: "stage-4", number: 4, nav: "Tự xây",
       kicker: "CHẶNG 4 · TỰ XÂY CHƯƠNG TRÌNH",
       title: "Nhìn kết quả trước, rồi mới viết code",
-      bit: "Giờ con tự xây chương trình. Bí quyết của mình: <strong>nhìn kết quả cần có trước</strong>, rồi mới viết từng lệnh cout.",
+      bit: "Giờ bạn tự xây chương trình. Bí quyết của mình: <strong>nhìn kết quả cần có trước</strong>, rồi mới viết từng lệnh cout.",
       objectives: ["Ghép chữ và số trong một cout", "Dùng comment để code dễ hiểu", "Tự chạy thử và so sánh"],
       lesson: `
         <div class="build-method"><h3>🛠️ CÔNG THỨC "NHÌN KẾT QUẢ TRƯỚC"</h3>
@@ -348,8 +348,8 @@ int main() {
 }`,
           expected: "Xin chao!\nBit dang hoc C++",
           rules: [
-            { test: code => /\/\/.+/.test(code.replace(/"(?:[^"\\]|\\.)*"/g, "\"\"")), msg: "Output đúng, nhưng con chưa có comment //." },
-            { test: code => /\/\*[\s\S]*?\*\//.test(code), msg: "Output đúng, nhưng con chưa có comment /* ... */." }
+            { test: code => /\/\/.+/.test(code.replace(/"(?:[^"\\]|\\.)*"/g, "\"\"")), msg: "Output đúng, nhưng bạn chưa có comment //." },
+            { test: code => /\/\*[\s\S]*?\*\//.test(code), msg: "Output đúng, nhưng bạn chưa có comment /* ... */." }
           ],
           why: "Comment làm code rõ hơn mà không đổi output.",
           hints: ["Thêm một dòng bắt đầu bằng //, và một đoạn nằm giữa /* và */.", "Đừng đặt comment vào giữa phần chữ trong \" \"."]
@@ -395,7 +395,7 @@ int main() {
       kicker: "BOSS · CÁ NHÂN",
       title: "Hạ Bọ Chúa Cú Pháp",
       bossName: "Bọ Chúa Cú Pháp",
-      bit: "Bọ Chúa Cú Pháp chặn đường! Mỗi nhiệm vụ đúng là một đòn đánh. Không có kiến thức mới — con dùng đúng những gì vừa học. <strong>Tự làm một mình nhé.</strong>",
+      bit: "Bọ Chúa Cú Pháp chặn đường! Mỗi nhiệm vụ đúng là một đòn đánh. Không có kiến thức mới — bạn dùng đúng những gì vừa học. <strong>Tự làm một mình nhé.</strong>",
       lesson: readMore("🚑 Trạm cứu trợ", "Quên thì được xem lại trước khi đánh tiếp.", [["syntax", "Cú pháp"], ["output", "cout"], ["new_lines", "Xuống dòng"], ["comments", "Comment"]]),
       challenges: [
         {
@@ -488,7 +488,7 @@ int main() {
     return 0;
 }`,
           expected: "+---+---+\n|   |   |\n+---+---+\n|  C++  |\n+-------+",
-          why: "Hộp quà hoàn hảo! Huy hiệu vàng thuộc về con.",
+          why: "Hộp quà hoàn hảo! Huy hiệu vàng thuộc về bạn.",
           hints: ["Mỗi dòng một cout ... << endl;", "Đếm kỹ dấu - và dấu cách: mỗi dòng dài đúng 9 ký tự."]
         }
       ]

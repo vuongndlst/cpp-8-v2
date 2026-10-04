@@ -541,7 +541,7 @@ function bindChallenge(c) {
     }));
     $('[data-act="choice"]', card).addEventListener("click", () => {
       const sel = $(`input[name="${c.id}"]:checked`, card);
-      if (!sel) return feedback(card, "info", "Con chọn một đáp án trước nhé.");
+      if (!sel) return feedback(card, "info", "Bạn chọn một đáp án trước nhé.");
       const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
       const picked = opts[Number(sel.value)];
       const right = picked.text === c.answer;
@@ -573,7 +573,7 @@ function bindChallenge(c) {
       $("[data-feedback]", card).classList.add("hidden");
     });
     $('[data-act="seq-check"]', card).addEventListener("click", () => {
-      if (picked.length !== c.answer.length) return feedback(card, "info", "Con chọn đủ tất cả các dòng nhé.");
+      if (picked.length !== c.answer.length) return feedback(card, "info", "Bạn chọn đủ tất cả các dòng nhé.");
       attempt(c.id);
       const order = picked.map(i => items[i]);
       const wrongAt = order.findIndex((v, i) => v !== c.answer[i]);
@@ -638,9 +638,9 @@ function firstDiff(actual, expected) {
   const a = actual.split("\n"), e = expected.split("\n");
   for (let i = 0; i < Math.max(a.length, e.length); i++) {
     if ((a[i] ?? "") !== (e[i] ?? "")) {
-      if (a[i] === undefined) return `Output của con mới có ${a.length} dòng, cần ${e.length} dòng.`;
-      if (e[i] === undefined) return `Output của con có ${a.length} dòng, chỉ cần ${e.length} dòng.`;
-      return `Dòng ${i + 1} chưa khớp:\n  của con: "${a[i]}"\n  cần:     "${e[i]}"`;
+      if (a[i] === undefined) return `Output của bạn mới có ${a.length} dòng, cần ${e.length} dòng.`;
+      if (e[i] === undefined) return `Output của bạn có ${a.length} dòng, chỉ cần ${e.length} dòng.`;
+      return `Dòng ${i + 1} chưa khớp:\n  của bạn: "${a[i]}"\n  cần:     "${e[i]}"`;
     }
   }
   return "";
