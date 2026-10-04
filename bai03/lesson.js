@@ -52,7 +52,7 @@ cout << (diem == 10);`, "1\n0", "Máy trả lời đúng (1) / sai (0)")}
         {
           id: "s1-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: 1 hay 0?",
-          prompt: "Đoán màn hình, <strong>đặt cược</strong> nếu tự tin.",
+          prompt: "Bạn đọc code rồi đoán xem máy trả lời 1 hay 0 nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int xp = 50;
 cout << (xp > 50) << endl;
 cout << (xp <= 50);`,
@@ -68,7 +68,7 @@ cout << (xp <= 50);`,
         {
           id: "s1-pick", type: "choice", icon: "🎯",
           title: "Nhiệm vụ 2: Chọn điều kiện",
-          prompt: "Game chỉ cho người <strong>từ 12 tuổi trở lên</strong>. Điều kiện nào đúng?",
+          prompt: "Trò chơi của mình chỉ dành cho bạn <strong>từ 12 tuổi trở lên</strong>. Bạn chọn giúp mình điều kiện đúng nhé?",
           options: [
             { text: "tuoi > 12", why: "Bạn đúng 12 tuổi sẽ bị chặn — sai yêu cầu." },
             { text: "tuoi >= 12" },
@@ -106,7 +106,7 @@ cout << "Tam biet";`, "Nhap tuoi: 15\nDuoc vao!\nTam biet", "Nhập 15 → đi�
         {
           id: "s2-predict", type: "choice", icon: "🔮", bet: true, mono: true, input: "6",
           title: "Nhiệm vụ 1: Nhập 6",
-          prompt: "Người dùng gõ <code>6</code>. Màn hình hiện gì?",
+          prompt: "Giả sử bạn gõ số <code>6</code>. Màn hình sẽ hiện gì?",
           code: `int diem;
 cout << "Diem: ";
 cin >> diem;
@@ -126,8 +126,8 @@ cout << "Het.";`,
         {
           id: "s2-code", type: "code", icon: "🌡️",
           title: "Nhiệm vụ 2: Cảnh báo nắng nóng",
-          prompt: "Thêm lệnh if: nhiệt độ <strong>trên 35</strong> thì nhắc uống nước.",
-          requirements: ["Nếu nhiệt độ > 35: in dòng Nong qua! Uong nuoc nhe.", "Dòng Tam biet luôn được in.", "Đạt cả 3 ca (có ca đúng bằng 35)."],
+          prompt: "Trời nóng quá! Bạn thêm lệnh <code>if</code> để khi nhiệt độ <strong>trên 35</strong>, mình nhắc mọi người uống nước nhé.",
+          requirements: ["Nhiệt độ trên 35: in dòng Nong qua! Uong nuoc nhe", "Dòng Tam biet lúc nào cũng in.", "Đúng với mọi ca trong bảng, kể cả ca đúng bằng 35."],
           starter: prog("int nhietDo;", 'cout << "Nhiet do: ";', "cin >> nhietDo;", "// Them lenh if o day", "", 'cout << "Tam biet";'),
           tests: [
             { input: "38", expected: "Nhiet do: 38\nNong qua! Uong nuoc nhe.\nTam biet" },
@@ -144,18 +144,18 @@ cout << "Het.";`,
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
       codeHash: "C9F410C9",
       todo: [
-        "Thầy hỏi: <strong>= khác == thế nào? Khi nào thân if được chạy?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>= khác == thế nào? Khi nào thân if được chạy?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Pin yếu”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở khoá</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở khoá</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Điểm tuyệt đối",
-          prompt: "Nếu điểm đúng bằng 10 thì chúc mừng.",
-          requirements: ["Điểm == 10: in Diem tuyet doi!", "Khác 10: không in thêm gì."],
+          prompt: "Ai được đúng 10 điểm là mình muốn chúc mừng ngay! Bạn thêm lệnh <code>if</code> để làm điều đó nhé.",
+          requirements: ["Điểm bằng 10: in Diem tuyet doi!", "Điểm khác 10: không in thêm gì."],
           starter: prog("int diem;", 'cout << "Diem: ";', "cin >> diem;", "// Viet if o day"),
           tests: [
             { input: "10", expected: "Diem: 10\nDiem tuyet doi!" },
@@ -196,7 +196,7 @@ if (so >= 10) {
         {
           id: "s3-predict", type: "choice", icon: "🔮", bet: true, mono: true, input: "10",
           title: "Nhiệm vụ 1: Nhập đúng bằng 10",
-          prompt: "Dùng chương trình ví dụ ở trên, người dùng gõ <code>10</code>. Màn hình hiện gì?",
+          prompt: "Nhìn chương trình ví dụ ở trên. Nếu bạn gõ đúng số <code>10</code> thì màn hình hiện gì?",
           code: `int so;
 cout << "Nhap so: ";
 cin >> so;
@@ -217,8 +217,8 @@ if (so >= 10) {
         {
           id: "s3-debug", type: "code", icon: "🐞",
           title: "Nhiệm vụ 2: Cổng ai cũng vào được",
-          prompt: "Cổng mở với mọi mật mã! Săn bọ để chỉ <code>2026</code> mới mở.",
-          requirements: ["Đạt cả 2 ca kiểm thử."],
+          prompt: "Cổng nhà mình mở với mọi mật mã — nguy quá! Bạn săn bọ để chỉ mật mã <code>2026</code> mới mở được cổng nhé.",
+          requirements: ["Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int matMa;", 'cout << "Nhap mat ma: ";', "cin >> matMa;", "if (matMa = 2026) {", '    cout << "Mo cong!";', "} else {", '    cout << "Sai mat ma!"', "}"),
           tests: [
             { input: "2026", expected: "Nhap mat ma: 2026\nMo cong!" },
@@ -253,7 +253,7 @@ if (so >= 10) {
         {
           id: "s4-pick", type: "choice", icon: "🧪",
           title: "Nhiệm vụ 1: Ca nào bắt được bọ?",
-          prompt: "Bạn viết nhầm <code>if (diem &gt; 5)</code> thay vì <code>&gt;= 5</code>. Nhập số nào mới thấy sai?",
+          prompt: "Mình lỡ viết <code>if (diem &gt; 5)</code> thay vì <code>&gt;= 5</code>. Bạn phải thử nhập số nào thì mới phát hiện ra lỗi này?",
           options: [
             { text: "9", why: "9 > 5 và 9 >= 5 đều đúng → không lộ bọ." },
             { text: "2", why: "2 > 5 và 2 >= 5 đều sai → không lộ bọ." },
@@ -266,8 +266,8 @@ if (so >= 10) {
         {
           id: "s4-code", type: "code", icon: "📝",
           title: "Nhiệm vụ 2: Máy báo đậu/rớt",
-          prompt: "Điểm từ 5 trở lên là đậu, dưới 5 là rớt.",
-          requirements: ["Câu dẫn: Nhap diem: ", "Từ 5 trở lên: in Dau", "Dưới 5: in Rot"],
+          prompt: "Bạn làm giúp mình máy báo kết quả: điểm từ 5 trở lên in <strong>Dau</strong>, dưới 5 in <strong>Rot</strong>.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap diem: ", "Từ 5 trở lên: in Dau", "Dưới 5: in Rot"],
           starter: prog("int diem;", "// Nhap, roi dung if-else"),
           tests: [
             { input: "9", expected: "Nhap diem: 9\nDau" },
@@ -284,18 +284,18 @@ if (so >= 10) {
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
       codeHash: "B376911D",
       todo: [
-        "Thầy hỏi: <strong>if-else khác if thế nào? Vì sao phải thử ca biên?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>if-else khác if thế nào? Vì sao phải thử ca biên?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Cổng mật mã”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở BOSS</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở BOSS</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g2-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Số lớn hơn",
-          prompt: "Nhập 2 số, in số lớn hơn (bằng nhau thì in số đó).",
-          requirements: ["Câu dẫn: Nhap a: và Nhap b: ", "In: Lon hon: <số>"],
+          prompt: "Bạn hỏi hai số rồi in số lớn hơn giúp mình nhé (nếu bằng nhau thì in số đó).",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Lon hon: <số>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
             { input: "3 8", expected: "Nhap a: 3\nNhap b: 8\nLon hon: 8" },
@@ -318,7 +318,7 @@ if (so >= 10) {
         {
           id: "boss-1", type: "choice", icon: "⚔️", bet: true, mono: true, input: "12",
           title: "Đòn 1: Nhánh nào chạy?",
-          prompt: "Người dùng gõ <code>12</code>. Màn hình hiện gì?",
+          prompt: "Rồng đố: nếu bạn gõ <code>12</code>, nhánh nào chạy và màn hình hiện gì?",
           code: `int t;
 cout << "Nhap t: ";
 cin >> t;
@@ -340,8 +340,8 @@ cout << "C";`,
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Săn 3 con bọ",
-          prompt: "Sửa hết bọ để máy kiểm tra tuổi chơi game.",
-          requirements: ["Từ 13 tuổi: Du tuoi choi game · dưới 13: Chua du tuoi", "Đạt cả 2 ca."],
+          prompt: "Rồng làm hỏng máy kiểm tra tuổi chơi game! Bạn sửa hết bọ để máy báo đúng nhé.",
+          requirements: ["Từ 13 tuổi: Du tuoi choi game · dưới 13: Chua du tuoi", "Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int tuoi;", 'cout << "Nhap tuoi: ";', "cin >> tuoi;", "if (tuoi => 13) {", '    cout << "Du tuoi choi game";', "} Else {", '    cout << "Chua du tuoi"', "}"),
           tests: [
             { input: "13", expected: "Nhap tuoi: 13\nDu tuoi choi game" },
@@ -358,8 +358,8 @@ cout << "C";`,
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Vé xe buýt",
-          prompt: "Trẻ dưới 6 tuổi miễn phí, còn lại giá 7000.",
-          requirements: ["Câu dẫn: Nhap tuoi: ", "Dưới 6: in Mien phi · còn lại: in Gia ve: 7000", "Đạt cả 3 ca (có ca biên 6)."],
+          prompt: "Bạn viết máy bán vé xe buýt: em bé dưới 6 tuổi được miễn phí, còn lại vé giá 7000.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap tuoi: ", "Dưới 6: in Mien phi · còn lại: in Gia ve: 7000", "Đúng với mọi ca trong bảng, kể cả ca đúng bằng 6."],
           starter: prog("int tuoi;", "// Viet tiep"),
           tests: [
             { input: "5", expected: "Nhap tuoi: 5\nMien phi" },
@@ -372,8 +372,8 @@ cout << "C";`,
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Học bổng",
-          prompt: "Nhập điểm Toán và Tin. Tổng từ 16 trở lên thì có học bổng.",
-          requirements: ["Câu dẫn: Diem Toan: và Diem Tin: ", "Tổng >= 16: Hoc bong · còn lại: Co gang them"],
+          prompt: "Bạn hỏi điểm Toán và điểm Tin. Nếu tổng từ 16 trở lên thì báo có học bổng nhé.",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Diem Toan: và Diem Tin: ", "Tổng >= 16: Hoc bong · còn lại: Co gang them"],
           starter: prog("int toan, tin;", "// Viet tiep"),
           tests: [
             { input: "8 8", expected: "Diem Toan: 8\nDiem Tin: 8\nHoc bong" },
@@ -386,8 +386,8 @@ cout << "C";`,
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Khoảng cách hai số",
-          prompt: "Nhập a, b. In khoảng cách giữa hai số (luôn không âm).",
-          requirements: ["Câu dẫn: Nhap a: và Nhap b: ", "In: Khoang cach: <số>"],
+          prompt: "Bạn hỏi hai số a, b rồi in khoảng cách giữa chúng. Khoảng cách thì không bao giờ âm nhé!",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Khoang cach: <số>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
             { input: "9 4", expected: "Nhap a: 9\nNhap b: 4\nKhoang cach: 5" },

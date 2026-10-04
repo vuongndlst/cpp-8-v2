@@ -46,7 +46,7 @@ window.LESSON = {
         {
           id: "s1-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Đoán màn hình",
-          prompt: "Màn hình hiện gì?",
+          prompt: "Bạn đọc code rồi đoán xem màn hình hiện gì nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `cout << "On" << "tap" << endl;
 cout << 5 << " bai";`,
           options: [
@@ -61,8 +61,8 @@ cout << 5 << " bai";`,
         {
           id: "s1-debug", type: "code", icon: "🐞",
           title: "Nhiệm vụ 2: Săn bọ lời chào",
-          prompt: "Sửa hết bọ.",
-          requirements: ["Đúng 2 dòng như mẫu."],
+          prompt: "Lời chào của mình bị bọ phá rồi! Bạn chạy thử, đọc lỗi và sửa hết bọ để màn hình giống mẫu nhé.",
+          requirements: ["In đúng 2 dòng như mẫu."],
           starter: prog('Cout << "Xin chao!" << endl', 'cout << "On tap C++"'),
           expected: "Xin chao!\nOn tap C++",
           bugs: [
@@ -92,7 +92,7 @@ cout << 5 << " bai";`,
         {
           id: "s2-predict", type: "choice", icon: "🔮", bet: true, mono: true, input: "4",
           title: "Nhiệm vụ 1: Người dùng gõ 4",
-          prompt: "Người dùng gõ <code>4</code>. Màn hình hiện gì?",
+          prompt: "Giả sử bạn gõ số <code>4</code>. Màn hình hiện gì? Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int x;
 cout << "x = ";
 cin >> x;
@@ -110,8 +110,8 @@ cout << "Ket qua: " << x + 1;`,
         {
           id: "s2-code", type: "code", icon: "🛒",
           title: "Nhiệm vụ 2: Tiền mua vở",
-          prompt: "Mỗi quyển vở giá 8000. Nhập số quyển, in tiền phải trả.",
-          requirements: ["Câu dẫn: Nhap so quyen: ", "In: Tien: <kết quả>"],
+          prompt: "Mỗi quyển vở giá 8000 đồng. Bạn hỏi số quyển muốn mua, rồi in số tiền phải trả nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so quyen: ", "In ra: Tien: <kết quả>"],
           starter: prog("// Nhap -> Xu ly -> Xuat"),
           tests: [
             { input: "3", expected: "Nhap so quyen: 3\nTien: 24000" },
@@ -127,17 +127,17 @@ cout << "Ket qua: " << x + 1;`,
       kicker: "ĐIỂM DỪNG 1 · SAU TRẠM 1–2",
       codeHash: "5F04C273",
       todo: [
-        "Thầy chốt sơ đồ tổng hợp: <strong>cout · biến · cin</strong>. Con nói trước, thầy chốt sau.",
+        "Thầy chốt sơ đồ tổng hợp: <strong>cout · biến · cin</strong>. Bạn nói trước, thầy chốt sau.",
         "Trả lời câu <strong>ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> nhanh trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a> theo đề trên slide.",
-        "Thầy hiện <strong>mã mở khoá</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở khoá</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Đổi giờ ra phút",
-          prompt: "Nhập số giờ, in số phút.",
-          requirements: ["Câu dẫn: Nhap so gio: ", "In: <giờ> gio = <phút> phut"],
+          prompt: "Bạn hỏi số giờ, rồi đổi ra phút giúp mình nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so gio: ", "In ra: <giờ> gio = <phút> phut"],
           starter: prog("int gio;", "// Viet tiep"),
           tests: [{ input: "2", expected: "Nhap so gio: 2\n2 gio = 120 phut" }],
           why: "Chuẩn!",
@@ -162,7 +162,7 @@ cout << "Ket qua: " << x + 1;`,
         {
           id: "s3-predict", type: "choice", icon: "🔮", bet: true, mono: true, input: "18",
           title: "Nhiệm vụ 1: Người dùng gõ 18",
-          prompt: "Người dùng gõ <code>18</code>. Màn hình hiện gì?",
+          prompt: "Giả sử bạn gõ <code>18</code>. Màn hình hiện gì? Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int t;
 cout << "Tuoi: ";
 cin >> t;
@@ -183,8 +183,8 @@ if (t > 18) {
         {
           id: "s3-code", type: "code", icon: "🏊",
           title: "Nhiệm vụ 2: Bể bơi",
-          prompt: "Cao từ 140 cm trở lên được vào bể lớn, còn lại vào bể nhỏ.",
-          requirements: ["Câu dẫn: Chieu cao: ", "Từ 140 trở lên: Be lon · còn lại: Be nho"],
+          prompt: "Hồ bơi có hai bể: bạn nào cao từ 140 cm trở lên vào bể lớn, còn lại vào bể nhỏ. Bạn viết máy chỉ đường giúp mình nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Chieu cao: ", "Từ 140 trở lên: Be lon · còn lại: Be nho"],
           starter: prog("int cao;", "// Viet tiep"),
           tests: [
             { input: "150", expected: "Chieu cao: 150\nBe lon" },
@@ -213,7 +213,7 @@ if (t > 18) {
         {
           id: "s4-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Tổng bao nhiêu?",
-          prompt: "Màn hình hiện gì?",
+          prompt: "Bạn theo dõi biến tổng qua từng vòng rồi đoán màn hình hiện gì nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int tong = 0;
 for (int i = 1; i <= 5; i = i + 2) {
     tong = tong + i;
@@ -231,8 +231,8 @@ cout << tong;`,
         {
           id: "s4-code", type: "code", icon: "🔢",
           title: "Nhiệm vụ 2: Bảng nhân rút gọn",
-          prompt: "Nhập n, in n × 1 đến n × 5.",
-          requirements: ["Câu dẫn: Nhap n: ", "Mỗi dòng dạng: n x i = kết quả"],
+          prompt: "Bạn hỏi số n, rồi in bảng nhân rút gọn từ n × 1 đến n × 5 nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Mỗi dòng dạng: n x i = kết quả"],
           starter: prog("int n;", "// Viet tiep"),
           tests: [
             { input: "3", expected: "Nhap n: 3\n3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15" }
@@ -266,7 +266,7 @@ cout << tong;`,
         {
           id: "boss-1", type: "choice", icon: "⚔️", bet: true, mono: true, input: "3",
           title: "Đòn 1: Đọc chương trình tổng hợp",
-          prompt: "Người dùng gõ <code>3</code>. Màn hình hiện gì?",
+          prompt: "Trùm Cuối đố: nếu bạn gõ <code>3</code>, màn hình hiện gì? Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int n;
 cout << "n = ";
 cin >> n;
@@ -291,8 +291,8 @@ if (tong >= 12) {
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Săn bọ máy bán vé",
-          prompt: "Mua từ 10 vé trở lên mỗi vé 15000, ít hơn thì 20000. Sửa hết bọ!",
-          requirements: ["Đạt cả 3 ca kiểm thử."],
+          prompt: "Máy bán vé bị bọ: mua từ 10 vé trở lên thì mỗi vé 15000, ít hơn thì 20000. Bạn sửa hết bọ giúp mình nhé!",
+          requirements: ["Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int soVe;", 'cout << "So ve: ";', "cin >> soVe;", "if (soVe => 10) {", '    cout << "Tong: " << soVe * 15000;', "} else {", '    cout << "Tong: " << SoVe * 20000;', "}"),
           tests: [
             { input: "12", expected: "So ve: 12\nTong: 180000" },
@@ -309,8 +309,8 @@ if (tong >= 12) {
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Đếm bước chân",
-          prompt: "Nhập số ngày n. Ngày thứ i đi i × 1000 bước. In tổng bước, rồi: tổng từ 10000 trở lên in Dat muc tieu!, còn lại in Co len!",
-          requirements: ["Câu dẫn: Nhap so ngay: ", "Dòng 2: Tong buoc: <tổng>", "Dòng 3: Dat muc tieu! hoặc Co len!"],
+          prompt: "Bạn hỏi số ngày n. Ngày thứ i đi i × 1000 bước. In tổng số bước, rồi: tổng từ 10000 trở lên in <strong>Dat muc tieu!</strong>, còn lại in <strong>Co len!</strong>",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so ngay: ", "Dòng 2: Tong buoc: <tổng>", "Dòng 3: Dat muc tieu! hoặc Co len!"],
           starter: prog("int n;", "// Nhap -> for cong don -> if-else"),
           tests: [
             { input: "4", expected: "Nhap so ngay: 4\nTong buoc: 10000\nDat muc tieu!" },
@@ -323,8 +323,8 @@ if (tong >= 12) {
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Tổng từ a đến b",
-          prompt: "Nhập a, b (a ≤ b). In tổng các số từ a đến b.",
-          requirements: ["Câu dẫn: Nhap a: và Nhap b: ", "In: Tong: <kết quả>"],
+          prompt: "Bạn hỏi hai số a, b (a ≤ b), rồi tính tổng các số từ a đến b giúp mình nhé.",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "In ra: Tong: <kết quả>"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
             { input: "3 6", expected: "Nhap a: 3\nNhap b: 6\nTong: 18" },
@@ -337,8 +337,8 @@ if (tong >= 12) {
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Bảng giá theo số vé",
-          prompt: "Nhập n, in giá cho 1 đến n vé (mỗi vé 20000), mỗi dòng một số vé.",
-          requirements: ["Câu dẫn: Nhap n: ", "Mỗi dòng: i ve: <tiền>"],
+          prompt: "Bạn hỏi số n, rồi in bảng giá cho 1 vé, 2 vé, … đến n vé (mỗi vé 20000), mỗi dòng một số vé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Mỗi dòng: i ve: <tiền>"],
           starter: prog("int n;", "// Viet tiep"),
           tests: [
             { input: "3", expected: "Nhap n: 3\n1 ve: 20000\n2 ve: 40000\n3 ve: 60000" }

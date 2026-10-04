@@ -58,7 +58,7 @@ cout &lt;&lt; "Lap rap!" &lt;&lt; endl;</div></article>
         {
           id: "s1-count", type: "choice", icon: "🔢",
           title: "Nhiệm vụ 1: Mấy lần?",
-          prompt: "<code>for (int i = 1; i &lt;= 4; i++)</code> chạy thân vòng lặp bao nhiêu lần?",
+          prompt: "Bạn đếm giúp mình: với <code>for (int i = 1; i &lt;= 4; i++)</code>, các lệnh trong thân được chạy mấy lần?",
           options: [
             { text: "3 lần", why: "i nhận 1, 2, 3, 4 → 4 giá trị." },
             { text: "4 lần" },
@@ -71,8 +71,8 @@ cout &lt;&lt; "Lap rap!" &lt;&lt; endl;</div></article>
         {
           id: "s1-code", type: "code", icon: "🤖",
           title: "Nhiệm vụ 2: Lắp ráp 6 lần",
-          prompt: "Dùng <strong>for</strong> để in “Lap rap!” 6 lần.",
-          requirements: ["Phải dùng for.", "Chỉ được có 1 lệnh cout."],
+          prompt: "Mình phải hô “Lap rap!” 6 lần mà lười gõ quá! Bạn dùng vòng <strong>for</strong> để in 6 lần, chỉ cần 1 lệnh cout nhé.",
+          requirements: ["Dùng vòng lặp for.", "Chỉ có 1 lệnh cout, đặt trong thân vòng lặp."],
           starter: prog("// Dung for de in 6 dong Lap rap!"),
           expected: "Lap rap!\nLap rap!\nLap rap!\nLap rap!\nLap rap!\nLap rap!",
           rules: [
@@ -112,7 +112,7 @@ cout &lt;&lt; "Lap rap!" &lt;&lt; endl;</div></article>
         {
           id: "s2-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Theo dấu i",
-          prompt: "Màn hình hiện gì? <strong>Đặt cược</strong> nếu tự tin.",
+          prompt: "Bạn theo dõi biến i qua từng vòng rồi đoán màn hình hiện gì nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `for (int i = 1; i <= 3; i++) {
     cout << i * 10 << " ";
 }`,
@@ -128,8 +128,8 @@ cout &lt;&lt; "Lap rap!" &lt;&lt; endl;</div></article>
         {
           id: "s2-code", type: "code", icon: "🏷️",
           title: "Nhiệm vụ 2: Dán số cho 5 robot",
-          prompt: "Dùng i để in số thứ tự từng robot.",
-          requirements: ["Dùng for và biến i.", "Chỉ 1 lệnh cout."],
+          prompt: "5 robot đang xếp hàng chờ dán số. Bạn dùng biến <code>i</code> của vòng for để in số thứ tự cho từng robot nhé.",
+          requirements: ["Dùng vòng for và in biến i.", "Chỉ có 1 lệnh cout."],
           starter: prog("for (int i = 1; i <= 5; i++) {", "    // In Robot so ... dung i", "}"),
           expected: "Robot so 1\nRobot so 2\nRobot so 3\nRobot so 4\nRobot so 5",
           rules: [
@@ -146,18 +146,18 @@ cout &lt;&lt; "Lap rap!" &lt;&lt; endl;</div></article>
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
       codeHash: "2F66676B",
       todo: [
-        "Thầy hỏi: <strong>for có mấy phần, mỗi phần làm gì?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>for có mấy phần, mỗi phần làm gì?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Băng chuyền số”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở khoá</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở khoá</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Hàng sao",
-          prompt: "Dùng for in 8 dấu * trên cùng một dòng.",
-          requirements: ["Dùng for, trong thân chỉ in một dấu *."],
+          prompt: "Bạn dùng for in 8 ngôi sao <code>*</code> nằm trên cùng một dòng giúp mình nhé.",
+          requirements: ["Dùng for; mỗi vòng chỉ in một dấu *."],
           starter: prog("// In ******** bang for"),
           expected: "********",
           rules: [{ test: coFor, msg: "Phải dùng vòng for." }, { test: c => !/\*\*/.test(c.replace(/\/\/.*$/gm, "")), msg: "Trong cout chỉ in một dấu * mỗi lần." }],
@@ -192,7 +192,7 @@ cout << "Xuat xuong!";`, "Nhap n: 3\n3\n2\n1\nXuat xuong!", "Đếm ngược t�
         {
           id: "s3-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Bước nhảy 3",
-          prompt: "Màn hình hiện gì?",
+          prompt: "Lần này i nhảy mỗi bước 3. Bạn đoán xem màn hình hiện gì?",
           code: `for (int i = 10; i >= 1; i = i - 3) {
     cout << i << " ";
 }`,
@@ -208,8 +208,8 @@ cout << "Xuat xuong!";`, "Nhap n: 3\n3\n2\n1\nXuat xuong!", "Đếm ngược t�
         {
           id: "s3-code", type: "code", icon: "🚀",
           title: "Nhiệm vụ 2: Đếm ngược xuất xưởng",
-          prompt: "Nhập n, đếm ngược từ n về 1 (mỗi số một dòng), rồi in Xuat xuong!",
-          requirements: ["Câu dẫn: Nhap n: ", "Dùng for đếm ngược.", "Đạt cả 2 ca."],
+          prompt: "Robot sắp xuất xưởng! Bạn hỏi số n, đếm ngược từ n về 1 (mỗi số một dòng), rồi hô <strong>Xuat xuong!</strong> nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Dùng for đếm ngược.", "Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int n;", 'cout << "Nhap n: ";', "cin >> n;", "// Dem nguoc tu n ve 1", "", 'cout << "Xuat xuong!";'),
           tests: [
             { input: "4", expected: "Nhap n: 4\n4\n3\n2\n1\nXuat xuong!" },
@@ -248,7 +248,7 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "s4-why", type: "choice", icon: "🤔",
           title: "Nhiệm vụ 1: Vì sao tong = 0?",
-          prompt: "Vì sao phải viết <code>int tong = 0;</code> <strong>trước</strong> vòng lặp?",
+          prompt: "Mình thắc mắc: vì sao phải viết <code>int tong = 0;</code> <strong>trước</strong> vòng lặp? Bạn chọn giúp mình câu đúng nhé.",
           options: [
             { text: "Để hộp tổng bắt đầu trống trước khi cộng dồn" },
             { text: "Để vòng lặp chạy 0 lần", why: "tong không ảnh hưởng số lần lặp." },
@@ -261,8 +261,8 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "s4-code", type: "code", icon: "🧮",
           title: "Nhiệm vụ 2: Tổng 1 đến n",
-          prompt: "Nhập n, in tổng 1 + 2 + … + n.",
-          requirements: ["Câu dẫn: Nhap n: ", "In: Tong: <kết quả>", "Dùng for và biến tổng."],
+          prompt: "Bạn hỏi số n, rồi tính giúp mình tổng 1 + 2 + … + n nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "In ra: Tong: <kết quả>", "Dùng vòng for và một biến tổng."],
           starter: prog("int n;", 'cout << "Nhap n: ";', "cin >> n;", "// Cong don tu 1 den n"),
           tests: [
             { input: "4", expected: "Nhap n: 4\nTong: 10" },
@@ -280,18 +280,18 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
       codeHash: "89FCC1A8",
       todo: [
-        "Thầy hỏi: <strong>đếm ngược viết thế nào? Biến tổng cần mấy bước?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>đếm ngược viết thế nào? Biến tổng cần mấy bước?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Tổng linh kiện có bọ”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở BOSS</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở BOSS</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g2-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Robot nhân đôi",
-          prompt: "Mỗi ngày số robot nhân đôi, bắt đầu từ 1. Nhập n, in số robot sau n ngày.",
-          requirements: ["Câu dẫn: Nhap so ngay: ", "In: So robot: <kết quả>"],
+          prompt: "Robot của mình cứ mỗi ngày lại nhân đôi, bắt đầu từ 1 robot. Bạn hỏi số ngày n, rồi tính xem sau n ngày có bao nhiêu robot nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so ngay: ", "In ra: So robot: <kết quả>"],
           starter: prog("int n;", 'cout << "Nhap so ngay: ";', "cin >> n;", "// Nhan doi n lan"),
           tests: [
             { input: "5", expected: "Nhap so ngay: 5\nSo robot: 32" },
@@ -314,7 +314,7 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "boss-1", type: "choice", icon: "⚔️", bet: true, mono: true,
           title: "Đòn 1: Theo dấu i",
-          prompt: "Màn hình hiện gì?",
+          prompt: "Robot Hỏng Mạch đố bạn: theo dõi biến i rồi đoán màn hình hiện gì?",
           code: `for (int i = 2; i <= 8; i = i + 3) {
     cout << i << " ";
 }`,
@@ -330,8 +330,8 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Dây chuyền có bọ",
-          prompt: "In “Robot 1” đến “Robot n”. Săn hết bọ!",
-          requirements: ["Đạt cả 2 ca kiểm thử."],
+          prompt: "Dây chuyền phải in “Robot 1” đến “Robot n”, nhưng đang có bọ. Bạn săn hết bọ giúp mình nhé!",
+          requirements: ["Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int n;", 'cout << "Nhap n: ";', "cin >> n", "for (int i = 1; i < n; i--) {", '    cout << "Robot " << i << endl;', "}"),
           tests: [
             { input: "3", expected: "Nhap n: 3\nRobot 1\nRobot 2\nRobot 3" },
@@ -348,8 +348,8 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Hàng đèn LED",
-          prompt: "Nhập n, in n dấu * trên một dòng.",
-          requirements: ["Câu dẫn: Nhap n: ", "Dùng for, mỗi vòng in một dấu *."],
+          prompt: "Bạn hỏi số n, rồi bật n bóng đèn LED: in n dấu <code>*</code> trên cùng một dòng.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap n: ", "Dùng for, mỗi vòng in một dấu *."],
           starter: prog("int n;", "// Viet tiep"),
           tests: [
             { input: "5", expected: "Nhap n: 5\n*****" },
@@ -362,8 +362,8 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Ống heo tăng dần",
-          prompt: "Ngày 1 bỏ 1000 đồng, ngày 2 bỏ 2000, … ngày n bỏ n × 1000. Tính tổng sau n ngày.",
-          requirements: ["Câu dẫn: Nhap so ngay: ", "In: Tong tien: <kết quả>"],
+          prompt: "Mình nuôi heo đất: ngày 1 bỏ 1000 đồng, ngày 2 bỏ 2000, … ngày n bỏ n × 1000. Bạn tính giúp mình tổng tiền sau n ngày nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so ngay: ", "In ra: Tong tien: <kết quả>"],
           starter: prog("int n;", "// Viet tiep"),
           tests: [
             { input: "3", expected: "Nhap so ngay: 3\nTong tien: 6000" },
@@ -376,8 +376,8 @@ cout << "Tong: " << tong;`, "Tong: 10", "Cộng 1 + 2 + 3 + 4")}
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Luỹ thừa",
-          prompt: "Nhập a và n, in a mũ n (a nhân với chính nó n lần).",
-          requirements: ["Câu dẫn: Nhap a: và Nhap n: ", "In: Ket qua: <kết quả>"],
+          prompt: "Bạn hỏi hai số a và n, rồi tính a mũ n (tức là a nhân với chính nó n lần) giúp mình nhé.",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap n: ", "In ra: Ket qua: <kết quả>"],
           starter: prog("int a, n;", "// Viet tiep"),
           tests: [
             { input: "2 10", expected: "Nhap a: 2\nNhap n: 10\nKet qua: 1024" },

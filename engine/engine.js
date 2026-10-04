@@ -3,7 +3,9 @@
    - Học sinh: localStorage, mỗi bài một khoá riêng
    - Chạy C++: JSCPP (lưu sẵn, đã vá để vọng số nhập giống Programiz)
    - Robot Bit nổi ở góc màn hình, đi theo khi cuộn, nói lời dẫn và phản hồi (gọi học sinh là "bạn")
-   - Lớp trò chơi: bản đồ, ổ khoá theo mã, đặt cược, săn bọ, combo, pháo giấy, BOSS có thanh máu, huy hiệu
+   - Lớp trò chơi: bản đồ, ổ khoá theo mã, Ngôi sao hi vọng (như Đường lên đỉnh Olympia), săn bọ, combo, pháo giấy,
+     BOSS có thanh máu, huy hiệu
+   - Khung code: tắt dán/kéo-thả/sao chép để học sinh tự gõ (tập gõ code)
 */
 "use strict";
 
@@ -11,7 +13,7 @@ const L = window.LESSON;
 const CFG = { schoolName: "", teacherName: "", canvasSubmissionUrl: "", ...(window.CPP_JOURNEY_CONFIG || {}) };
 const PREFIX = "cpp8v2";
 const CLASSES = ["8A1", "8A2", "8A3", "8A4", "8A5", "8A6", "8A7", "8A8", "8A9", "8A10"];
-const XP_PASS = 10, XP_FIRST_TRY = 5;
+const XP_PASS = 10, XP_FIRST_TRY = 5, STAR_LOSS = 10;
 
 const STEPS = L.steps;
 // Nhiệm vụ bắt buộc: không tính nhiệm vụ nâng cao (BOSS) và nhiệm vụ phụ (ở điểm dừng).
@@ -53,7 +55,7 @@ window.CPP = { stripComments, normalizeOutput }; // lesson.js / kit.js dùng tro
 /* ---------- lưu trạng thái ---------- */
 function freshState(student) {
   return { student, active: STEPS[0].id, passed: {}, attempts: {}, drafts: {}, inputs: {}, gates: {},
-    xp: 0, combo: 0, bets: {}, startedAt: new Date().toISOString(), completedAt: null };
+    xp: 0, combo: 0, stars: {}, startedAt: new Date().toISOString(), completedAt: null };
 }
 function storageKey() { return `${PREFIX}:${L.id}:${studentKey(state.student)}`; }
 function save() {
@@ -246,14 +248,14 @@ function shell() {
     <form id="identityForm" method="dialog" class="modal-card">
       <div class="sticker">START</div>
       <p class="eyebrow">BÀI ${L.number} · ${esc(L.title)}</p>
-      <h2>Con là ai? 👋</h2>
-      <p>Nhập đúng họ tên và lớp. Nếu con đã học trên máy này, web sẽ mở lại tiến độ của con.</p>
+      <h2>Bạn là ai? 👋</h2>
+      <p>Nhập đúng họ tên và lớp. Nếu bạn đã học trên máy này, mình sẽ mở lại tiến độ của bạn.</p>
       <label class="field"><span>Họ và tên</span>
         <input id="nameInput" type="text" autocomplete="name" minlength="2" maxlength="60" placeholder="Ví dụ: Nguyễn Minh Anh" required /></label>
       <label class="field"><span>Lớp</span>
         <select id="classInput" required><option value="" selected disabled>Chọn lớp</option>
         ${CLASSES.map(c => `<option>${c}</option>`).join("")}</select></label>
-      <div class="privacy-note">Dùng chung máy? Học xong, bấm <strong>Học sinh mới</strong> để bạn sau không thấy bài của con.</div>
+      <div class="privacy-note">Dùng chung máy? Học xong, bấm <strong>Học sinh mới</strong> để người học sau không thấy bài của bạn.</div>
       <button class="primary-button wide" type="submit">Vào hành trình →</button>
     </form>
   </dialog>
@@ -268,6 +270,15 @@ function shell() {
         <tbody>${L.errorTable.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody>
       </table></div>
     </div>
+  </dialog>
+  <dialog id="typeDialog" class="modal type-modal">
+    <form method="dialog" class="modal-card type-card">
+      <div class="type-bit">${bitSvg("wow")}</div>
+      <h2>Ối, bạn ơi! ✋</h2>
+      <p>Mình không cho sao chép hay dán code đâu nè. Bạn <strong>tự gõ từng dòng</strong> nhé —
+        gõ tay giúp bạn nhớ lệnh và nhanh tay hơn. Sai chỗ nào mình chỉ cho!</p>
+      <button class="primary-button wide" type="submit">OK, mình tự gõ 💪</button>
+    </form>
   </dialog>
   <dialog id="certDialog" class="modal certificate-modal">
     <div class="modal-card certificate-card">
@@ -305,14 +316,15 @@ function renderMap() {
       </button>`;
   }).join("")}</div>`;
   $$(".map-node", map).forEach(btn => btn.addEventListener("click", () => go(btn.dataset.step)));
-  $(".map-node.active", map)?.scrollIntoView({ block: "nearest", inline: "center" });
+  const act = $(".map-node.active", map);
+  if (act) map.scrollLeft = act.offsetLeft - (map.clientWidth - act.offsetWidth) / 2;
 }
 
 function go(stepId) {
   state.active = stepId;
   save();
   renderAll(true);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 function updateTop() {
@@ -324,12 +336,13 @@ function updateTop() {
 /* ---------- khối Scratch (scratchblocks, tiếng Việt) ---------- */
 function renderScratch(root) {
   const sb = window.scratchblocks;
+  if (sb && sb.appendStyles && !renderScratch.styled) { sb.appendStyles(); renderScratch.styled = true; }
   $$("pre.sb", root).forEach(pre => {
     if (!sb) { pre.classList.add("sb-fallback"); return; }
     try {
       const doc = sb.parse(pre.textContent, { languages: ["en"] });
       if (sb.allLanguages && sb.allLanguages.vi) doc.translate(sb.allLanguages.vi);
-      const svg = sb.render(doc, { style: "scratch3", scale: 0.8 });
+      const svg = sb.render(doc, { style: "scratch3", scale: 0.95 });
       svg.classList.add("sb-svg");
       pre.replaceWith(svg);
     } catch { pre.classList.add("sb-fallback"); }
@@ -356,7 +369,7 @@ function renderAll(entering = false) {
     const msg = step.kind === "gate"
       ? (stepDone(step) ? "Đã mở khoá! Đi tiếp thôi bạn ơi." : "Dừng lại một chút nhé! Nhìn lên bảng, nghe thầy chốt rồi cùng luyện tập với bạn bên cạnh.")
       : step.bit;
-    if (msg) bitSay(msg, step.kind === "boss" ? "wow" : "happy", 12000);
+    if (msg) bitSay(msg, step.kind === "boss" ? "wow" : "happy", 8000);
   }
 }
 
@@ -430,7 +443,7 @@ function refreshFooter(step) {
       : `Còn ${req.length - hit} đòn nữa để hạ BOSS.`;
     return;
   }
-  if (note) note.textContent = done ? "⭐ Hoàn thành chặng!" : "Hoàn thành các nhiệm vụ để đi tiếp.";
+  if (note) note.textContent = done ? "⭐ Hoàn thành chặng!" : "Làm xong các nhiệm vụ ở trên là bạn đi tiếp được nhé!";
 }
 
 function renderGate(step) {
@@ -443,7 +456,7 @@ function renderGate(step) {
       <div>
         <div class="stage-kicker">${esc(step.kicker)}</div>
         <h2>${done ? "Đã mở khoá!" : "DỪNG LẠI — NHÌN LÊN BẢNG"}</h2>
-        <p>${done ? "Con đi tiếp được rồi." : "Cả lớp cùng dừng ở đây. Đừng làm tiếp một mình nhé."}</p>
+        <p>${done ? "Bạn đi tiếp được rồi." : "Cả lớp cùng dừng ở đây. Đừng làm tiếp một mình nhé."}</p>
       </div>
     </div>
     <div class="lesson-body">
@@ -491,7 +504,7 @@ function renderChallenge(c) {
     const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
     body = `
       ${c.code ? codeBlock(c.code, c.input) : ""}
-      ${c.bet && !passed && !state.bets[c.id] ? betRow(c) : ""}
+      ${c.bet && !passed && !state.attempts[c.id] ? starRow(c) : ""}
       <div class="choice-grid ${c.mono ? "mono-grid" : ""}">${opts.map((o, i) => `
         <label class="choice-option"><input type="radio" name="${c.id}" value="${i}" />
         <span class="${c.mono ? "mono" : ""}">${esc(o.text)}</span></label>`).join("")}</div>`;
@@ -524,10 +537,10 @@ function renderChallenge(c) {
     body = `
       <div class="task-grid">
         <div class="requirement-box">
-          <div class="requirement-title">🎯 YÊU CẦU</div>
+          <div class="requirement-title">🎯 BIT NHỜ BẠN</div>
           <ul>${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
         </div>
-        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các ca kiểm thử" : "Màn hình cần đạt"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
+        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các ca mình sẽ thử" : "Màn hình Bit cần thấy"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
       </div>
       ${c.bugs ? `<div class="bug-board">${c.bugs.map((b, i) => `<span class="bug" data-bug="${i}">🐛 <small>${esc(b.label)}</small></span>`).join("")}</div>` : ""}
       <div class="code-lab">
@@ -572,12 +585,15 @@ function codeBlock(code, input) {
   return `<div class="code-demo"><div class="code-demo-header"><span><span class="window-dots">● ● ●</span></span><span>main.cpp${input ? ` · nhập: ${esc(input)}` : ""}</span></div><pre><code>${esc(code)}</code></pre></div>`;
 }
 
-function betRow(c) {
-  const chips = [0, 5, 10, 20];
-  return `<div class="bet-row" data-bet>
-    <span>🎲 <strong>Đặt cược</strong> vào dự đoán:</span>
-    ${chips.map(v => `<button type="button" class="bet-chip ${v === 0 ? "on" : ""}" data-v="${v}" ${v > state.xp ? "disabled" : ""}>${v ? `${v} XP` : "Không cược"}</button>`).join("")}
-    <small class="muted">Đúng: được thêm số XP đã cược · Sai: mất số XP đó</small>
+// Ngôi sao hi vọng (như Đường lên đỉnh Olympia): chọn TRƯỚC khi trả lời, mỗi chặng 1 lần.
+// Đúng ngay lần này: XP câu này ×2. Sai: −10 XP.
+function stepOf(c) { return STEPS.find(s => (s.challenges || []).some(x => x.id === c.id)); }
+function starRow(c) {
+  const used = state.stars[stepOf(c).id];
+  if (used && used !== c.id) return `<div class="star-row used">⭐ Chặng này bạn đã dùng Ngôi sao hi vọng rồi.</div>`;
+  return `<div class="star-row" data-star>
+    <button type="button" class="star-toggle" aria-pressed="false"><span class="star-icon">☆</span> Chọn Ngôi sao hi vọng</button>
+    <span class="star-rule">Đúng ngay lần này: <strong>XP ×2</strong> · Sai: <strong>−${STAR_LOSS} XP</strong> · Mỗi chặng chỉ <strong>1 ngôi sao</strong></span>
   </div>`;
 }
 
@@ -604,28 +620,36 @@ function bindChallenge(c) {
   });
 
   if (c.type === "choice") {
-    let wager = 0;
-    $$(".bet-chip", card).forEach(chip => chip.addEventListener("click", () => {
-      $$(".bet-chip", card).forEach(x => x.classList.remove("on"));
-      chip.classList.add("on"); wager = Number(chip.dataset.v);
-    }));
+    let star = false;
+    $(".star-toggle", card)?.addEventListener("click", e => {
+      star = !star;
+      const t = e.currentTarget;
+      t.classList.toggle("on", star); t.setAttribute("aria-pressed", String(star));
+      t.innerHTML = star ? `<span class="star-icon">⭐</span> Đã chọn Ngôi sao hi vọng` : `<span class="star-icon">☆</span> Chọn Ngôi sao hi vọng`;
+      if (star) {
+        beep("unlock");
+        bitSay(`<strong>Ngôi sao hi vọng!</strong> Đúng thì XP nhân đôi, sai thì mất ${STAR_LOSS} XP. Đọc kỹ code rồi hãy chọn nhé!`, "wow", 6000);
+      }
+    });
     $('[data-act="choice"]', card).addEventListener("click", ev => {
       const sel = $(`input[name="${c.id}"]:checked`, card);
       if (!sel) return result(card, "info", "Chọn một đáp án trước nhé.");
       const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
       const picked = opts[Number(sel.value)];
       const right = picked.text === c.answer;
+      const starNow = star && !state.passed[c.id];
+      if (starNow) state.stars[stepOf(c).id] = c.id;
+      star = false;
+      $("[data-star]", card)?.remove();
       attempt(c.id);
-      let betMsg = "";
-      if (c.bet && !state.bets[c.id] && !state.passed[c.id]) {
-        state.bets[c.id] = true;
-        if (wager) { state.xp = Math.max(0, state.xp + (right ? wager : -wager)); betMsg = right ? ` 🎲 Thắng cược +${wager} XP!` : ` 🎲 Thua cược −${wager} XP.`; }
-        $("[data-bet]", card)?.remove();
-      }
       $$(".choice-option", card).forEach(l => l.classList.remove("right", "wrong"));
       sel.closest(".choice-option").classList.add(right ? "right" : "wrong");
-      if (right) pass(c, card, (c.why || "Chính xác!") + betMsg, ev.currentTarget);
-      else { miss(card, (picked.why || "Chưa đúng. Đọc lại phần giải thích phía trên rồi thử lại.") + betMsg); updateTop(); }
+      if (right) pass(c, card, c.why || "Chính xác!", ev.currentTarget, starNow);
+      else {
+        let msg = picked.why || "Chưa đúng. Đọc lại phần giải thích phía trên rồi thử lại.";
+        if (starNow) { state.xp = Math.max(0, state.xp - STAR_LOSS); msg += ` ⭐ Ngôi sao hi vọng chưa may mắn: −${STAR_LOSS} XP.`; }
+        miss(card, msg);
+      }
     });
   }
 
@@ -664,15 +688,33 @@ function bindChallenge(c) {
     };
     sync();
     ed.addEventListener("input", () => { state.drafts[c.id] = ed.value; save(); sync(); });
-    ed.addEventListener("keydown", e => {
-      if (e.key === "Tab") {
-        e.preventDefault();
+    guardTyping(ed);
+    // Chèn chữ bằng insertText để Ctrl+Z (hoàn tác) vẫn dùng được; xoá trước `back` ký tự nếu cần.
+    const put = (text, back = 0) => {
+      ed.setSelectionRange(ed.selectionStart - back, ed.selectionEnd);
+      if (!document.execCommand("insertText", false, text)) {
         const s = ed.selectionStart;
-        ed.value = ed.value.slice(0, s) + "    " + ed.value.slice(ed.selectionEnd);
-        ed.selectionStart = ed.selectionEnd = s + 4;
+        ed.value = ed.value.slice(0, s) + text + ed.value.slice(ed.selectionEnd);
+        ed.selectionStart = ed.selectionEnd = s + text.length;
         ed.dispatchEvent(new Event("input"));
       }
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('[data-act="run"]', card).click(); }
+    };
+    const lineBefore = () => { const b = ed.value.slice(0, ed.selectionStart); return b.slice(b.lastIndexOf("\n") + 1); };
+    // Gõ } ở đầu dòng: tự lùi lề 4 dấu cách
+    ed.addEventListener("beforeinput", e => {
+      if (e.inputType === "insertText" && e.data === "}" && ed.selectionStart === ed.selectionEnd && /^ {4,}$/.test(lineBefore())) {
+        e.preventDefault(); put("}", 4);
+      }
+    });
+    ed.addEventListener("keydown", e => {
+      if (e.key === "Tab") { e.preventDefault(); put("    "); }
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('[data-act="run"]', card).click(); return; }
+      if (e.key === "Enter" && !e.shiftKey && !e.altKey) {
+        // Xuống dòng giữ lề dòng trên; sau dấu { thì thụt thêm 4 dấu cách (giống Programiz)
+        e.preventDefault();
+        const line = lineBefore();
+        put("\n" + line.match(/^ */)[0] + (/\{\s*$/.test(line) ? "    " : ""));
+      }
     });
     stdin?.addEventListener("input", () => { state.inputs[c.id] = stdin.value; save(); });
     $('[data-act="reset-code"]', card).addEventListener("click", () => {
@@ -690,6 +732,34 @@ function bindChallenge(c) {
       if (v.ok) pass(c, card, v.msg, ev.currentTarget); else miss(card, v.msg);
     });
   }
+}
+
+// Tập gõ code: không cho dán, kéo-thả, sao chép/cắt trong khung code.
+// Học sinh thử sao chép/dán thì mới hiện popup nhắc (không ghi chú sẵn trên trang).
+function noPasteMsg() {
+  const d = $("#typeDialog");
+  if (d && !d.open) d.showModal();
+}
+function guardTyping(ed) {
+  ["paste", "drop", "copy", "cut"].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); noPasteMsg(); }));
+  ed.addEventListener("dragover", e => e.preventDefault());
+  ed.addEventListener("beforeinput", e => {
+    if (/^insertFrom(Paste|Drop|Yank)/.test(e.inputType || "")) { e.preventDefault(); noPasteMsg(); }
+  });
+  ed.addEventListener("contextmenu", e => e.preventDefault());
+}
+// Code mẫu trên trang (ví dụ, bảng giải mã, đáp án): không sao chép được.
+function guardCopy() {
+  const el = n => (n && n.nodeType === 1 ? n : n && n.parentElement);
+  const inLesson = n => { const e = el(n); return Boolean(e && e.closest(".stage-page") && !e.closest("input")); };
+  ["copy", "cut"].forEach(ev => document.addEventListener(ev, e => {
+    const sel = document.getSelection();
+    if (sel && inLesson(sel.anchorNode)) {
+      e.preventDefault();
+      noPasteMsg();
+    }
+  }));
+  document.addEventListener("dragstart", e => { if (inLesson(e.target)) e.preventDefault(); });
 }
 
 function updateBugs(c, card, code) {
@@ -725,7 +795,7 @@ function checkCode(c, code, currentInput) {
   for (const [n, t] of tests.entries()) {
     const r = runCpp(code, t.input || "");
     lastRun = r;
-    if (!r.ok) return { ok: false, run: r, input: t.input, msg: "Code chưa chạy được. Đọc dòng ⚠ LỖI trong ô MÀN HÌNH rồi sửa (mở 🧰 Bảng lỗi nếu cần)." };
+    if (!r.ok) return { ok: false, run: r, input: t.input, msg: "Code chưa chạy được. Bạn đọc dòng ⚠ LỖI trong ô MÀN HÌNH rồi sửa nhé (bí quá thì mở 🧰 Bảng lỗi)." };
     if (t.expected != null) {
       const a = normalizeOutput(r.output), e = normalizeOutput(t.expected);
       if (a !== e) {
@@ -738,7 +808,7 @@ function checkCode(c, code, currentInput) {
     if (!rule.test(code, lastRun.output)) return { ok: false, run: lastRun, msg: rule.msg };
   }
   if (c.bugs && !c.bugs.every(b => b.fixed(code))) {
-    return { ok: false, run: lastRun, msg: "Màn hình đã đúng nhưng vẫn còn bọ trên bảng. Xem con 🐛 nào chưa nổ." };
+    return { ok: false, run: lastRun, msg: "Màn hình đúng rồi, nhưng vẫn còn bọ trốn trong code! Xem con 🐛 nào chưa nổ nhé." };
   }
   return { ok: true, run: lastRun, msg: c.why || "Chính xác! Màn hình khớp mẫu." + (tests.length > 1 ? ` Đạt cả ${tests.length} ca.` : "") };
 }
@@ -751,7 +821,7 @@ function nextOpenCard(card) {
   return [...all.slice(i + 1), ...all.slice(0, i)].find(el => !el.classList.contains("passed") && !el.classList.contains("advanced") && !el.classList.contains("bonus"));
 }
 
-function pass(c, card, msg, btn) {
+function pass(c, card, msg, btn, starNow = false) {
   const first = !state.passed[c.id];
   let extra = "";
   if (first) {
@@ -761,6 +831,7 @@ function pass(c, card, msg, btn) {
       state.combo += 1; gain += XP_FIRST_TRY;
       if (state.combo >= 2) { gain += state.combo * 2; extra = ` 🔥 Combo x${state.combo}!`; }
     } else state.combo = 0;
+    if (starNow) { gain *= 2; extra += " ⭐ Ngôi sao hi vọng: XP nhân đôi!"; }
     state.xp += gain;
     extra = ` +${gain} XP.` + extra;
     if (allRequiredDone() && !state.completedAt) state.completedAt = new Date().toISOString();
@@ -783,10 +854,10 @@ function pass(c, card, msg, btn) {
   $("[data-go-step]", card)?.addEventListener("click", () => go(STEPS[STEPS.indexOf(step) + 1].id));
 
   const r = btn ? btn.getBoundingClientRect() : null;
-  confetti(r ? { x: r.left + r.width / 2, y: r.top } : null, false);
-  beep("good");
+  confetti(r ? { x: r.left + r.width / 2, y: r.top } : null, starNow);
+  beep(starNow ? "win" : "good");
   const cheers = ["Tuyệt vời!", "Quá đỉnh!", "Chuẩn luôn!", "Bạn giỏi quá!", "Xuất sắc!"];
-  bitSay(`<strong>${cheers[Math.floor(Math.random() * cheers.length)]}</strong> ${esc(msg)}${extra}`, "happy", 6000);
+  bitSay(`<strong>${cheers[Math.floor(Math.random() * cheers.length)]}</strong>${extra}`, "happy", 3500);
   updateTop();
   renderMap();
   if (step.kind !== "gate") refreshFooter(step);
@@ -800,7 +871,7 @@ function pass(c, card, msg, btn) {
 function miss(card, msg) {
   state.combo = 0; save(); updateTop();
   result(card, "bad", msg);
-  bitSay("Chưa đúng rồi — đọc dòng ❌ ngay dưới nút nhé. Sửa từng chỗ một, bạn làm được!", "sad", 6000);
+  bitSay("Chưa đúng — đọc dòng ❌ ngay dưới nút nhé. Bạn làm được!", "sad", 3500);
   beep("bad");
 }
 
@@ -951,6 +1022,7 @@ function boot() {
     if (b.classList.contains("hidden") && bitLast) { b.classList.remove("hidden"); } else b.classList.add("hidden");
   });
   $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇";
+  guardCopy();
   askIdentity();
 }
 

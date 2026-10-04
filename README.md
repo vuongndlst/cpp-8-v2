@@ -7,7 +7,7 @@ _Web/
 ├── index.html            trang mục lục + bộ sưu tập huy hiệu
 ├── config.js             tên trường, giáo viên, link Canvas (dùng chung)
 ├── engine/
-│   ├── engine.js         bộ máy chung: bản đồ, ổ khoá, chấm code, cược, săn bọ, BOSS, chứng chỉ
+│   ├── engine.js         bộ máy chung: bản đồ, ổ khoá, chấm code, Ngôi sao hi vọng, săn bọ, BOSS, chứng chỉ
 │   ├── base.css          giao diện gốc (từ web Bài 1 cũ)
 │   ├── game.css          lớp trò chơi
 │   └── JSCPP.es5.min.js  trình chạy C++ trong trình duyệt (lưu sẵn, không cần CDN)
@@ -40,9 +40,13 @@ câu đoán output khớp kết quả JSCPP **và** g++ thật. Kết quả ph�
 Chép `bai01/` thành `bai0N/`, sửa `lesson.js` (id, number, title, story, badge, skills, errorTable, steps),
 viết `_kiem_tra/dap_an_bai0N.js`, chạy kiểm tra, rồi bật `ready: true` cho bài đó trong `index.html`.
 
-Các dạng nhiệm vụ: `choice` (có `bet: true` để đặt cược, `why` giải thích từng lựa chọn sai), `sequence`
+Các dạng nhiệm vụ: `choice` (có `bet: true` để hiện ⭐ Ngôi sao hi vọng — chọn trước khi trả lời, đúng lần đầu XP ×2, sai −10 XP, mỗi chặng 1 lần; `why` giải thích từng lựa chọn sai), `sequence`
 (`mono: true` để lắp dòng code), `code` (`expected` hoặc `tests: [{input, expected}]` cho bài có `cin`;
 `rules` cho yêu cầu thêm; `bugs` để săn bọ). `advanced: true` = nâng cao ở BOSS; `bonus: true` = nhiệm vụ phụ ở điểm dừng.
+
+Lời đề (`prompt`, `requirements`) viết bằng giọng Bit: xưng "mình", gọi học sinh là "bạn", nói rõ việc cần làm.
+Khung code không cho sao chép/dán/kéo-thả (học sinh tự gõ); khi thử sao chép hoặc dán, web hiện popup của Bit.
+Enter tự thụt lề, gõ `}` tự lùi lề, Ctrl+Enter = Chạy.
 
 ## Chạy thử trên máy
 

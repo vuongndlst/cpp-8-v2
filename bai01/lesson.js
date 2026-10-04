@@ -1,5 +1,5 @@
 /* Bài 1 — Nhập môn C++: cấu trúc chương trình và xuất dữ liệu
-   Câu chuyện: Bit mất giọng — con dạy robot Bit "nói" bằng cout.
+   Câu chuyện: Bit mất giọng — bạn dạy robot Bit "nói" bằng cout.
    Mã mở khoá: chỉ ghi trong README của bài (thư mục giáo viên) — KHÔNG ghi trong web công khai.
 */
 "use strict";
@@ -37,7 +37,7 @@ window.LESSON = {
       lesson: `
         <div class="note-card blue short-note">
           <h3>💡 C++ là gì?</h3>
-          <p>C++ là một <strong>ngôn ngữ lập trình</strong>: con viết chỉ dẫn bằng code, máy làm theo <strong>từng dòng, từ trên xuống</strong> — giống một chuỗi khối Scratch.</p>
+          <p>C++ là một <strong>ngôn ngữ lập trình</strong>: bạn viết chỉ dẫn bằng code, máy làm theo <strong>từng dòng, từ trên xuống</strong> — giống một chuỗi khối Scratch.</p>
         </div>
         ${codeVaManHinh(`#include <iostream>
 using namespace std;
@@ -48,7 +48,7 @@ int main() {
 }`, "Xin chao, C++!", "Chương trình đầu tiên")}
         ${giaiMa("🔍 GIẢI MÃ TỪNG LỆNH", [
           { code: "#include <iostream>", y: "Nạp công cụ nhập/xuất để dùng được <code>cout</code>." },
-          { code: "using namespace std;", y: "Cho phép viết gọn <code>cout</code> thay vì <code>std::cout</code>.", nho: "Bây giờ con xem đây là dòng thiết lập quen thuộc." },
+          { code: "using namespace std;", y: "Cho phép viết gọn <code>cout</code> thay vì <code>std::cout</code>.", nho: "Bây giờ bạn cứ xem đây là dòng thiết lập quen thuộc." },
           { code: "int main() {\n  ...\n}", y: "Chương trình <strong>bắt đầu chạy từ đây</strong>; các lệnh nằm trong <code>{ }</code>.", sb: "when flag clicked" },
           { code: 'cout << "Xin chao";', y: "Đưa chữ ra màn hình. Chữ đặt trong ngoặc kép.", nho: "Đọc là: “in dòng chữ Xin chao ra màn hình”.", sb: "say [Xin chao]", nhan: true },
           { code: "return 0;", y: "Kết thúc <code>main()</code> — nằm ngay trước dấu <code>}</code> cuối." }
@@ -61,7 +61,7 @@ int main() {
         {
           id: "s1-order", type: "sequence", icon: "🧩", mono: true,
           title: "Nhiệm vụ 1: Lắp chương trình",
-          prompt: "Bấm lần lượt các dòng để lắp thành chương trình đúng thứ tự.",
+          prompt: "Các dòng code của mình bị xáo trộn rồi! Bạn bấm lần lượt từng dòng, từ dòng đầu đến dòng cuối, để lắp lại chương trình giúp mình nhé.",
           shuffle: ["    return 0;", "int main() {", "#include <iostream>", "}", "    cout << \"Xin chao!\";", "using namespace std;"],
           answer: ["#include <iostream>", "using namespace std;", "int main() {", "    cout << \"Xin chao!\";", "    return 0;", "}"],
           hintWrong: "Nhớ: chuẩn bị công cụ trước → mở main → các lệnh → return 0; → đóng }.",
@@ -71,8 +71,8 @@ int main() {
         {
           id: "s1-run", type: "code", icon: "🚀",
           title: "Nhiệm vụ 2: Dạy Bit câu chào đầu tiên",
-          prompt: "Chỉ thay phần chữ được in ra màn hình.",
-          requirements: ["Chương trình phải chạy được.", "Kết quả đúng câu: Chao lop 8!"],
+          prompt: "Bạn giúp mình chào cả lớp nhé: chỉ sửa chữ nằm trong ngoặc kép thành <strong>Chao lop 8!</strong>, rồi bấm ▶ Chạy để nghe mình nói.",
+          requirements: ["Chỉ sửa chữ trong ngoặc kép, giữ nguyên các dòng khác.", "Màn hình hiện đúng câu: Chao lop 8!"],
           starter: `#include <iostream>
 using namespace std;
 
@@ -121,7 +121,7 @@ cout << "Tuoi: " << 14;`, "Ten cua minh la:\nMinh\nTuoi: 14", "Cùng ví dụ, t
         {
           id: "s2-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Nhìn code, đoán kết quả",
-          prompt: "Đoán trước, <strong>đặt cược</strong> nếu con tự tin, rồi mới kiểm tra.",
+          prompt: "Bạn đọc code rồi đoán xem màn hình hiện gì nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `cout << "Bit" << endl;
 cout << "lop " << 8;
 cout << "A" << endl;
@@ -138,8 +138,8 @@ cout << "xin chao!";`,
         {
           id: "s2-lines", type: "code", icon: "↩️",
           title: "Nhiệm vụ 2: Tách thành 3 dòng",
-          prompt: "Sửa code để kết quả giống hệt mẫu.",
-          requirements: ["Dòng 1: Ten cua minh la:", "Dòng 2: Minh", "Dòng 3: Tuoi: 14", "Đúng 3 dòng."],
+          prompt: "Lời giới thiệu của mình đang dính thành một hàng. Bạn thêm chỗ xuống dòng để màn hình giống hệt ô mẫu nhé.",
+          requirements: ["Dòng 1: Ten cua minh la:", "Dòng 2: Minh", "Dòng 3: Tuoi: 14", "Màn hình có đúng 3 dòng, không thừa dòng trống."],
           starter: `#include <iostream>
 using namespace std;
 
@@ -163,18 +163,18 @@ int main() {
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
       codeHash: "8B2ED1A6",
       todo: [
-        "Thầy hỏi: <strong>con hiểu gì</strong> về khung chương trình và <code>cout</code>? Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>bạn hiểu gì</strong> về khung chương trình và <code>cout</code>? Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: hai bạn một máy, làm theo đề trên slide, chụp ảnh output nộp lên ClassPoint.",
-        "Thầy hiện <strong>mã mở khoá</strong> → con nhập vào ô bên dưới để đi tiếp."
+        "Thầy hiện <strong>mã mở khoá</strong> → bạn nhập vào ô bên dưới để đi tiếp."
       ],
       challenges: [
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Bảng tên của Bit",
-          prompt: "In ra đúng khung tên này.",
-          requirements: ["Đúng 3 dòng, giống hệt mẫu (kể cả dấu cách)."],
+          prompt: "Bạn làm cho mình một bảng tên thật xịn nhé: in khung tên giống hệt mẫu, từng dấu cách một.",
+          requirements: ["In đúng 3 dòng, giống hệt mẫu — đếm kỹ cả dấu cách."],
           starter: `#include <iostream>
 using namespace std;
 
@@ -215,7 +215,7 @@ int main() {
         {
           id: "s3-comment", type: "choice", icon: "💬",
           title: "Nhiệm vụ 1: Comment làm gì?",
-          prompt: "Chọn phát biểu đúng.",
+          prompt: "Mình thấy mấy dòng bắt đầu bằng <code>//</code> trong code. Theo bạn, câu nào nói đúng về comment?",
           options: [
             { text: "Comment được in ra màn hình", why: "Máy bỏ qua comment nên nó không bao giờ được in ra." },
             { text: "Comment giúp người đọc hiểu code và không tạo ra output" },
@@ -228,7 +228,7 @@ int main() {
         {
           id: "s3-debug", type: "code", icon: "🐞",
           title: "Nhiệm vụ 2: Săn 3 con bọ",
-          prompt: "Mỗi lỗi sửa đúng là một con bọ nổ 💥. Sửa hết để chương trình chạy đúng.",
+          prompt: "Ba con bọ đang trốn trong code của mình. Bạn sửa đúng con nào thì nó nổ 💥 ngay. Bấm ▶ Chạy và đọc dòng ⚠ LỖI để lần ra chúng nhé!",
           requirements: ["Đúng 2 dòng.", "Dòng 1: Hello!", "Dòng 2: C++"],
           starter: `#include <iostream>
 using namespace std
@@ -272,17 +272,17 @@ int main() {
           <p>Đọc là: <strong>in chữ → in số → in chữ</strong>. Kết quả: <code>Nam nay toi 14 tuoi</code>.</p>
         </div>
         <div class="note-card purple short-note">
-          <h3>💬 Comment giúp con nhớ "vì sao"</h3>
-          <p><code class="inline-code">// In thong tin hoc sinh</code> không hiện ra màn hình, nhưng giúp con và bạn đọc code nhanh hơn.</p>
+          <h3>💬 Comment giúp bạn nhớ "vì sao"</h3>
+          <p><code class="inline-code">// In thong tin hoc sinh</code> không hiện ra màn hình, nhưng giúp bạn và người khác đọc code nhanh hơn.</p>
         </div>
-        ${readMore("📚 Ôn nhanh trước BOSS", "Mở mục con còn yếu, thử ví dụ rồi quay lại.", [["output", "cout"], ["new_lines", "endl / \\n"], ["comments", "Comment"]])}
+        ${readMore("📚 Ôn nhanh trước BOSS", "Mở mục bạn còn yếu, thử ví dụ rồi quay lại.", [["output", "cout"], ["new_lines", "endl / \\n"], ["comments", "Comment"]])}
       `,
       challenges: [
         {
           id: "s4-onecout", type: "code", icon: "🔗",
           title: "Nhiệm vụ 1: Gộp 3 cout thành 1",
-          prompt: "Kết quả giữ nguyên, nhưng chỉ dùng <strong>1</strong> lệnh cout.",
-          requirements: ["Chỉ có 1 lệnh cout.", "Kết quả: Nam nay toi 14 tuoi"],
+          prompt: "Mình đang dùng 3 lệnh cout cho một câu — dài quá! Bạn gộp lại thành <strong>1 lệnh cout</strong> mà màn hình vẫn y như cũ nhé.",
+          requirements: ["Chỉ dùng 1 lệnh cout (nối các phần bằng <<).", "Màn hình vẫn là: Nam nay toi 14 tuoi"],
           starter: `#include <iostream>
 using namespace std;
 
@@ -303,7 +303,7 @@ int main() {
         {
           id: "s4-comment", type: "code", icon: "💬",
           title: "Nhiệm vụ 2: Ghi chú mà không đổi kết quả",
-          prompt: "Thêm cả hai kiểu comment, output vẫn y nguyên.",
+          prompt: "Bạn thêm ghi chú giúp mình nhớ code làm gì: một comment kiểu <code>//</code> và một comment kiểu <code>/* ... */</code>. Màn hình phải giữ nguyên nhé!",
           requirements: ["Có ít nhất 1 comment //", "Có ít nhất 1 comment /* ... */", "Dòng 1: Xin chao!", "Dòng 2: Bit dang hoc C++"],
           starter: `#include <iostream>
 using namespace std;
@@ -330,18 +330,18 @@ int main() {
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
       codeHash: "196207DA",
       todo: [
-        "Thầy hỏi: <strong>khi chương trình báo lỗi, con làm gì?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>khi chương trình báo lỗi, bạn làm gì?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: sửa lỗi theo đề trên slide, chụp ảnh output nộp lên ClassPoint.",
-        "Thầy hiện <strong>mã mở BOSS</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở BOSS</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g2-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Vẽ mặt Bit",
-          prompt: "In ra đúng hình mặt Bit này.",
-          requirements: ["Đúng 4 dòng, giống hệt mẫu (kể cả dấu cách)."],
+          prompt: "Vẽ chân dung mình bằng cout nhé! In hình mặt Bit giống hệt mẫu.",
+          requirements: ["In đúng 4 dòng, giống hệt mẫu — đếm kỹ cả dấu cách."],
           starter: `#include <iostream>
 using namespace std;
 
@@ -368,7 +368,7 @@ int main() {
         {
           id: "boss-1", type: "choice", icon: "⚔️", bet: true, mono: true,
           title: "Đòn 1: Đoán output",
-          prompt: "Đoạn code này in ra gì? Có thể đặt cược.",
+          prompt: "Bọ Chúa tung câu đố: đoạn code này in ra gì? Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `cout << "Lop" << endl;
 cout << "8A";
 cout << "!" << endl;
@@ -385,7 +385,7 @@ cout << 2026;`,
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Săn bọ",
-          prompt: "Tìm và sửa hết bọ để chương trình chạy đúng.",
+          prompt: "Bọ Chúa thả bọ vào code! Bạn bấm ▶ Chạy, đọc dòng ⚠ LỖI rồi sửa từng con một cho đến khi màn hình đúng mẫu.",
           requirements: ["Dòng 1: Debug OK", "Dòng 2: 2026"],
           starter: `#include <iostream>
 using namespace std;
@@ -407,8 +407,8 @@ int main() {
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Hồ sơ của Bit",
-          prompt: "Sửa code để output giống hệt mẫu.",
-          requirements: ["Đúng 3 dòng như mẫu.", "Số 8 và 2026 in dạng số (không cần ngoặc kép)."],
+          prompt: "Hồ sơ của mình đang lộn xộn. Bạn sửa code để màn hình giống hệt ô mẫu nhé.",
+          requirements: ["In đúng 3 dòng như mẫu.", "Số 8 và 2026 viết thẳng, không để trong ngoặc kép."],
           starter: `#include <iostream>
 using namespace std;
 
@@ -425,8 +425,8 @@ int main() {
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Một cout, ba dòng",
-          prompt: "In lại hồ sơ của Bit bằng <strong>đúng 1 lệnh cout</strong>.",
-          requirements: ["Chỉ 1 lệnh cout.", "Output giống hệt mẫu."],
+          prompt: "Thử thách cho cao thủ: in lại hồ sơ của mình chỉ bằng <strong>1 lệnh cout</strong> nhé!",
+          requirements: ["Chỉ dùng 1 lệnh cout.", "Màn hình giống hệt mẫu."],
           starter: `#include <iostream>
 using namespace std;
 
@@ -445,8 +445,8 @@ int main() {
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Hộp quà C++",
-          prompt: "Vẽ đúng hộp quà này.",
-          requirements: ["Đúng 5 dòng, giống hệt mẫu."],
+          prompt: "Mình muốn tặng cả lớp một hộp quà. Bạn vẽ hộp quà giống hệt mẫu bằng cout nhé!",
+          requirements: ["In đúng 5 dòng, giống hệt mẫu — đếm kỹ cả dấu cách."],
           starter: `#include <iostream>
 using namespace std;
 

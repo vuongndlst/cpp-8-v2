@@ -54,7 +54,7 @@ cout << "Gia banh: " << giaBanh;`, "Gia banh: 12000", "Cất số vào biến r�
         {
           id: "s1-predict", type: "choice", icon: "🔮", bet: true, mono: true,
           title: "Nhiệm vụ 1: Biến hay chữ?",
-          prompt: "Đoán màn hình, <strong>đặt cược</strong> nếu tự tin.",
+          prompt: "Bạn đọc code rồi đoán xem màn hình hiện gì nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong> để nhân đôi XP!",
           code: `int keo = 5;
 cout << "keo" << endl;
 cout << keo;`,
@@ -70,8 +70,8 @@ cout << keo;`,
         {
           id: "s1-code", type: "code", icon: "📦",
           title: "Nhiệm vụ 2: Cất số kẹo vào hộp",
-          prompt: "Khai báo biến rồi dùng biến đó để in.",
-          requirements: ["Khai báo biến soKeo kiểu int, gán 12.", "Lệnh cout phải dùng biến soKeo (không viết thẳng số 12)."],
+          prompt: "Mình có 12 cái kẹo mà hay quên lắm! Bạn tạo hộp <code>soKeo</code> để cất số 12, rồi in số kẹo ra từ chính cái hộp đó nhé.",
+          requirements: ["Tạo biến soKeo kiểu int, cất vào đó số 12.", "Lệnh cout in biến soKeo — không gõ thẳng số 12."],
           starter: prog("// Khai bao bien soKeo o day", "", 'cout << "So keo: " << 0;'),
           expected: "So keo: 12",
           rules: [
@@ -117,7 +117,7 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
         {
           id: "s2-name", type: "choice", icon: "🏷️",
           title: "Nhiệm vụ 1: Tên nào hợp lệ?",
-          prompt: "Chọn tên biến <strong>viết đúng</strong> trong C++.",
+          prompt: "Mình định đặt tên cho một hộp mới. Bạn chọn giúp mình tên nào C++ <strong>chấp nhận</strong> nhé?",
           options: [
             { text: "so keo", why: "Tên biến không được có dấu cách." },
             { text: "2keo", why: "Tên biến không được bắt đầu bằng số." },
@@ -130,8 +130,8 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
         {
           id: "s2-code", type: "code", icon: "➕",
           title: "Nhiệm vụ 2: Thưởng thêm điểm",
-          prompt: "Dùng phép gán lại để cộng thêm 2 điểm.",
-          requirements: ["Giữ nguyên dòng int diem = 7;", "Thêm lệnh gán lại cộng 2 vào diem.", "In ra: Diem moi: 9 (cout dùng biến diem)."],
+          prompt: "Bạn được thưởng 2 điểm! Bạn thêm một lệnh để hộp <code>diem</code> tăng thêm 2, rồi in điểm mới ra nhé.",
+          requirements: ["Giữ nguyên dòng int diem = 7;", "Thêm một lệnh gán lại để diem tăng thêm 2.", "In ra: Diem moi: 9 (cout in biến diem, không gõ thẳng 9)."],
           starter: prog("int diem = 7;", "// Cong them 2 diem o day", "", 'cout << "Diem moi: " << 9;'),
           expected: "Diem moi: 9",
           rules: [
@@ -150,18 +150,18 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
       codeHash: "19E72064",
       todo: [
-        "Thầy hỏi: <strong>biến là gì?</strong> In biến khác in chữ thế nào? Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>biến là gì?</strong> In biến khác in chữ thế nào? Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Thực đơn căng tin”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở khoá</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở khoá</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g1-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Phép tính của Bit",
-          prompt: "Dùng biến a, b để in đúng 3 dòng.",
-          requirements: ["Không viết thẳng kết quả 10, 2, 24 — phải tính bằng a và b."],
+          prompt: "Mình có hai hộp a và b. Bạn dùng chính hai hộp đó để tính tổng, hiệu, tích và in đúng 3 dòng như mẫu nhé.",
+          requirements: ["Tính bằng a và b — không gõ thẳng các số 10, 2, 24."],
           starter: prog("int a = 6;", "int b = 4;", "// In a + b, a - b, a * b"),
           expected: "6 + 4 = 10\n6 - 4 = 2\n6 * 4 = 24",
           rules: [{ test: c => /a\s*\+\s*b/.test(c) && /a\s*-\s*b/.test(c) && /a\s*\*\s*b/.test(c), msg: "Phải tính bằng a + b, a - b, a * b." }],
@@ -188,7 +188,7 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
 cout << "Nhap tuoi: ";
 cin >> tuoi;
 cout << "Nam sau ban " << tuoi + 1 << " tuoi";`, "Nhap tuoi: 13\nNam sau ban 14 tuoi", "Hỏi tuổi", "13")}
-        ${meo("Trên web, con gõ số vào ô <strong>📥 DỮ LIỆU NHẬP</strong> rồi bấm Chạy. Số con nhập <strong>hiện lại trên màn hình</strong> giống Programiz.")}
+        ${meo("Trên web, bạn gõ số vào ô <strong>📥 DỮ LIỆU NHẬP</strong> rồi bấm Chạy. Số bạn nhập <strong>hiện lại trên màn hình</strong> giống Programiz.")}
         ${meo("<code>cout &lt;&lt;</code> đưa ra màn hình · <code>cin &gt;&gt;</code> đưa <strong>vào biến</strong> — mũi tên chỉ hướng dữ liệu đi.")}
         ${docThem([["user_input", "Nhập dữ liệu (cin)"]])}
       `,
@@ -196,7 +196,7 @@ cout << "Nam sau ban " << tuoi + 1 << " tuoi";`, "Nhap tuoi: 13\nNam sau ban 14 
         {
           id: "s3-predict", type: "choice", icon: "🔮", bet: true, mono: true, input: "7",
           title: "Nhiệm vụ 1: Người dùng gõ 7",
-          prompt: "Người dùng gõ <code>7</code>. Màn hình hiện gì?",
+          prompt: "Giả sử bạn gõ số <code>7</code> khi máy hỏi. Màn hình sẽ hiện gì?",
           code: `int n;
 cout << "Nhap n: ";
 cin >> n;
@@ -213,8 +213,8 @@ cout << n * 2;`,
         {
           id: "s3-code", type: "code", icon: "⌨️",
           title: "Nhiệm vụ 2: Hỏi số kẹo",
-          prompt: "Thêm lệnh nhập để chương trình đúng với <strong>mọi số</strong> người dùng gõ.",
-          requirements: ["Thêm cin để nhập vào biến soKeo.", "Đạt cả 2 ca kiểm thử."],
+          prompt: "Căng tin của mình muốn hỏi khách mua bao nhiêu kẹo. Bạn thêm lệnh <code>cin</code> để chương trình đúng với <strong>mọi số</strong> khách gõ nhé.",
+          requirements: ["Thêm lệnh cin để cất số khách gõ vào biến soKeo.", "Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int soKeo = 0;", 'cout << "Nhap so keo: ";', "// Them lenh nhap o day", "", 'cout << "Ban co " << soKeo << " keo";'),
           tests: [
             { input: "5", expected: "Nhap so keo: 5\nBan co 5 keo" },
@@ -254,7 +254,7 @@ cout << "Tong: " << tong;`, "Nhap a: 3\nNhap b: 5\nTong: 8", "Cộng hai số", 
         {
           id: "s4-order", type: "sequence", icon: "🧩", mono: true,
           title: "Nhiệm vụ 1: Xếp đúng 3 bước",
-          prompt: "Lắp các dòng thành chương trình tính tiền 1 món theo <strong>Nhập → Xử lý → Xuất</strong>.",
+          prompt: "Bạn lắp các dòng thành chương trình tính tiền 1 món, theo đúng thứ tự <strong>Nhập → Xử lý → Xuất</strong> nhé.",
           shuffle: ['cout << "Tien: " << tien;', "cin >> soLuong;", "int soLuong;", "int tien = soLuong * 5000;", 'cout << "Nhap so luong: ";'],
           answer: ["int soLuong;", 'cout << "Nhap so luong: ";', "cin >> soLuong;", "int tien = soLuong * 5000;", 'cout << "Tien: " << tien;'],
           hintWrong: "Khai báo → câu dẫn → cin → tính → in.",
@@ -264,8 +264,8 @@ cout << "Tong: " << tong;`, "Nhap a: 3\nNhap b: 5\nTong: 8", "Cộng hai số", 
         {
           id: "s4-code", type: "code", icon: "🎂",
           title: "Nhiệm vụ 2: Máy tính tuổi",
-          prompt: "Nhập năm sinh, in tuổi của người đó trong năm 2026.",
-          requirements: ["Câu dẫn đúng nguyên văn: Nhap nam sinh: ", "Tính tuổi = 2026 − năm sinh.", "In: Tuoi nam 2026: <số tuổi>"],
+          prompt: "Mình muốn biết mọi người bao nhiêu tuổi. Bạn viết chương trình hỏi năm sinh, rồi in ra tuổi trong năm 2026 nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap nam sinh: ", "Tính tuổi = 2026 − năm sinh.", "In ra: Tuoi nam 2026: <số tuổi>"],
           starter: prog("int namSinh;", "// Nhap: cau dan + cin", "", "// Xu ly: tinh tuoi", "", "// Xuat: in tuoi"),
           tests: [
             { input: "2013", expected: "Nhap nam sinh: 2013\nTuoi nam 2026: 13" },
@@ -283,18 +283,18 @@ cout << "Tong: " << tong;`, "Nhap a: 3\nNhap b: 5\nTong: 8", "Cộng hai số", 
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
       codeHash: "EED0A344",
       todo: [
-        "Thầy hỏi: <strong>cin khác cout thế nào? Vì sao cần câu dẫn?</strong> Con nói trước, thầy chốt sau.",
+        "Thầy hỏi: <strong>cin khác cout thế nào? Vì sao cần câu dẫn?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",
         "Trả lời <strong>2 câu ClassPoint</strong>.",
         "<strong>Luyện tập cặp</strong> trên <a href=\"https://www.programiz.com/cpp-programming/online-compiler/\" target=\"_blank\" rel=\"noopener\">Programiz ↗</a>: “Tiền bánh mì”, chụp ảnh nộp ClassPoint.",
-        "Thầy hiện <strong>mã mở BOSS</strong> → con nhập vào ô bên dưới."
+        "Thầy hiện <strong>mã mở BOSS</strong> → bạn nhập vào ô bên dưới."
       ],
       challenges: [
         {
           id: "g2-bonus", type: "code", icon: "🎁", bonus: true,
           title: "Nhiệm vụ phụ: Hình vuông",
-          prompt: "Nhập cạnh hình vuông, in chu vi và diện tích.",
-          requirements: ["Câu dẫn: Nhap canh: ", "Dòng 2: Chu vi: …  Dòng 3: Dien tich: …"],
+          prompt: "Bạn viết chương trình hỏi cạnh hình vuông, rồi in chu vi và diện tích giúp mình nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap canh: ", "Dòng 2: Chu vi: …", "Dòng 3: Dien tich: …"],
           starter: prog("int canh;", "// Viet chuong trinh o day"),
           tests: [
             { input: "5", expected: "Nhap canh: 5\nChu vi: 20\nDien tich: 25" },
@@ -318,7 +318,7 @@ cout << "Tong: " << tong;`, "Nhap a: 3\nNhap b: 5\nTong: 8", "Cộng hai số", 
         {
           id: "boss-1", type: "choice", icon: "⚔️", bet: true, mono: true,
           title: "Đòn 1: Hộp đổi giá trị",
-          prompt: "Màn hình hiện gì?",
+          prompt: "Quái Vật cứ đổi giá trị trong hộp! Bạn theo dõi từng dòng rồi đoán màn hình hiện gì nhé.",
           code: `int a = 4;
 int b = a + 3;
 a = a * 2;
@@ -335,8 +335,8 @@ cout << a << " " << b;`,
         {
           id: "boss-2", type: "code", icon: "⚔️",
           title: "Đòn 2: Săn bọ sĩ số",
-          prompt: "Sửa hết bọ để chương trình tính đúng sĩ số.",
-          requirements: ["Đạt cả 2 ca kiểm thử."],
+          prompt: "Quái Vật làm hỏng máy tính sĩ số rồi! Bạn chạy thử, đọc lỗi và sửa hết bọ để máy tính đúng nhé.",
+          requirements: ["Đúng với mọi ca trong bảng bên cạnh."],
           starter: prog("int soNam, soNu;", 'cout << "Nhap so nam: ";', "cin >> soNam", 'cout << "Nhap so nu: ";', "cin >> SoNu;", 'cout << "Si so: " << soNam + sonu;'),
           tests: [
             { input: "15 17", expected: "Nhap so nam: 15\nNhap so nu: 17\nSi so: 32" },
@@ -353,8 +353,8 @@ cout << a << " " << b;`,
         {
           id: "boss-3", type: "code", icon: "⚔️",
           title: "Đòn 3: Đếm bánh trong kho",
-          prompt: "Nhập số bánh mỗi hộp và số hộp, in tổng số bánh.",
-          requirements: ["Câu dẫn 1: Nhap so banh moi hop: ", "Câu dẫn 2: Nhap so hop: ", "In: Tong so banh: <kết quả>"],
+          prompt: "Kho bánh cần kiểm kê! Bạn hỏi số bánh mỗi hộp và số hộp, rồi in tổng số bánh nhé.",
+          requirements: ["Câu dẫn 1 (gõ đúng từng chữ): Nhap so banh moi hop: ", "Câu dẫn 2: Nhap so hop: ", "In ra: Tong so banh: <kết quả>"],
           starter: prog("// Khai bao bien, nhap, tinh, in"),
           tests: [
             { input: "6 4", expected: "Nhap so banh moi hop: 6\nNhap so hop: 4\nTong so banh: 24" },
@@ -366,8 +366,8 @@ cout << a << " " << b;`,
         {
           id: "adv-1", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 1: Ba phép tính",
-          prompt: "Nhập a, b. In tổng, hiệu, tích trên 3 dòng.",
-          requirements: ["Câu dẫn: Nhap a: và Nhap b: ", "3 dòng: Tong: …  Hieu: …  Tich: …"],
+          prompt: "Bạn làm cho mình một máy tính mini: hỏi hai số a, b rồi in tổng, hiệu, tích trên 3 dòng nhé.",
+          requirements: ["Hai câu dẫn (gõ đúng từng chữ): Nhap a: và Nhap b: ", "Ba dòng kết quả: Tong: …, Hieu: …, Tich: …"],
           starter: prog("int a, b;", "// Viet tiep"),
           tests: [
             { input: "7 3", expected: "Nhap a: 7\nNhap b: 3\nTong: 10\nHieu: 4\nTich: 21" },
@@ -379,8 +379,8 @@ cout << a << " " << b;`,
         {
           id: "adv-2", type: "code", icon: "🥇", advanced: true,
           title: "Nâng cao 2: Đổi phút ra giây",
-          prompt: "Nhập số phút, in số giây tương ứng.",
-          requirements: ["Câu dẫn: Nhap so phut: ", "In: <phút> phut = <giây> giay"],
+          prompt: "Mình muốn biết một số phút bằng bao nhiêu giây. Bạn hỏi số phút rồi đổi ra giây giúp mình nhé.",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap so phut: ", "In ra: <phút> phut = <giây> giay"],
           starter: prog("int phut;", "// Viet tiep"),
           tests: [
             { input: "3", expected: "Nhap so phut: 3\n3 phut = 180 giay" },

@@ -1,4 +1,4 @@
-/* C++ Journey 8 — V2: lớp trò chơi (bản đồ, điểm dừng, Bit, BOSS, cược, săn bọ) */
+/* C++ Journey 8 — V2: lớp trò chơi (bản đồ, điểm dừng, Bit, BOSS, Ngôi sao hi vọng, săn bọ) */
 
 .brand { color: inherit; text-decoration: none; }
 /* Tắt chữ ghép (ligature) để << không bị vẽ thành một ký hiệu lạ */
@@ -32,14 +32,14 @@ code, pre, textarea, .mono, .sequence-button { font-variant-ligatures: none; fon
   background: #fff; border: 3px solid var(--blue); font-weight: 900; font-size: 1rem;
   transition: transform .2s ease;
 }
-.node-label { font-size: .72rem; font-weight: 800; max-width: 92px; text-align: center; line-height: 1.15; }
+.node-label { font-size: .8rem; font-weight: 800; max-width: 100px; text-align: center; line-height: 1.15; }
 .map-node:hover:not(:disabled) .node-dot { transform: translateY(-2px); }
 .map-node.done .node-dot { background: var(--green); border-color: var(--green); color: #fff; }
 .map-node.gate .node-dot { border-radius: 12px; border-color: var(--orange); background: var(--orange-soft); }
 .map-node.gate.done .node-dot { background: var(--orange); color: #fff; }
 .map-node.boss .node-dot { width: 50px; height: 50px; border-color: var(--purple); background: var(--purple-soft); font-size: 1.4rem; }
 .map-node.active .node-dot { box-shadow: 0 0 0 5px rgba(32,118,210,.22); animation: pulse 1.6s ease-in-out infinite; }
-.map-node.locked { opacity: .45; cursor: not-allowed; }
+.map-node.locked { opacity: .6; cursor: not-allowed; }
 .map-node.locked .node-dot { border-color: #b8b2a4; background: #f1eee6; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(32,118,210,.08); } }
 
@@ -172,15 +172,22 @@ pre.sb, pre.sb-fallback { margin: 0; padding: 6px 10px; border-radius: 8px; back
 .advanced-section .challenge-card { border-color: #e2b53c; }
 .advanced-section .challenge-badge { background: #fff1c2; color: #7d5600; }
 
-/* ----- đặt cược ----- */
-.bet-row {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0;
-  padding: 10px 12px; border-radius: 12px; background: #f5f0ff; border: 1px dashed #a58bdc;
+/* ----- Ngôi sao hi vọng ----- */
+.star-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 10px 0;
+  padding: 10px 14px; border-radius: 14px; background: linear-gradient(90deg, #fff8dc, #fff1c2); border: 2px dashed #e2b53c;
 }
-.bet-row small { width: 100%; }
-.bet-chip { padding: 6px 11px; border-radius: 999px; border: 2px solid #b9a6e6; background: #fff; font-weight: 800; color: var(--ink); }
-.bet-chip.on { background: var(--purple); border-color: var(--purple); color: #fff; }
-.bet-chip:disabled { opacity: .35; cursor: not-allowed; }
+.star-row.used { color: #7d5600; font-weight: 700; font-size: .88rem; border-style: dotted; opacity: .8; }
+.star-toggle {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+  border: 2px solid #e2b53c; background: #fff; color: #7d5600; font-weight: 900; font-size: .95rem; cursor: pointer;
+}
+.star-toggle:hover { transform: translateY(-1px); box-shadow: 0 3px 0 #e2b53c; }
+.star-toggle.on { background: #ffcf33; border-color: #b47700; color: #3b2a00; animation: twinkle 1.2s ease-in-out infinite; }
+.star-icon { font-size: 1.25rem; line-height: 1; }
+.star-rule { font-size: .84rem; color: #6b5200; }
+@keyframes twinkle { 50% { box-shadow: 0 0 0 6px rgba(255, 207, 51, .35); } }
+@media (prefers-reduced-motion: reduce) { .star-toggle.on { animation: none; } }
 .choice-option span { white-space: pre-line; }
 .choice-option span.mono { font-size: .9rem; }
 
@@ -253,3 +260,10 @@ pre.sb, pre.sb-fallback { margin: 0; padding: 6px 10px; border-radius: 8px; back
   .new-student-button { display: none; }
   .journey-map { position: static; }
 }
+
+/* ----- tập gõ code: code mẫu không bôi đen/sao chép ----- */
+.code-demo pre, .screen-card pre, .gm code, .choice-option .mono, .sequence-button.mono, .picked.mono,
+.expected-output, .test-table pre { -webkit-user-select: none; user-select: none; }
+.type-card { text-align: center; max-width: 440px; }
+.type-bit { width: 84px; height: 96px; margin: 0 auto 4px; animation: hop .6s ease; }
+.type-card p { line-height: 1.6; }
