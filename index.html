@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#173b78" />
+  <title>C++ Journey 8 | Lập trình C++ lớp 8</title>
+  <link rel="stylesheet" href="engine/base.css" />
+  <link rel="stylesheet" href="engine/game.css" />
+  <style>
+    .hub { width: min(1100px, calc(100% - 32px)); margin: 26px auto 40px; }
+    .hub-hero { display: flex; gap: 16px; align-items: center; padding: 22px; background: var(--paper); border: 2px solid var(--ink); border-radius: 22px; box-shadow: var(--shadow); }
+    .hub-hero h2 { margin: 0 0 6px; }
+    .hub-hero p { margin: 0; color: #4a5568; line-height: 1.55; }
+    .lesson-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 22px; }
+    .lesson-card { position: relative; display: grid; gap: 8px; padding: 18px; background: #fff; border: 2px solid #cfc7b6; border-radius: 18px; color: var(--ink); text-decoration: none; box-shadow: 4px 5px 0 #eee7d7; }
+    a.lesson-card:hover { transform: translateY(-2px); border-color: var(--blue); }
+    .lesson-card .num { font-weight: 900; color: var(--blue); font-size: .8rem; letter-spacing: .1em; }
+    .lesson-card h3 { margin: 0; font-size: 1.1rem; padding-right: 46px; }
+    .lesson-card p { margin: 0; color: var(--muted); font-size: .85rem; }
+    .lesson-card .medal { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; font-size: 1.4rem; background: #f1eee6; border: 2px dashed #c8c1b1; }
+    .lesson-card .medal.silver { background: #dfe6ee; border: 3px solid #8a97a8; }
+    .lesson-card .medal.gold { background: #ffd44d; border: 3px solid #b47700; }
+    .lesson-card.soon { opacity: .55; cursor: not-allowed; }
+    .collection { margin-top: 16px; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-badge">C++</div>
+      <div><div class="eyebrow">C++ JOURNEY 8</div><h1>Lập trình C++ · Khối 8</h1></div></div>
+  </header>
+  <main class="hub">
+    <section class="hub-hero">
+      <svg class="bit-svg" viewBox="0 0 64 72" aria-hidden="true" style="width:72px;height:82px">
+        <line x1="32" y1="4" x2="32" y2="14" stroke="#17304f" stroke-width="3"/><circle cx="32" cy="5" r="4" fill="#ef8a17"/>
+        <rect x="8" y="14" width="48" height="40" rx="12" fill="#eaf4ff" stroke="#17304f" stroke-width="3"/>
+        <circle cx="23" cy="31" r="5" fill="#17304f"/><circle cx="41" cy="31" r="5" fill="#17304f"/>
+        <path d="M24 41 q8 7 16 0" stroke="#17304f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <rect x="18" y="56" width="28" height="12" rx="5" fill="#2076d2" stroke="#17304f" stroke-width="3"/></svg>
+      <div>
+        <h2>Cùng robot Bit học C++</h2>
+        <p>Mỗi bài có 4 chặng, 2 điểm dừng và một BOSS. Hạ BOSS để nhận chứng chỉ và huy hiệu. Sưu tầm đủ 5 huy hiệu nhé!</p>
+        <div class="collection" id="collection"></div>
+      </div>
+    </section>
+    <div class="lesson-cards" id="cards"></div>
+  </main>
+  <script>
+    const LESSONS = [
+      { id: "bai01", n: 1, title: "Nhập môn C++", story: "Bit mất giọng", icon: "📣", ready: true },
+      { id: "bai02", n: 2, title: "Biến và lệnh cin", story: "Căng tin của Bit", icon: "🧮", ready: false },
+      { id: "bai03", n: 3, title: "Câu điều kiện if, if-else", story: "Cổng game", icon: "🚪", ready: false },
+      { id: "bai04", n: 4, title: "Vòng lặp for", story: "Nhà máy robot", icon: "🏭", ready: false },
+      { id: "bai05", n: 5, title: "Ôn tập", story: "Hành trình tổng hợp", icon: "🗺️", ready: false }
+    ];
+    function hashText(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).toUpperCase().padStart(8, "0"); }
+    let badges = {}, who = null;
+    try {
+      who = JSON.parse(localStorage.getItem("cpp8v2:lastStudent") || "null");
+      if (who) badges = JSON.parse(localStorage.getItem("cpp8v2:badges:" + hashText(`${who.name}|${who.className}`.toLowerCase())) || "{}");
+    } catch { /* trình duyệt chặn lưu trữ */ }
+    document.getElementById("cards").innerHTML = LESSONS.map(l => {
+      const medal = badges[l.id] || "";
+      const inner = `<span class="medal ${medal}">${medal ? l.icon : "?"}</span>
+        <span class="num">BÀI ${l.n}</span><h3>${l.title}</h3><p>${l.story}${l.ready ? "" : " · sắp mở"}</p>`;
+      return l.ready ? `<a class="lesson-card" href="${l.id}/">${inner}</a>` : `<div class="lesson-card soon">${inner}</div>`;
+    }).join("");
+    const got = Object.keys(badges).length;
+    document.getElementById("collection").textContent = who ? `🏅 ${who.name} · ${who.className}: ${got}/5 huy hiệu` : "";
+  </script>
+</body>
+</html>
