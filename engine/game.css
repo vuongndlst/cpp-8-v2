@@ -2,7 +2,7 @@
 
 .brand { color: inherit; text-decoration: none; }
 /* Tắt chữ ghép (ligature) để << không bị vẽ thành một ký hiệu lạ */
-code, pre, textarea, .mono, .sequence-button { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+code, pre, textarea, .mono, .sequence-button, .console-mini, .gm code { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
 .challenge-card, .stage-page { scroll-margin-top: 190px; }
 .muted { color: var(--muted); font-size: .84rem; }
 .mono { font-family: "Cascadia Code", Consolas, monospace; }

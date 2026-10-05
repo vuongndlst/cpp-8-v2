@@ -84,8 +84,32 @@ function isGold() {
 function activeStep() { return STEPS.find(s => s.id === state.active); }
 
 /* ---------- chạy C++ ---------- */
+// JSCPP cho gọi hàm viết SAU main mà không khai báo trước; g++ (Programiz) thì báo lỗi → web cũng báo lỗi.
+function functionOrderError(code) {
+  const c = stripComments(code);
+  const mainAt = c.search(/\bint\s+main\s*\(/);
+  if (mainAt < 0) return null;
+  const defRe = /\b(?:void|int)\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*\{/g;
+  let m;
+  while ((m = defRe.exec(c))) {
+    const name = m[1];
+    if (name === "main" || m.index < mainAt) continue;
+    const truoc = c.slice(0, mainAt);
+    if (new RegExp("\\b(?:void|int)\\s+" + name + "\\s*\\([^)]*\\)\\s*;").test(truoc)) continue;
+    const goi = new RegExp("\\b" + name + "\\s*\\(").exec(c.slice(mainAt, m.index));
+    if (goi) {
+      const line = c.slice(0, mainAt + goi.index).split("\n").length;
+      return `Máy chưa biết hàm "${name}" ở dòng ${line}: hàm này được viết SAU main().\n` +
+        `👉 Đưa cả hàm ${name} lên TRÊN main(), hoặc khai báo trước main: ${m[0].replace(/\s*\{$/, "")};`;
+    }
+  }
+  return null;
+}
+
 function runCpp(code, input = "") {
   if (!window.JSCPP) return { ok: false, output: "", error: "Không tải được trình chạy C++. Tải lại trang (F5)." };
+  const orderErr = functionOrderError(code);
+  if (orderErr) return { ok: false, output: "", error: orderErr };
   let output = "";
   try {
     // echo: số đọc bằng cin được in lại kèm xuống dòng, giống màn hình Programiz (JSCPP đã vá, xem _Web/README.md)
@@ -121,7 +145,11 @@ function friendlyError(msg, code) {
     return "Chương trình chạy mãi không dừng (quá 2 giây).\n👉 Kiểm tra điều kiện và bước tăng/giảm của vòng lặp.";
   }
   if (/must return a value/i.test(msg)) {
-    return "Hàm main() chưa có dòng return 0; ở cuối.\n👉 Thêm return 0; trước dấu } cuối cùng.";
+    return `Một hàm kiểu int chưa trả về giá trị${lineText}.\n👉 Hàm int phải có lệnh return ...; (main thì return 0;).`;
+  }
+  const noMethod = msg.match(/no method (\w+) in/);
+  if (noMethod) {
+    return `Gọi hàm "${noMethod[1]}" chưa đúng${lineText}.\n👉 Truyền đủ số giá trị, đúng thứ tự như các tham số khi viết hàm (kể cả cặp ngoặc tròn).`;
   }
   if (/cannot find|not found|include/i.test(msg) && !/#include\s*<iostream>/.test(code)) {
     return "Thiếu dòng #include <iostream> ở đầu chương trình.";

@@ -61,7 +61,9 @@ for (const step of L.steps) {
     if (c.type === "choice") {
       if (!c.options.some(o => (typeof o === "string" ? o : o.text) === c.answer)) fail("đáp án không có trong lựa chọn");
       if (c.code) {
-        const prog = `#include <iostream>\nusing namespace std;\n\nint main() {\n${c.code}\n    return 0;\n}`;
+        const prog = /\bint\s+main\s*\(/.test(c.code)
+          ? `#include <iostream>\nusing namespace std;\n\n${c.code}`
+          : `#include <iostream>\nusing namespace std;\n\nint main() {\n${c.code}\n    return 0;\n}`;
         const r = jscpp(prog, c.input), g = gpp(prog, c.input), r0 = jscpp(prog, c.input, false);
         if (!r.ok || norm(r.out) !== norm(c.answer)) fail(`JSCPP ra ${JSCPP_out(r)} ≠ đáp án`);
         if (!g.ok || norm(g.out) !== norm(r0.out)) fail(`g++ ra ${JSON.stringify(g.out)} ≠ JSCPP`);
