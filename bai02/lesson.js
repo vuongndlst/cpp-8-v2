@@ -92,17 +92,35 @@ cout << keo;`,
 
     /* ================= CHẶNG 2 ================= */
     {
-      kind: "stage", id: "stage-2", number: 2, nav: "Đổi giá & đặt tên",
-      kicker: "CHẶNG 2 · GÁN LẠI · ĐẶT TÊN",
-      title: "Đổi giá trị và đặt tên biến",
-      bit: "Giá bánh vừa tăng! Mình phải <strong>gán lại giá trị cho biến</strong>. À, đặt tên biến thế nào cho đúng nhỉ?",
-      objectives: ["Gán lại giá trị cho biến", "Dùng + − * với biến", "Đặt tên biến hợp lệ (camelCase)"],
+      kind: "stage", id: "stage-2", number: 2, nav: "Toán tử & tên",
+      kicker: "CHẶNG 2 · TOÁN TỬ · GÁN LẠI · ĐẶT TÊN",
+      title: "Toán tử, gán lại và đặt tên biến",
+      bit: "Giá bánh vừa tăng, mình còn phải chia kẹo cho các bạn nữa! Bạn chỉ mình <strong>các phép tính</strong> và cách <strong>gán lại giá trị cho biến</strong> nhé. À, đặt tên biến thế nào cho đúng nhỉ?",
+      objectives: ["Dùng toán tử số học + − * / %", "Gán lại giá trị, dùng += −= *= ++ −−", "Đặt tên biến hợp lệ (camelCase)"],
       lesson: `
         ${giaiMa("🔁 GÁN LẠI VÀ TÍNH TOÁN", [
           { code: "diem = 9;", y: "Gán lại: biến chỉ giữ <strong>giá trị mới</strong> (giá trị cũ mất).", sb: "set [diem v] to (9)" },
           { code: "diem = diem + 2;", y: "Lấy giá trị cũ của <code>diem</code> cộng 2, rồi gán lại cho <code>diem</code>.", sb: "change [diem v] by (2)", nhan: true },
           { code: "int tong = a + b;", y: "Phép cộng <code>+</code>, trừ <code>-</code>, nhân <code>*</code> dùng được với biến.", sb: "set [tong v] to ((a) + (b))" }
         ])}
+        ${giaiMa("🧮 TOÁN TỬ SỐ HỌC (với số nguyên int)", [
+          { code: "7 + 2   7 - 2   7 * 2", y: "Cộng, trừ, nhân → <code>9</code>, <code>5</code>, <code>14</code>.", sb: "((7) * (2))" },
+          { code: "7 / 2", y: "<strong>Chia lấy phần nguyên</strong>: hai số nguyên chia nhau thì <strong>bỏ phần lẻ</strong> → <code>3</code> (không phải 3.5).", sb: "((7) / (2))", nhan: true },
+          { code: "7 % 2", y: "<strong>Chia lấy dư</strong>: 7 chia 2 được 3, <strong>dư 1</strong> → <code>1</code>.", nho: "Số chẵn chia 2 dư 0, số lẻ chia 2 dư 1.", sb: "((7) mod (2))", nhan: true },
+          { code: "2 + 3 * 4", y: "<strong>Nhân, chia, chia dư trước</strong>; cộng trừ sau → <code>14</code>. Có ngoặc thì tính trong ngoặc trước: <code>(2 + 3) * 4</code> → <code>20</code>." }
+        ])}
+        ${codeVaManHinh(`int keo = 17;
+int soBan = 5;
+cout << "Moi ban: " << keo / soBan << endl;
+cout << "Con du: " << keo % soBan;`, "Moi ban: 3\nCon du: 2", "Chia 17 cái kẹo cho 5 bạn")}
+        ${cuPhap({ ten: "TOÁN TỬ SỐ HỌC",
+          mau: ["‹số 1› + ‹số 2›   ‹số 1› - ‹số 2›   ‹số 1› * ‹số 2›", "‹số 1› / ‹số 2›   ‹số 1› % ‹số 2›"],
+          phan: [["/", "chia lấy phần nguyên (với int): <code>17 / 5</code> → <code>3</code>"],
+                 ["%", "chia lấy dư: <code>17 % 5</code> → <code>2</code>"]],
+          quyTac: ["Thứ tự: <code>( )</code> trước, rồi <code>* / %</code>, cuối cùng <code>+ -</code>; cùng mức thì tính từ trái sang phải",
+                   "Hai số nguyên chia nhau thì <strong>bỏ phần lẻ</strong> — <code>7 / 2</code> là <code>3</code>",
+                   "Không chia cho 0 (chương trình sẽ lỗi)"],
+          viDu: "cout << 17 / 5 << endl;\ncout << 17 % 5 << endl;\ncout << (2 + 3) * 4;", man: "3\n2\n20" })}
         ${codeVaManHinh(`int diem = 7;
 diem = diem + 2;
 cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
@@ -113,6 +131,12 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
                    "Dấu <code>=</code> là phép <strong>gán</strong>, không phải “bằng” như trong Toán",
                    "Gán lại thì giá trị cũ mất, biến chỉ giữ giá trị mới"],
           viDu: "int diem = 7;\ndiem = diem + 2;\ncout << diem;", man: "9" })}
+        ${cuPhap({ ten: "TOÁN TỬ GÁN VIẾT GỌN",
+          mau: ["‹tên biến› += ‹giá trị›;\n‹tên biến› -= ‹giá trị›;\n‹tên biến› *= ‹giá trị›;", "‹tên biến›++;\n‹tên biến›--;"],
+          phan: [["a += 5;", "giống <code>a = a + 5;</code>"], ["a -= 5;", "giống <code>a = a - 5;</code>"],
+                 ["a *= 2;", "giống <code>a = a * 2;</code>"], ["a++;  a--;", "tăng 1 · giảm 1 (giống <code>a = a + 1;</code>)"]],
+          quyTac: ["Viết liền, không có dấu cách: <code>+=</code>, không viết <code>+ =</code>", "<code>i++</code> chính là bước nhảy hay gặp trong vòng lặp for (Bài 4)"],
+          viDu: "int a = 6;\na += 4;\na *= 2;\na--;\ncout << a;", man: "19" })}
         ${tenBien()}
         ${meo("<code>soKeo</code> và <code>sokeo</code> là <strong>hai tên khác nhau</strong> — gõ tên biến giống hệt lúc khai báo.")}
         ${docThem([["variables_identifiers", "Đặt tên biến"], ["variables_multiple", "Nhiều biến"], ["operators", "Phép toán"]])}
@@ -132,8 +156,24 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
           why: "Đúng! soKeo viết theo camelCase."
         },
         {
+          id: "s2-ops", type: "choice", icon: "🧮", bet: true, mono: true,
+          title: "Nhiệm vụ 2: Chia kẹo",
+          prompt: "Mình chia 23 cái kẹo cho 4 bạn. Bạn đọc code rồi đoán màn hình nhé. Chắc chắn thì bật <strong>⭐ Ngôi sao hi vọng</strong>!",
+          code: `int keo = 23;
+cout << keo / 4 << endl;
+cout << keo % 4;`,
+          options: [
+            { text: "5\n3" },
+            { text: "5.75\n3", why: "Hai số nguyên chia nhau thì bỏ phần lẻ: 23 / 4 = 5." },
+            { text: "5\n5", why: "% là chia lấy dư: 23 = 4 × 5 + 3 → dư 3." },
+            { text: "6\n1", why: "Chia lấy phần nguyên không làm tròn lên: 23 / 4 = 5." }
+          ],
+          answer: "5\n3",
+          why: "Chuẩn! Mỗi bạn 5 cái, còn dư 3 cái."
+        },
+        {
           id: "s2-code", type: "code", icon: "➕",
-          title: "Nhiệm vụ 2: Thưởng thêm điểm",
+          title: "Nhiệm vụ 3: Thưởng thêm điểm",
           prompt: "Bạn được thưởng 2 điểm! Bạn thêm một lệnh gán để biến <code>diem</code> tăng thêm 2, rồi in điểm mới ra nhé.",
           requirements: ["Giữ nguyên dòng int diem = 7;", "Thêm một lệnh gán lại để diem tăng thêm 2.", "In ra: Diem moi: 9 (cout in giá trị của biến diem, không viết trực tiếp 9)."],
           starter: prog("int diem = 7;", "// Cong them 2 diem o day", "", 'cout << "Diem moi: " << 9;'),
@@ -143,7 +183,7 @@ cout << "Diem moi: " << diem;`, "Diem moi: 9", "Cộng thêm 2 điểm")}
             { test: c => /<<\s*diem\b/.test(window.CPP.stripComments(c)), msg: "cout phải in biến diem, không viết thẳng số 9." }
           ],
           why: "Biến diem giờ có giá trị 9!",
-          hints: ["diem = diem + 2; nghĩa là lấy 7 cộng 2 rồi cất lại.", "Rồi đổi số 9 trong cout thành tên biến diem."]
+          hints: ["diem = diem + 2; (hoặc viết gọn diem += 2;) nghĩa là lấy 7 cộng 2 rồi gán lại cho diem.", "Rồi đổi số 9 trong cout thành tên biến diem."]
         }
       ]
     },

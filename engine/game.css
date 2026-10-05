@@ -296,3 +296,12 @@ pre.sb, pre.sb-fallback { margin: 0; padding: 6px 10px; border-radius: 8px; back
 .tb-table tr.sai td:nth-child(2) { color: #a3333d; font-weight: 800; white-space: nowrap; }
 @media (max-width: 760px) { .cp-body { grid-template-columns: 1fr; } }
 .cp-mau, .cp-code, .cp-man { -webkit-user-select: none; user-select: none; }
+
+/* ----- Tìm hiểu thêm (không bắt buộc) ----- */
+.mo-rong { margin: 18px 0; border: 2px dashed #7dc6ab; border-radius: 16px; background: #f2fbf7; }
+.mo-rong summary { cursor: pointer; list-style: none; padding: 12px 16px; line-height: 1.55; }
+.mo-rong summary::-webkit-details-marker { display: none; }
+.mo-rong-btn { margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: var(--green); color: #fff; font-size: .78rem; font-weight: 800; }
+.mo-rong[open] .mo-rong-btn { background: #94a3b8; }
+.mo-rong[open] .mo-rong-btn::after { content: " ▲"; }
+.mo-rong-body { padding: 0 16px 14px; }

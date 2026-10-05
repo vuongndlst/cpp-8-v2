@@ -3,7 +3,7 @@
    Mã mở khoá: chỉ ghi trong README của bài (thư mục giáo viên) — KHÔNG ghi trong web công khai.
 */
 "use strict";
-const { giaiMa, codeVaManHinh, doan, meo, docThem, khongCo, cuPhap } = window.KIT;
+const { giaiMa, codeVaManHinh, doan, meo, docThem, khongCo, cuPhap, moRong } = window.KIT;
 const H = "#include <iostream>\nusing namespace std;\n\nint main() {\n";
 const E = "    return 0;\n}";
 const prog = (...dong) => H + dong.map(d => "    " + d).join("\n") + "\n" + E;
@@ -267,6 +267,27 @@ if (so >= 10) {
             <div><span>3</span><strong>Ca biên</strong><small>đúng bằng mốc: 5</small></div>
           </div></div>
         ${meo("Mốc “từ 5 trở lên” → thử <strong>5</strong> và <strong>4</strong>. Nếu nhầm <code>&gt;</code> với <code>&gt;=</code>, chỉ ca 5 mới bắt được bọ.")}
+        ${moRong("toán tử logic && || ! — ghép nhiều điều kiện", `
+          <p>Muốn kiểm tra <strong>hai điều kiện cùng lúc</strong>, ví dụ “từ 12 đến 15 tuổi”? C++ có <strong>toán tử logic</strong>.
+          Phần này để bạn nào thích thì tìm hiểu thêm — không bắt buộc, không có trong bài kiểm tra.</p>
+          ${giaiMa("🔗 TOÁN TỬ LOGIC", [
+            { code: "a && b", y: "<strong>VÀ</strong>: đúng khi <strong>cả hai</strong> điều kiện đều đúng.", sb: "<<(t) > (11)> and <(t) < (16)>>" },
+            { code: "a || b", y: "<strong>HOẶC</strong>: đúng khi <strong>ít nhất một</strong> điều kiện đúng.", sb: "<<(t) < (6)> or <(t) > (60)>>" },
+            { code: "!a", y: "<strong>KHÔNG</strong>: đảo ngược — đúng thành sai, sai thành đúng.", sb: "<not <(t) > (12)>>" }
+          ])}
+          ${codeVaManHinh(`int tuoi;
+cout << "Nhap tuoi: ";
+cin >> tuoi;
+if (tuoi >= 12 && tuoi <= 15) {
+    cout << "Lua tuoi THCS";
+} else {
+    cout << "Khong phai THCS";
+}`, "Nhap tuoi: 14\nLua tuoi THCS", "Ghép hai điều kiện bằng &&", "14")}
+          ${cuPhap({ ten: "TOÁN TỬ LOGIC",
+            mau: ["if (‹điều kiện 1› && ‹điều kiện 2›)", "if (‹điều kiện 1› || ‹điều kiện 2›)", "if (!(‹điều kiện›))"],
+            quyTac: ["<code>&&</code> và <code>||</code> viết hai dấu liền nhau",
+                     "Mỗi vế phải là một điều kiện đầy đủ: viết <code>tuoi >= 12 && tuoi <= 15</code>, không viết <code>12 <= tuoi <= 15</code>"] })}
+          ${docThem([["operators_logical", "Toán tử logic"]], "📚 Đọc thêm trên W3Schools")}`)}
         ${docThem([["conditions_else", "if-else"]])}
       `,
       challenges: [
@@ -324,6 +345,23 @@ if (so >= 10) {
           ],
           why: "Ca bằng nhau cũng đúng — tuyệt!",
           hints: ["if (a >= b) in a, else in b."]
+        },
+        {
+          id: "g2-logic", type: "code", icon: "🚀", bonus: true,
+          title: "Nhiệm vụ phụ (tìm hiểu thêm): Vé tham quan",
+          prompt: "Dành cho bạn đã đọc phần <strong>toán tử logic</strong> ở Chặng 4: trẻ em dưới 6 tuổi <strong>hoặc</strong> người từ 60 tuổi trở lên được miễn phí, còn lại mua vé. Không bắt buộc nhé!",
+          requirements: ["Câu dẫn (gõ đúng từng chữ): Nhap tuoi: ", "Dưới 6 hoặc từ 60 trở lên: in Mien phi · còn lại: in Mua ve",
+                         "Chỉ dùng MỘT lệnh if-else, ghép điều kiện bằng ||."],
+          starter: prog("int tuoi;", 'cout << "Nhap tuoi: ";', "cin >> tuoi;", "// Mot lenh if-else dung ||"),
+          tests: [
+            { input: "5", expected: "Nhap tuoi: 5\nMien phi" },
+            { input: "6", expected: "Nhap tuoi: 6\nMua ve" },
+            { input: "59", expected: "Nhap tuoi: 59\nMua ve" },
+            { input: "60", expected: "Nhap tuoi: 60\nMien phi" }
+          ],
+          rules: [{ test: c => /\|\|/.test(window.CPP.stripComments(c)), msg: "Hãy thử ghép hai điều kiện bằng || trong một lệnh if." }],
+          why: "Bạn đã dùng được toán tử logic — giỏi quá!",
+          hints: ["if (tuoi < 6 || tuoi >= 60) { ... } else { ... }"]
         }
       ]
     },

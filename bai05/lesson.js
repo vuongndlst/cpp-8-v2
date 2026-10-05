@@ -88,7 +88,8 @@ cout << 5 << " bai";`,
         ${cuPhap({ ten: "CẦN NHỚ TỪ BÀI 2",
           mau: ["int ‹tên biến› = ‹giá trị›;", "‹tên biến› = ‹biểu thức›;", "cin >> ‹tên biến›;"],
           quyTac: ["Tên biến: chữ cái tiếng Anh, chữ số, dấu <code>_</code>; không bắt đầu bằng số; không dấu cách, không dấu tiếng Việt; không trùng từ khoá",
-                   "Khai báo biến trước khi gán, nhập hay in"] })}
+                   "Khai báo biến trước khi gán, nhập hay in",
+                   "Toán tử: <code>+ - * / %</code> — <code>7 / 2</code> là 3 (bỏ phần lẻ), <code>7 % 2</code> là 1 (số dư); <code>a += 2</code> là <code>a = a + 2</code>"] })}
         ${giaiMa("📒 TÓM TẮT BÀI 2", [
           { code: "int soKeo = 5;", y: "Khai báo + gán. Tên camelCase, không dấu cách, không bắt đầu bằng số.", sb: "set [soKeo v] to (5)" },
           { code: "soKeo = soKeo + 2;", y: "Gán lại: giá trị cũ cộng 2.", sb: "change [soKeo v] by (2)" },

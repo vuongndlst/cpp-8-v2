@@ -73,6 +73,9 @@
               .map(([t, ok, ly]) => `<tr class="${ok ? "ok" : "sai"}"><td><code>${esc(t)}</code></td><td>${ok ? "✅ Đúng" : "❌ Sai"}</td><td>${ly}</td></tr>`).join("")}
           </table></div>
       </div></div>`,
+    // Phần "Tìm hiểu thêm" (không bắt buộc, không kiểm tra) — thu gọn, bấm mới mở
+    moRong: (tieuDe, html) => `<details class="mo-rong"><summary>🚀 <strong>Tìm hiểu thêm (không bắt buộc):</strong> ${tieuDe}
+      <span class="mo-rong-btn">Mở ra</span></summary><div class="mo-rong-body">${html}</div></details>`,
     // Ô "Đoán trước" — bấm mới hiện đáp án
     doan: (cauHoi, dapAn) => `<details class="guess"><summary>🧠 <strong>Đoán trước:</strong> ${cauHoi} <span class="guess-btn">Xem đáp án</span></summary><div>${dapAn}</div></details>`,
     meo: html => `<div class="tip-strip">✨ ${html}</div>`,
