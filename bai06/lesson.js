@@ -184,7 +184,7 @@ int main() {
     {
       kind: "gate", id: "gate-1", nav: "Điểm dừng 1",
       kicker: "ĐIỂM DỪNG 1 · SAU CHẶNG 1–2",
-      codeHash: "52C511CB",
+      codeHash: "E9F57F03",
       todo: [
         "Thầy hỏi: <strong>hàm là gì? Tham số dùng để làm gì?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 1</strong> trên slide vào vở.",
@@ -391,7 +391,7 @@ int main() {
     {
       kind: "gate", id: "gate-2", nav: "Điểm dừng 2",
       kicker: "ĐIỂM DỪNG 2 · SAU CHẶNG 3–4",
-      codeHash: "F361E456",
+      codeHash: "8855F913",
       todo: [
         "Thầy hỏi: <strong>hàm void khác hàm int ở đâu? setup() và loop() chạy mấy lần?</strong> Bạn nói trước, thầy chốt sau.",
         "Chép phần <strong>Ghi bài 2</strong> trên slide vào vở.",
