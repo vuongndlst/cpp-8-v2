@@ -24,7 +24,7 @@
     .lesson-card.soon { opacity: .55; cursor: not-allowed; }
     .collection { margin-top: 16px; font-weight: 800; }
   </style>
-</head>
+<link rel="stylesheet" href="engine/school.css?v=e505b99642bb"></head>
 <body>
   <header class="topbar">
     <div class="brand"><div class="brand-badge">C++</div>
@@ -40,7 +40,7 @@
         <rect x="18" y="56" width="28" height="12" rx="5" fill="#2076d2" stroke="#17304f" stroke-width="3"/></svg>
       <div>
         <h2>Cùng robot Bit học C++</h2>
-        <p>Mỗi bài có 4 chặng, 2 điểm dừng và một BOSS. Hạ BOSS để nhận chứng chỉ và huy hiệu. Sưu tầm đủ 5 huy hiệu nhé!</p>
+        <p>Mỗi bài có 4 chặng, 2 điểm dừng và một BOSS. Hạ BOSS để nhận chứng chỉ và huy hiệu. Sưu tầm đủ 6 huy hiệu nhé!</p>
         <div class="collection" id="collection"></div>
       </div>
     </section>
@@ -56,11 +56,7 @@
       { id: "bai06", n: 6, title: "Hàm cơ bản (mở rộng)", story: "Xưởng mạch Arduino", icon: "🔌", ready: true }
     ];
     function hashText(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).toUpperCase().padStart(8, "0"); }
-    let badges = {}, who = null;
-    try {
-      who = JSON.parse(localStorage.getItem("cpp8v2:lastStudent") || "null");
-      if (who) badges = JSON.parse(localStorage.getItem("cpp8v2:badges:" + hashText(`${who.name}|${who.className}`.toLowerCase())) || "{}");
-    } catch { /* trình duyệt chặn lưu trữ */ }
+    let badges={},who=null;
     document.getElementById("cards").innerHTML = LESSONS.map(l => {
       const medal = badges[l.id] || "";
       const inner = `<span class="medal ${medal}">${medal ? l.icon : "?"}</span>
@@ -68,7 +64,7 @@
       return l.ready ? `<a class="lesson-card" href="${l.id}/">${inner}</a>` : `<div class="lesson-card soon">${inner}</div>`;
     }).join("");
     const got = Object.keys(badges).length;
-    document.getElementById("collection").textContent = who ? `🏅 ${who.name} · ${who.className}: ${got}/5 huy hiệu` : "";
+    document.getElementById("collection").textContent = who ? `🏅 ${who.name} · ${who.className}: ${got}/6 huy hiệu` : "";
   </script>
-</body>
+<script src="engine/supabase.js?v=d6a5c4414a5d"></script><script src="config.js?v=4671dbc8bbd5"></script><script src="engine/cloud.js?v=b0e796a9d28a"></script><script src="engine/account.js?v=0a2dd8d737a2"></script></body>
 </html>

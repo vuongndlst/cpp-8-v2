@@ -1,3 +1,4 @@
+(()=>{
 /* C++ Journey 8 — V2 engine (dùng chung cho Bài 1–5)
    - Nội dung từng bài: window.LESSON (bai0N/lesson.js), khối nội dung dùng chung: engine/kit.js
    - Học sinh: localStorage, mỗi bài một khoá riêng
@@ -19,7 +20,7 @@ const STEPS = L.steps;
 // Nhiệm vụ bắt buộc: không tính nhiệm vụ nâng cao (BOSS) và nhiệm vụ phụ (ở điểm dừng).
 const REQUIRED = STEPS.flatMap(s => (s.challenges || []).filter(c => !c.advanced && !c.bonus).map(c => c.id));
 
-let state = null;
+let state = null, cppBusy=false;
 
 /* ---------- tiện ích ---------- */
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -57,27 +58,23 @@ function freshState(student) {
   return { student, active: STEPS[0].id, passed: {}, attempts: {}, drafts: {}, inputs: {}, gates: {},
     xp: 0, combo: 0, stars: {}, startedAt: new Date().toISOString(), completedAt: null };
 }
-function storageKey() { return `${PREFIX}:${L.id}:${studentKey(state.student)}`; }
 function save() {
-  if (!state) return;
-  safeSet(storageKey(), JSON.stringify(state));
-  safeSet(`${PREFIX}:lastStudent`, JSON.stringify(state.student));
+ if(!state||!CppCloud.allowed())return;
+ state.student=CPPAccount.student();state.completed=allRequiredDone();
+ if(state.completed)state.badge=isGold()?"gold":"silver";
+ CppCloud.save(L.id,state);
 }
-function load(student) {
-  state = freshState(student);
-  const raw = safeGet(storageKey());
-  if (raw) { try { state = { ...state, ...JSON.parse(raw), student }; } catch { /* dữ liệu hỏng: làm lại */ } }
-  save();
-}
+function load(student){state={...freshState(student),...CppCloud.state(L.id),student};for(const f of ["passed","attempts","drafts","inputs","gates","stars","waitingChoice"])if(!state[f]||typeof state[f]!=="object"||Array.isArray(state[f]))state[f]={};}
+function selfStudy(){return state?.navigationMode==="self-study";}
 
 /* ---------- tiến độ ---------- */
 function stepDone(step) {
   if (step.kind === "gate") return Boolean(state.gates[step.id]);
-  return step.challenges.filter(c => !c.advanced).every(c => state.passed[c.id]);
+  return step.challenges.filter(c => !c.advanced && !c.bonus).every(c => state.passed[c.id]);
 }
-function stepUnlocked(index) { return STEPS.slice(0, index).every(stepDone); }
+function stepUnlocked(index) { return selfStudy() || STEPS.slice(0,index).every(stepDone); }
 function bossStep() { return STEPS.find(s => s.kind === "boss"); }
-function allRequiredDone() { return REQUIRED.every(id => state.passed[id]) && STEPS.every(stepDone); }
+function allRequiredDone() { return REQUIRED.every(id => state.passed[id]) && STEPS.filter(s=>s.kind!=="gate").every(stepDone); }
 function isGold() {
   return allRequiredDone() && bossStep().challenges.filter(c => c.advanced).every(c => state.passed[c.id]);
 }
@@ -106,21 +103,10 @@ function functionOrderError(code) {
   return null;
 }
 
-function runCpp(code, input = "") {
-  if (!window.JSCPP) return { ok: false, output: "", error: "Không tải được trình chạy C++. Tải lại trang (F5)." };
-  const orderErr = functionOrderError(code);
-  if (orderErr) return { ok: false, output: "", error: orderErr };
-  let output = "";
-  try {
-    // echo: số đọc bằng cin được in lại kèm xuống dòng, giống màn hình Programiz (JSCPP đã vá, xem _Web/README.md)
-    const exitCode = window.JSCPP.run(code, input, {
-      stdio: { write: s => { output += s; }, echo: tok => { output += tok + "\n"; } }, maxTimeout: 2000 });
-    return { ok: true, output, exitCode };
-  } catch (e) {
-    return { ok: false, output, error: friendlyError(String(e && e.message ? e.message : e), code) };
-  }
+async function runCpp(code,input="") {
+ const orderErr=functionOrderError(code);if(orderErr)return {ok:false,output:"",error:orderErr};
+ const r=await CppRun.run(code,input);if(!r.ok)r.error=/Output limit/.test(r.error)?"In quá nhiều dữ liệu. Giảm số lần lặp hoặc số dòng in.":friendlyError(r.error,code);return r;
 }
-
 // Dịch thông báo lỗi của JSCPP sang lời dễ hiểu cho học sinh lớp 8.
 function friendlyError(msg, code) {
   const lineMatch = msg.match(/line (\d+)/) || msg.match(/^(\d+):(\d+)/);
@@ -256,14 +242,14 @@ function shell() {
       <button id="errorsBtn" class="top-btn" type="button" title="Bảng lỗi thường gặp">🧰 Bảng lỗi</button>
       <button id="soundBtn" class="top-btn" type="button" title="Bật/tắt âm thanh"></button>
       <button id="studentBtn" class="student-chip" type="button"><span>👤</span><span id="studentText">Chưa có tên</span></button>
-      <button id="newStudentBtn" class="new-student-button" type="button">🧹 Học sinh mới</button>
+      <button id="newStudentBtn" class="new-student-button" type="button">Tài khoản</button>
     </div>
   </header>
   <nav class="journey-map" id="journeyMap" aria-label="Bản đồ hành trình"></nav>
   <main class="main-wrap"><div id="stepContainer"></div></main>
   <footer class="site-footer">
     <p>C++ Journey 8 · Bài ${L.number} · Khối Scratch vẽ bằng scratchblocks (MIT).</p>
-    <button id="resetBtn" class="text-button danger-link" type="button">Xoá toàn bộ dữ liệu & làm từ đầu</button>
+    <button id="resetBtn" class="text-button danger-link" type="button">Tài khoản / tải bản sao bài làm</button>
   </footer>
   <div class="bit-dock" id="bitDock">
     <div class="bit-bubble-dock hidden" id="bitBubble" role="status" aria-live="polite">
@@ -272,21 +258,6 @@ function shell() {
     </div>
     <button class="bit-face" id="bitFace" type="button" title="Bit — bấm để nghe lại">${bitSvg()}</button>
   </div>
-  <dialog id="identityDialog" class="modal">
-    <form id="identityForm" method="dialog" class="modal-card">
-      <div class="sticker">START</div>
-      <p class="eyebrow">BÀI ${L.number} · ${esc(L.title)}</p>
-      <h2>Bạn là ai? 👋</h2>
-      <p>Nhập đúng họ tên và lớp. Nếu bạn đã học trên máy này, mình sẽ mở lại tiến độ của bạn.</p>
-      <label class="field"><span>Họ và tên</span>
-        <input id="nameInput" type="text" autocomplete="name" minlength="2" maxlength="60" placeholder="Ví dụ: Nguyễn Minh Anh" required /></label>
-      <label class="field"><span>Lớp</span>
-        <select id="classInput" required><option value="" selected disabled>Chọn lớp</option>
-        ${CLASSES.map(c => `<option>${c}</option>`).join("")}</select></label>
-      <div class="privacy-note">Dùng chung máy? Học xong, bấm <strong>Học sinh mới</strong> để người học sau không thấy bài của bạn.</div>
-      <button class="primary-button wide" type="submit">Vào hành trình →</button>
-    </form>
-  </dialog>
   <dialog id="errorsDialog" class="modal errors-modal">
     <div class="modal-card">
       <button class="icon-button close-button" type="button" data-close>×</button>
@@ -327,12 +298,12 @@ function shell() {
 /* ---------- bản đồ ---------- */
 function stepProgress(step) {
   if (step.kind === "gate") return "";
-  const req = step.challenges.filter(c => !c.advanced);
+  const req = step.challenges.filter(c => !c.advanced && !c.bonus);
   return `${req.filter(c => state.passed[c.id]).length}/${req.length}`;
 }
 function renderMap() {
   const map = $("#journeyMap");
-  map.innerHTML = `<div class="map-track">${STEPS.map((step, i) => {
+  map.innerHTML = `<div class="study-mode"><button id="studyMode" class="secondary-button">${selfStudy()?"Học theo lớp":"Tự học / học bù"}</button><span>Học bù mở điều hướng; nhiệm vụ vẫn cần hoàn thành thật.</span></div><div class="map-track">${STEPS.map((step, i) => {
     const unlocked = stepUnlocked(i), done = stepDone(step), active = state.active === step.id;
     const icon = step.kind === "gate" ? (done ? "🔓" : "⏸") : step.kind === "boss" ? "👾" : done ? "✓" : step.number;
     const cls = ["map-node", step.kind, done ? "done" : "", active ? "active" : "", unlocked ? "" : "locked"].join(" ");
@@ -343,6 +314,7 @@ function renderMap() {
         <span class="node-label">${esc(step.nav)}</span>
       </button>`;
   }).join("")}</div>`;
+  $("#studyMode").onclick=()=>{state.navigationMode=selfStudy()?"guided":"self-study";save();renderAll(true)};
   $$(".map-node", map).forEach(btn => btn.addEventListener("click", () => go(btn.dataset.step)));
   const act = $(".map-node.active", map);
   if (act) map.scrollLeft = act.offsetLeft - (map.clientWidth - act.offsetWidth) / 2;
@@ -405,7 +377,7 @@ function renderStage(step) {
   const isBoss = step.kind === "boss";
   const idx = STEPS.indexOf(step);
   const next = STEPS[idx + 1];
-  const required = step.challenges.filter(c => !c.advanced);
+  const required = step.challenges.filter(c => !c.advanced && !c.bonus);
   const advanced = step.challenges.filter(c => c.advanced);
   $("#stepContainer").innerHTML = `
   <article class="stage-page ${isBoss ? "boss-stage" : ""}">
@@ -433,6 +405,7 @@ function renderStage(step) {
       </div>
     </div>
   </article>`;
+  const media=document.createElement("div");$("#stepContainer .challenge-section").before(media);CPPMedia.mount(media,L.media,step.id);
   step.challenges.forEach(bindChallenge);
   $("#nextBtn")?.addEventListener("click", () => { if (stepDone(step)) go(next.id); });
   $("#certBtn")?.addEventListener("click", openCertificate);
@@ -444,7 +417,7 @@ function nextLabel(next) {
 }
 
 function bossBar(step) {
-  const req = step.challenges.filter(c => !c.advanced);
+  const req = step.challenges.filter(c => !c.advanced && !c.bonus);
   const hit = req.filter(c => state.passed[c.id]).length;
   const hp = Math.round(100 * (1 - hit / req.length));
   return `<div class="boss-hp"><span class="boss-face">👾</span>
@@ -456,8 +429,8 @@ function refreshFooter(step) {
   const note = $("#stageNote");
   const done = stepDone(step);
   const next = $("#nextBtn");
-  if (next) next.disabled = !done;
-  const req = step.challenges.filter(c => !c.advanced);
+  if (next) next.disabled = !done && !selfStudy();
+  const req = step.challenges.filter(c => !c.advanced && !c.bonus);
   const cnt = $(".section-count");
   if (cnt) cnt.textContent = `${req.filter(c => state.passed[c.id]).length}/${req.length} xong`;
   if (step.kind === "boss") {
@@ -488,9 +461,9 @@ function renderGate(step) {
       </div>
     </div>
     <div class="lesson-body">
-      <ol class="gate-steps">${step.todo.map((t, i) => `<li><span>${i + 1}</span><div>${t}</div></li>`).join("")}</ol>
+      <ol class="gate-steps">${(selfStudy()?["Tự tóm tắt kiến thức vừa học bằng lời của bạn.","Chạy lại ví dụ và đối chiếu kết quả; nếu cần, chọn một bài trong xưởng thử thách.","Ghi câu hỏi chưa hiểu để hỏi giáo viên trong buổi kế tiếp.","Tiếp tục học mà không cần mã đồng bộ; nhiệm vụ chính vẫn phải hoàn thành thật."]:step.todo).map((t, i) => `<li><span>${i + 1}</span><div>${t}</div></li>`).join("")}</ol>
       <div class="unlock-box">
-        ${done
+        ${done || selfStudy()
           ? `<button id="gateNext" class="primary-button big" type="button">${nextLabel(next)}</button>`
           : `<label for="gateCode"><strong>🔑 Mã mở khoá</strong> <span class="muted">(thầy hiện trên slide sau phần luyện tập)</span></label>
              <div class="unlock-row"><input id="gateCode" type="text" autocomplete="off" placeholder="Nhập mã…" maxlength="20" />
@@ -500,11 +473,12 @@ function renderGate(step) {
       ${step.challenges && step.challenges.length ? `
       <section class="challenge-section bonus-section">
         <h3 class="section-heading"><span class="doodle">🎁</span>Trong lúc chờ: nhiệm vụ phụ (không bắt buộc, +XP)</h3>
-        <div class="challenge-list">${step.challenges.map(renderChallenge).join("")}</div>
+        <div class="challenge-list">${step.challenges.filter(c=>!c.waitingBank).map(renderChallenge).join("")}</div>
       </section>` : ""}
     </div>
   </article>`;
-  step.challenges?.forEach(bindChallenge);
+  step.challenges?.filter(c=>!c.waitingBank).forEach(bindChallenge);
+  mountWaitingBank(step);
   $("#gateNext")?.addEventListener("click", () => go(next.id));
   const tryCode = () => {
     if (codeHash($("#gateCode").value) === step.codeHash) {
@@ -523,9 +497,17 @@ function renderGate(step) {
 }
 
 /* ---------- nhiệm vụ ---------- */
+
+function mountWaitingBank(step){
+ const tasks=(step.challenges||[]).filter(c=>c.waitingBank);if(!tasks.length)return;
+ const area=document.createElement("section");area.className="waiting-bank";area.innerHTML=`<h3>🚀 Xưởng thử thách trong lúc chờ</h3><p>Ưu tiên nhiệm vụ chính. Khi đã làm xong, chọn một bài phù hợp; không cần hoàn thành cả ngân hàng. Khi thầy chốt kiến thức, hãy dừng và nghe hướng dẫn.</p><label class="field">Chọn thử thách<select id="waiting-task">${tasks.map(c=>`<option value="${esc(c.id)}">${esc(c.tier)} · ${c.minutes} phút · ${esc(c.title)}${state.passed[c.id]?" ✓":""}</option>`).join("")}</select></label><div id="waiting-card"></div>`;$("#stepContainer article").append(area);
+ const select=area.querySelector('select'),holder=area.querySelector('#waiting-card');select.value=tasks.some(c=>c.id===state.waitingChoice[step.id])?state.waitingChoice[step.id]:tasks[0].id;
+ const show=()=>{state.waitingChoice[step.id]=select.value;save();const c=tasks.find(c=>c.id===select.value);holder.innerHTML=renderChallenge(c);bindChallenge(c)};select.onchange=show;show();
+}
+
 function renderChallenge(c) {
   const passed = Boolean(state.passed[c.id]);
-  const tag = c.bonus ? "+XP" : c.advanced ? "🥇 NÂNG CAO" : "1 SAO";
+  const tag = c.waitingBank ? "🚀 "+c.tier : c.bonus ? "+XP" : c.advanced ? "🥇 NÂNG CAO" : "1 SAO";
   let body = "", actions = "";
 
   if (c.type === "choice") {
@@ -749,15 +731,20 @@ function bindChallenge(c) {
       ed.value = c.starter; state.drafts[c.id] = c.starter; save(); sync();
       out.textContent = "Đã trả về code ban đầu."; out.classList.remove("error");
     });
-    $('[data-act="run"]', card).addEventListener("click", () => {
-      showRun(out, runCpp(ed.value, stdin ? stdin.value : ""));
+    $('[data-act="run"]', card).addEventListener("click", async () => {
+      if(cppBusy||!CppCloud.allowed())return;cppBusy=true;const buttons=[...card.querySelectorAll("button")];buttons.forEach(b=>b.disabled=true);
+      try{const r=await runCpp(ed.value,stdin?stdin.value:"");if(state&&CppCloud.allowed()&&card.isConnected)showRun(out,r)}finally{cppBusy=false;buttons.forEach(b=>b.disabled=false)}
     });
-    $('[data-act="check"]', card).addEventListener("click", ev => {
+    $(' [data-act="check"]'.trim(), card).addEventListener("click", async ev => {
+      if(cppBusy||!CppCloud.allowed())return;cppBusy=true;const buttons=[...card.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);
+      try {
       attempt(c.id);
-      const v = checkCode(c, ed.value, stdin ? stdin.value : "");
+      const v = await checkCode(c, ed.value, stdin ? stdin.value : "");
+      if(!state||!CppCloud.allowed()||!card.isConnected)return;
       if (v.input != null && stdin) stdin.value = v.input;
       showRun(out, v.run);
-      if (v.ok) pass(c, card, v.msg, ev.currentTarget); else miss(card, v.msg);
+      if (v.ok) pass(c, card, v.msg, card.querySelector('[data-act="check"]')); else miss(card, v.msg);
+      }finally{cppBusy=false;buttons.forEach(b=>b.disabled=false)}
     });
   }
 }
@@ -817,11 +804,11 @@ function firstDiff(actual, expected) {
   return "";
 }
 
-function checkCode(c, code, currentInput) {
+async function checkCode(c, code, currentInput) {
   const tests = c.tests || [{ input: currentInput, expected: c.expected }];
   let lastRun = null;
   for (const [n, t] of tests.entries()) {
-    const r = runCpp(code, t.input || "");
+    const r = await runCpp(code, t.input || "");
     lastRun = r;
     if (!r.ok) return { ok: false, run: r, input: t.input, msg: "Code chưa chạy được. Bạn đọc dòng ⚠ LỖI trong ô MÀN HÌNH rồi sửa nhé (bí quá thì mở 🧰 Bảng lỗi)." };
     if (t.expected != null) {
@@ -850,6 +837,7 @@ function nextOpenCard(card) {
 }
 
 function pass(c, card, msg, btn, starNow = false) {
+  if(!state||!CppCloud.allowed())return;
   const first = !state.passed[c.id];
   let extra = "";
   if (first) {
@@ -906,15 +894,11 @@ function miss(card, msg) {
 /* ---------- huy hiệu & chứng chỉ ---------- */
 function saveBadge() {
   if (!allRequiredDone()) return;
-  const key = `${PREFIX}:badges:${studentKey(state.student)}`;
-  let badges = {};
-  try { badges = JSON.parse(safeGet(key) || "{}"); } catch { /* bỏ qua */ }
-  badges[L.id] = isGold() ? "gold" : "silver";
-  safeSet(key, JSON.stringify(badges));
+  state.badge=isGold()?"gold":"silver";
 }
 
 function certId() {
-  return `CPP8-B${String(L.number).padStart(2, "0")}-${state.student.className}-${hashText(`${state.student.name}|${state.student.className}|${L.id}|${state.completedAt}`)}`;
+  return `CPP8-B${String(L.number).padStart(2, "0")}-${state.student.className}-${hashText(`${state.student.userId}|${L.id}|${state.completedAt}`)}`;
 }
 
 function openCertificate() {
@@ -944,7 +928,7 @@ function drawCertificate() {
   ctx.font = "64px Segoe UI Emoji, Apple Color Emoji, sans-serif"; ctx.fillText(L.badge.icon, W - 210, 213);
   ctx.font = "800 20px Segoe UI, Arial"; ctx.fillStyle = gold ? "#7d5600" : "#4f5d70";
   ctx.fillText(gold ? "HUY HIỆU VÀNG" : "HUY HIỆU BẠC", W - 210, 292);
-  ctx.fillStyle = "#17304f"; ctx.font = "900 30px Segoe UI, Arial"; ctx.fillText("CHỨNG CHỈ HOÀN THÀNH", W / 2, 165);
+  ctx.fillStyle = "#17304f"; ctx.font = "900 30px Segoe UI, Arial"; ctx.fillText("CHỨNG NHẬN HOÀN THÀNH TỰ HỌC", W / 2, 165);
   ctx.fillStyle = "#2076d2"; fit(ctx, `BÀI ${L.number}: ${L.title.toUpperCase()}`, W / 2, 235, 980, 54, 34, "#2076d2");
   ctx.fillStyle = "#61708a"; ctx.font = "500 26px Segoe UI, Arial"; ctx.fillText(`C++ Journey 8 · ${L.story}`, W / 2, 285);
   ctx.fillStyle = "#17304f"; ctx.font = "500 25px Segoe UI, Arial"; ctx.fillText("Chứng nhận học sinh", W / 2, 385);
@@ -1009,36 +993,12 @@ function printPdf() {
 }
 
 /* ---------- khởi động ---------- */
-function clearAll() {
-  if (!confirm("Xoá toàn bộ bài làm C++ Journey 8 trên trình duyệt này (tất cả học sinh, tất cả bài)?")) return;
-  try {
-    const keys = [];
-    for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(PREFIX)) keys.push(k); }
-    keys.forEach(k => localStorage.removeItem(k));
-  } catch { /* bỏ qua */ }
-  location.reload();
-}
-
-function askIdentity() {
-  $("#nameInput").value = ""; $("#classInput").value = "";
-  $("#identityDialog").showModal();
-}
-
 function boot() {
   shell();
-  $("#identityForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const name = $("#nameInput").value.trim().replace(/\s+/g, " ");
-    const className = $("#classInput").value;
-    if (name.length < 2 || !CLASSES.includes(className)) return;
-    load({ name, className });
-    $("#identityDialog").close();
-    renderAll(true);
-  });
-  $("#identityDialog").addEventListener("cancel", e => e.preventDefault());
-  $("#studentBtn").addEventListener("click", askIdentity);
-  $("#newStudentBtn").addEventListener("click", clearAll);
-  $("#resetBtn").addEventListener("click", clearAll);
+  load(CPPAccount.student());
+  $("#studentBtn").addEventListener("click",CPPAccount.profile);
+  $("#newStudentBtn").addEventListener("click",CPPAccount.profile);
+  $("#resetBtn").addEventListener("click",CPPAccount.profile);
   $("#errorsBtn").addEventListener("click", () => $("#errorsDialog").showModal());
   $("#soundBtn").addEventListener("click", () => { safeSet(`${PREFIX}:sound`, soundOn() ? "off" : "on"); $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇"; });
   $$("[data-close]").forEach(b => b.addEventListener("click", () => b.closest("dialog").close()));
@@ -1051,7 +1011,10 @@ function boot() {
   });
   $("#soundBtn").textContent = soundOn() ? "🔊" : "🔇";
   guardCopy();
-  askIdentity();
+  renderAll(true);CPPAccount.controls();
 }
 
-boot();
+window.CPP_ENGINE={remoteState(){if(!CppCloud.allowed())return;load(CPPAccount.student());renderAll(true)},profileChanged(){if(!state||!CppCloud.allowed())return;state.student=CPPAccount.student();updateTop()},dispose(){CppRun.stop();clearTimeout(bitTimer);state=null}};
+if(CppCloud.allowed())boot();
+
+})();
