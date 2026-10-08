@@ -72,7 +72,7 @@ function stepDone(step) {
   if (step.kind === "gate") return Boolean(state.gates[step.id]);
   return step.challenges.filter(c => !c.advanced && !c.bonus).every(c => state.passed[c.id]);
 }
-function stepUnlocked(index) { return selfStudy() || STEPS.slice(0,index).every(stepDone); }
+function stepUnlocked(index) { return Boolean(state.completedAt) || STEPS.slice(0,index).every(stepDone); }
 function bossStep() { return STEPS.find(s => s.kind === "boss"); }
 function allRequiredDone() { return REQUIRED.every(id => state.passed[id]) && STEPS.filter(s=>s.kind!=="gate").every(stepDone); }
 function isGold() {
@@ -408,7 +408,7 @@ function renderStage(step) {
   </article>`;
   const media=document.createElement("div");$("#stepContainer .challenge-section").before(media);CPPMedia.mount(media,L.media,step.id);
   step.challenges.filter(c=>!c.waitingBank).forEach(bindChallenge);mountWaitingBank(step);
-  $("#nextBtn")?.addEventListener("click", () => { if (selfStudy() || stepDone(step)) go(next.id); });
+  $("#nextBtn")?.addEventListener("click", () => { if (stepDone(step)) go(next.id); });
   $("#certBtn")?.addEventListener("click", openCertificate);
   refreshFooter(step);
 }
@@ -430,7 +430,7 @@ function refreshFooter(step) {
   const note = $("#stageNote");
   const done = stepDone(step);
   const next = $("#nextBtn");
-  if (next) next.disabled = !done && !selfStudy();
+  if (next) next.disabled = !done;
   const req = step.challenges.filter(c => !c.advanced && !c.bonus);
   const cnt = $(".section-count");
   if (cnt) cnt.textContent = `${req.filter(c => state.passed[c.id]).length}/${req.length} xong`;
@@ -604,7 +604,7 @@ function codeBlock(code, input) {
 function stepOf(c) { return STEPS.find(s => (s.challenges || []).some(x => x.id === c.id)); }
 function starRow(c) {
   const used = state.stars[stepOf(c).id];
-  if (used && used !== c.id) return `<div class="star-row used">⭐ Chặng này bạn đã dùng Ngôi sao hi vọng rồi.</div>`;
+  if (used || state.attempts[c.id] || state.passed[c.id]) return `<div class="star-row used">⭐ Chặng này bạn đã dùng Ngôi sao hi vọng rồi.</div>`;
   return `<div class="star-row" data-star>
     <button type="button" class="star-toggle" aria-pressed="false"><span class="star-icon">☆</span> Chọn Ngôi sao hi vọng</button>
     <span class="star-rule">Đúng ngay lần này: <strong>XP ×2</strong> · Sai: <strong>−${STAR_LOSS} XP</strong> · Mỗi chặng chỉ <strong>1 ngôi sao</strong></span>
@@ -651,7 +651,7 @@ function bindChallenge(c) {
       const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
       const picked = opts[Number(sel.value)];
       const right = picked.text === c.answer;
-      const starNow = star && !state.passed[c.id];
+      const starNow = star && !state.passed[c.id] && !state.attempts[c.id] && !state.stars[stepOf(c).id];
       if (starNow) state.stars[stepOf(c).id] = c.id;
       star = false;
       $("[data-star]", card)?.remove();
