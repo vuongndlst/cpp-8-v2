@@ -223,6 +223,7 @@ function bitSay(html, mood = "happy", ms = 0) {
   $("#bitText").innerHTML = html;
   $("#bitFace").innerHTML = bitSvg(mood);
   bubble.className = `bit-bubble-dock ${mood}`;
+  if(sessionStorage.getItem('lsts-hints-open:'+PortalCloud.user.id)!=='1')bubble.classList.add('hidden');
   dock.classList.remove("jump"); void dock.offsetWidth; dock.classList.add("jump");
   clearTimeout(bitTimer);
   if (ms) bitTimer = setTimeout(() => bubble.classList.add("hidden"), ms);
@@ -380,7 +381,7 @@ function renderStage(step) {
   const required = step.challenges.filter(c => !c.advanced && !c.bonus);
   const advanced = step.challenges.filter(c => c.advanced);
   $("#stepContainer").innerHTML = `
-  <article class="stage-page ${isBoss ? "boss-stage" : ""}">
+  <article class="stage-page ${isBoss ? "boss-stage" : ""}" data-stage="${esc(step.id)}">
     <header class="stage-hero">
       <div class="stage-kicker">${esc(step.kicker)}</div>
       <h2>${esc(step.title)}</h2>
@@ -502,7 +503,10 @@ function mountWaitingBank(step){
  const tasks=(step.challenges||[]).filter(c=>c.waitingBank);if(!tasks.length)return;
  const area=document.createElement("section");area.className="waiting-bank";area.innerHTML=`<h3>🚀 Xưởng thử thách trong lúc chờ</h3><p>Ưu tiên nhiệm vụ chính. Khi đã làm xong, chọn một bài phù hợp; không cần hoàn thành cả ngân hàng. Khi thầy chốt kiến thức, hãy dừng và nghe hướng dẫn.</p><label class="field">Chọn thử thách<select id="waiting-task">${tasks.map(c=>`<option value="${esc(c.id)}">${esc(c.tier)} · ${c.minutes} phút · ${esc(c.title)}${state.passed[c.id]?" ✓":""}</option>`).join("")}</select></label><div id="waiting-card"></div>`;$("#stepContainer article").append(area);
  const select=area.querySelector('select'),holder=area.querySelector('#waiting-card');select.value=tasks.some(c=>c.id===state.waitingChoice[step.id])?state.waitingChoice[step.id]:tasks[0].id;
- const show=()=>{state.waitingChoice[step.id]=select.value;save();const c=tasks.find(c=>c.id===select.value);holder.innerHTML=renderChallenge(c);bindChallenge(c)};select.onchange=show;show();
+ const filter=document.createElement('label');filter.className='field';filter.innerHTML=`Lọc độ khó<select id="waiting-tier"><option value="">Tất cả mức</option>${[...new Set(tasks.map(c=>c.tier))].map(t=>`<option>${esc(t)}</option>`).join('')}</select>`;area.insertBefore(filter,select.closest('label'));
+ const skills=document.createElement('p');skills.textContent='Kĩ năng của bài: '+L.skills.join(' · ');area.insertBefore(skills,filter);
+ const show=()=>{state.waitingChoice[step.id]=select.value;save();const c=tasks.find(c=>c.id===select.value);if(c){holder.innerHTML=renderChallenge(c);bindChallenge(c)}};select.onchange=show;
+ filter.querySelector('select').onchange=e=>{const filtered=tasks.filter(c=>!e.target.value||c.tier===e.target.value),old=select.value;select.innerHTML=filtered.map(c=>`<option value="${esc(c.id)}">${esc(c.tier)} · ${c.minutes} phút · ${esc(c.title)}${state.passed[c.id]?" ✓":""}</option>`).join('');select.value=filtered.some(c=>c.id===old)?old:filtered[0].id;show()};show();
 }
 
 function renderChallenge(c) {

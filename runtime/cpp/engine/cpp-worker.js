@@ -4,9 +4,10 @@
 self.window=self;
 self.document={};
 importScripts('JSCPP.es5.min.js');
+importScripts('main-shim.js');
 self.onmessage=e=>{
- const {id,code,input}=e.data;let output='';
+ const {id,code,input,echo=true}=e.data;let output='';
  const append=s=>{if(output.length+s.length>32768)throw Error('Output limit exceeded');output+=s};
- try{const exitCode=JSCPP.run(code,input,{stdio:{write:append,echo:t=>append(t+'\n')},maxTimeout:2000});self.postMessage({id,result:{ok:true,output,exitCode}})}
+ try{const exitCode=JSCPP.run(cppMainWithImplicitReturn(code),input,{stdio:{write:append,echo:t=>{if(echo)append(t+'\n')}},maxTimeout:2000});self.postMessage({id,result:{ok:true,output,exitCode}})}
  catch(err){self.postMessage({id,result:{ok:false,output,error:String(err?.message||err)}})}
 };
