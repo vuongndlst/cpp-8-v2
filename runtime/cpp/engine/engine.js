@@ -64,7 +64,7 @@ function save() {
  if(state.completed)state.badge=isGold()?"gold":"silver";
  CppCloud.save(L.id,state);
 }
-function load(student){const remote={...CppCloud.state(L.id)},q=new URLSearchParams(location.search),steps=L.steps.filter(s=>s.kind!=='gate'&&(q.has('cuoi')||s.kind!=='boss')),index=q.has('cuoi')?steps.findIndex(s=>s.kind==='boss'):Number(q.get('chang'));if(q.has('chang')||q.has('cuoi'))remote.active=steps[index]?.id||steps[0].id;state={...freshState(student),...remote,student};for(const f of ["passed","attempts","drafts","inputs","gates","stars","waitingChoice"])if(!state[f]||typeof state[f]!=="object"||Array.isArray(state[f]))state[f]={};}
+function load(student){const remote={...CppCloud.state(L.id)},q=new URLSearchParams(location.search),steps=L.steps.filter(s=>s.kind!=='gate'&&(q.has('cuoi')||s.kind!=='boss')),index=q.has('cuoi')?steps.findIndex(s=>s.kind==='boss'):Number(q.get('chang'));if(q.has('chang')||q.has('cuoi'))remote.active=steps[index]?.id||steps[0].id;state={...freshState(student),...remote,student};const oldIndex=L.steps.findIndex(s=>s.id===state.active);if(oldIndex>=0&&L.steps[oldIndex].kind==='gate')state.active=L.steps.slice(oldIndex+1).find(s=>s.kind!=='gate')?.id||STEPS[0].id;for(const f of ["passed","attempts","drafts","inputs","gates","stars","waitingChoice"])if(!state[f]||typeof state[f]!=="object"||Array.isArray(state[f]))state[f]={};}
 function selfStudy(){return Boolean(window.PORTAL_SELF_STUDY);}
 
 /* ---------- tiến độ ---------- */
