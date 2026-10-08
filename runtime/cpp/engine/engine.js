@@ -16,7 +16,7 @@ const PREFIX = "cpp8v2";
 const CLASSES = ["8A1", "8A2", "8A3", "8A4", "8A5", "8A6", "8A7", "8A8", "8A9", "8A10"];
 const XP_PASS = 10, XP_FIRST_TRY = 5, STAR_LOSS = 10;
 
-const STEPS = L.steps;
+const STEPS = L.steps.filter(step=>step.kind!=='gate'||!selfStudy());
 // Nhiệm vụ bắt buộc: không tính nhiệm vụ nâng cao (BOSS) và nhiệm vụ phụ (ở điểm dừng).
 const REQUIRED = STEPS.flatMap(s => (s.challenges || []).filter(c => !c.advanced && !c.bonus).map(c => c.id));
 
@@ -64,8 +64,8 @@ function save() {
  if(state.completed)state.badge=isGold()?"gold":"silver";
  CppCloud.save(L.id,state);
 }
-function load(student){state={...freshState(student),...CppCloud.state(L.id),student};for(const f of ["passed","attempts","drafts","inputs","gates","stars","waitingChoice"])if(!state[f]||typeof state[f]!=="object"||Array.isArray(state[f]))state[f]={};}
-function selfStudy(){return state?.navigationMode==="self-study";}
+function load(student){const remote={...CppCloud.state(L.id)},q=new URLSearchParams(location.search),steps=L.steps.filter(s=>s.kind!=='gate'&&(q.has('cuoi')||s.kind!=='boss')),index=q.has('cuoi')?steps.findIndex(s=>s.kind==='boss'):Number(q.get('chang'));if(q.has('chang')||q.has('cuoi'))remote.active=steps[index]?.id||steps[0].id;state={...freshState(student),...remote,student};for(const f of ["passed","attempts","drafts","inputs","gates","stars","waitingChoice"])if(!state[f]||typeof state[f]!=="object"||Array.isArray(state[f]))state[f]={};}
+function selfStudy(){return Boolean(window.PORTAL_SELF_STUDY);}
 
 /* ---------- tiến độ ---------- */
 function stepDone(step) {
@@ -242,14 +242,14 @@ function shell() {
       <button id="errorsBtn" class="top-btn" type="button" title="Bảng lỗi thường gặp">🧰 Bảng lỗi</button>
       <button id="soundBtn" class="top-btn" type="button" title="Bật/tắt âm thanh"></button>
       <button id="studentBtn" class="student-chip" type="button"><span>👤</span><span id="studentText">Chưa có tên</span></button>
-      <button id="newStudentBtn" class="new-student-button" type="button">Tài khoản</button>
+      <button id="newStudentBtn" class="new-student-button" type="button">Người học</button>
     </div>
   </header>
   <nav class="journey-map" id="journeyMap" aria-label="Bản đồ hành trình"></nav>
   <main class="main-wrap"><div id="stepContainer"></div></main>
   <footer class="site-footer">
     <p>C++ Journey 8 · Bài ${L.number} · Khối Scratch vẽ bằng scratchblocks (MIT).</p>
-    <button id="resetBtn" class="text-button danger-link" type="button">Tài khoản / tải bản sao bài làm</button>
+    <button id="resetBtn" class="text-button danger-link" type="button">Người học / tải bản sao bài làm</button>
   </footer>
   <div class="bit-dock" id="bitDock">
     <div class="bit-bubble-dock hidden" id="bitBubble" role="status" aria-live="polite">
@@ -303,7 +303,7 @@ function stepProgress(step) {
 }
 function renderMap() {
   const map = $("#journeyMap");
-  map.innerHTML = `<div class="study-mode"><button id="studyMode" class="secondary-button">${selfStudy()?"Học theo lớp":"Tự học / học bù"}</button><span>Học bù mở điều hướng; nhiệm vụ vẫn cần hoàn thành thật.</span></div><div class="map-track">${STEPS.map((step, i) => {
+  map.innerHTML = `<div class="study-mode"><button id="studyMode" class="secondary-button">${selfStudy()?"Học theo lớp":"Tự học / học bù"}</button><span>Mọi chặng đều mở. Trên lớp, dừng theo hướng dẫn của giáo viên.</span></div><div class="map-track">${STEPS.map((step, i) => {
     const unlocked = stepUnlocked(i), done = stepDone(step), active = state.active === step.id;
     const icon = step.kind === "gate" ? (done ? "🔓" : "⏸") : step.kind === "boss" ? "👾" : done ? "✓" : step.number;
     const cls = ["map-node", step.kind, done ? "done" : "", active ? "active" : "", unlocked ? "" : "locked"].join(" ");
@@ -406,8 +406,8 @@ function renderStage(step) {
     </div>
   </article>`;
   const media=document.createElement("div");$("#stepContainer .challenge-section").before(media);CPPMedia.mount(media,L.media,step.id);
-  step.challenges.forEach(bindChallenge);
-  $("#nextBtn")?.addEventListener("click", () => { if (stepDone(step)) go(next.id); });
+  step.challenges.filter(c=>!c.waitingBank).forEach(bindChallenge);mountWaitingBank(step);
+  $("#nextBtn")?.addEventListener("click", () => { if (selfStudy() || stepDone(step)) go(next.id); });
   $("#certBtn")?.addEventListener("click", openCertificate);
   refreshFooter(step);
 }
