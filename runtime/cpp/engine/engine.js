@@ -634,26 +634,16 @@ function bindChallenge(c) {
   });
 
   if (c.type === "choice") {
-    let star = false;
-    $(".star-toggle", card)?.addEventListener("click", e => {
-      star = !star;
-      const t = e.currentTarget;
-      t.classList.toggle("on", star); t.setAttribute("aria-pressed", String(star));
-      t.innerHTML = star ? `<span class="star-icon">⭐</span> Đã chọn Ngôi sao hi vọng` : `<span class="star-icon">☆</span> Chọn Ngôi sao hi vọng`;
-      if (star) {
-        beep("unlock");
-        bitSay(`<strong>Ngôi sao hi vọng!</strong> Đúng thì XP nhân đôi, sai thì mất ${STAR_LOSS} XP. Đọc kỹ code rồi hãy chọn nhé!`, "wow", 6000);
-      }
-    });
+    const starControl=HopeStars.nativeMount(card,state,stepOf(c).id,c.id,save);
     $('[data-act="choice"]', card).addEventListener("click", ev => {
       const sel = $(`input[name="${c.id}"]:checked`, card);
       if (!sel) return result(card, "info", "Chọn một đáp án trước nhé.");
       const opts = c.options.map(o => (typeof o === "string" ? { text: o } : o));
       const picked = opts[Number(sel.value)];
       const right = picked.text === c.answer;
-      const starNow = star && !state.passed[c.id] && !state.attempts[c.id] && !state.stars[stepOf(c).id];
+      const starNow = starControl?.selected() && !state.passed[c.id] && !state.attempts[c.id] && !state.stars[stepOf(c).id];
       if (starNow) state.stars[stepOf(c).id] = c.id;
-      star = false;
+      if(starNow)delete state.starSelections[stepOf(c).id];
       $("[data-star]", card)?.remove();
       attempt(c.id);
       $$(".choice-option", card).forEach(l => l.classList.remove("right", "wrong"));
@@ -661,7 +651,7 @@ function bindChallenge(c) {
       if (right) pass(c, card, c.why || "Chính xác!", ev.currentTarget, starNow);
       else {
         let msg = picked.why || "Chưa đúng. Đọc lại phần giải thích phía trên rồi thử lại.";
-        if (starNow) { state.xp = Math.max(0, state.xp - STAR_LOSS); msg += ` ⭐ Ngôi sao hi vọng chưa may mắn: −${STAR_LOSS} XP.`; }
+        if (starNow) { state.xp = Math.max(0, state.xp - STAR_LOSS); msg += ` ⭐ Ngôi sao chưa thành công: −${STAR_LOSS} XP.`; }
         miss(card, msg);
       }
     });
@@ -851,7 +841,7 @@ function pass(c, card, msg, btn, starNow = false) {
       state.combo += 1; gain += XP_FIRST_TRY;
       if (state.combo >= 2) { gain += state.combo * 2; extra = ` 🔥 Combo x${state.combo}!`; }
     } else state.combo = 0;
-    if (starNow) { gain *= 2; extra += " ⭐ Ngôi sao hi vọng: XP nhân đôi!"; }
+    if (starNow) { gain *= 2; extra += " ⭐ Ngôi sao thành công"; }
     state.xp += gain;
     extra = ` +${gain} XP.` + extra;
     if (allRequiredDone() && !state.completedAt) state.completedAt = new Date().toISOString();
