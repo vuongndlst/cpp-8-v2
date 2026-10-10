@@ -874,7 +874,7 @@ function pass(c, card, msg, btn, starNow = false) {
   if (step.kind === "boss" && first && allRequiredDone()) {
     beep("win"); confetti(null, true);
     bitSay("<strong>BOSS gục rồi!</strong> Lưu chứng chỉ để nộp nhé. Còn sức thì thử nhiệm vụ nâng cao để lấy huy hiệu vàng!", "wow");
-    if (!c.advanced) setTimeout(openCertificate, 1200);
+    if (!c.advanced && !window.LessonCelebration) setTimeout(openCertificate, 1200);
   }
 }
 
@@ -895,7 +895,9 @@ function certId() {
   return `CPP8-B${String(L.number).padStart(2, "0")}-${state.student.className}-${hashText(`${state.student.userId}|${L.id}|${state.completedAt}`)}`;
 }
 
-function openCertificate() {
+window.LessonCelebration?.setCertificateOpener(()=>openCertificate(true));
+function openCertificate(bypass=false) {
+  if(bypass!==true&&window.LessonCelebration?.holdCertificate(()=>openCertificate(true)))return;
   if (!allRequiredDone()) return;
   drawCertificate();
   const link = $("#canvasLink");
