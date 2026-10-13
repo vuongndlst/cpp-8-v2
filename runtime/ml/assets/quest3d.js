@@ -10,15 +10,28 @@
  * Âm thanh tự tạo bằng Web Audio (không tải file nhạc). Máy yếu: tự chuyển chế độ nhẹ.
  */
 import * as THREE from "three";
-import {upgradeActor,addLandmark} from "./blender-art.js?v=00d16112a840";
-import {stationGame} from './quest-games.js?v=00d16112a840';
-import {assignStation,startStation,finishStation} from './arcade-selection.js?v=00d16112a840';
+import {upgradeActor,addLandmark} from "./blender-art.js?v=a6b3aaf21b6e";
+import {stationGame} from './quest-games.js?v=a6b3aaf21b6e';
+import {assignStation,startStation,finishStation} from './arcade-selection.js?v=a6b3aaf21b6e';
 
 const B = window.BAI;
 const CFG = Object.assign({ ten: "Thế giới " + B.tieu_de, trang_doc: "index.html",
   mau: "#38BDF8", mau_phu: "#A78BFA", bieu_tuong: "AI", ky_hieu: ["AI", "ML", "∑", "∇"],
   dung_sau_chang: true }, window.QUEST || {});
 CFG.ten_dao = CFG.ten_dao || CFG.ten;
+// A read link needs the same lesson and learner context as the island.
+function trangDocURL() {
+  const u = new URL(CFG.trang_doc, location.href);
+  for (const [key, value] of new URLSearchParams(location.search)) u.searchParams.set(key, value);
+  u.searchParams.set('mode', 'read');
+  return u.href;
+}
+function moCheDoDoc(event) {
+  if (!window.PortalCloud || parent === window) return;
+  event.preventDefault();
+  parent.postMessage({type:'portal-switch-read'}, location.origin);
+}
+
 // Course identity changes geometry as well as colour; lesson seeds vary its details.
 const THEME = CFG.theme || 'research';
 const STYLE = {
@@ -75,7 +88,7 @@ try {
   document.body.appendChild(h("div", { class: "q-loi" }, [h("div", { class: "q-the", style: "padding:24px;max-width:480px" }, [
     h("h2", { text: "Máy này chưa chạy được đồ hoạ 3D" }),
     h("p", { text: "Em vẫn học đủ các chặng ở trang bài học dạng đọc; tiến độ và chứng chỉ được dùng chung." }),
-    h("a", { class: "q-vao", href: CFG.trang_doc, style: "display:inline-grid;place-items:center;text-decoration:none", text: "Mở trang bài học" })])]));
+    h("a", { class: "q-vao", href: trangDocURL(), onclick: moCheDoDoc, style: "display:inline-grid;place-items:center;text-decoration:none", text: "Mở trang bài học" })])]));
   throw e;
 }
 window.__questOK = true;
@@ -1075,7 +1088,7 @@ manDau.appendChild(h("div", { class: "q-the" }, [
   h("p", { class: "q-cau", text: B.cau_hoi }),
   h("p", { text: ({workshop:'Khám phá xưởng robot, bánh răng và bàn lắp ráp.',space:'Khám phá bệ phóng, tên lửa và dàn pin của trạm không gian.',archive:'Khám phá các kho dữ liệu và đường kết nối giữa chúng.',research:'Khám phá nhà kính nghiên cứu và các cụm dữ liệu theo chủ đề bài học.'})[THEME] + ' Hoàn thành trạm trước để mở trạm tiếp theo; khi vào bài, thế giới tạm dừng.' }),
   h("p", { class: "q-nho", text: CAM_UNG ? "Kéo để di chuyển hoặc chạm trạm để đi tới." : "Di chuyển: WASD/phím mũi tên · Vào trạm: E · Xoay nhìn: kéo chuột." }),
-  h("div", { class: "q-hang" }, [nutVao, h("a", { class: "q-lien-ket", href: CFG.trang_doc, text: "Học ở chế độ đọc" })]),
+  h("div", { class: "q-hang" }, [nutVao, h("a", { class: "q-lien-ket", href: trangDocURL(), onclick: moCheDoDoc, text: "Học ở chế độ đọc" })]),
 ]));
 document.body.appendChild(manDau);
 nutVao.addEventListener("click", () => {
