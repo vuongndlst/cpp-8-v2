@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {rng} from './arcade-rules.js?v=4753a04700cc';
-import {makeMaze,mazeRoute,moveMaze} from './game-rules.js?v=4753a04700cc';
+import {rng} from './arcade-rules.js?v=00d16112a840';
+import {makeMaze,mazeRoute,moveMaze} from './game-rules.js?v=00d16112a840';
 export function setupAction({type,seed,art,scene,control,status,active,win,lose,tone,held}){const random=rng(seed),objects=[],group=new THREE.Group();scene.add(group);const avatar=type==='flight'?art.plane():art.human(type==='maze'?.65:type==='frogger'?.55:1);let s={},clock=0,stepClock=0;
  const setStatus=t=>{status.textContent=t;};
  if(type==='jump'||type==='flight'){

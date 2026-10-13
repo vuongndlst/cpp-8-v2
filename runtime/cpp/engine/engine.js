@@ -554,7 +554,7 @@ function renderChallenge(c) {
           <div class="requirement-title">🎯 BIT NHỜ BẠN</div>
           <ul>${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
         </div>
-        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các ca mình sẽ thử" : "Màn hình Bit cần thấy"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
+        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các test case" : "Màn hình Bit cần thấy"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
       </div>
       ${c.bugs ? `<div class="bug-board">${c.bugs.map((b, i) => `<span class="bug" data-bug="${i}">🐛 <small>${esc(b.label)}</small></span>`).join("")}</div>` : ""}
       <div class="code-lab">
@@ -565,14 +565,14 @@ function renderChallenge(c) {
           <textarea class="code-editor" spellcheck="false" aria-label="Trình soạn thảo C++">${esc(draft)}</textarea></div>
         </div>
         <div class="console-shell">
-          ${needInput ? `<div class="console-toolbar"><span>📥 DỮ LIỆU NHẬP</span><small>cách nhau dấu cách</small></div>
+          ${needInput ? `<div class="console-toolbar"><span>📥 DỮ LIỆU NHẬP</span><small>số nguyên, cách nhau dấu cách</small></div>
             <input class="stdin-box" type="text" spellcheck="false" aria-label="Dữ liệu nhập" value="${esc(inputVal)}" />` : ""}
           <div class="console-toolbar"><span>🖥 MÀN HÌNH</span></div>
           <pre class="console-output">Bấm “▶ Chạy” để xem.</pre>
         </div>
       </div>`;
     actions = `<button class="secondary-button" data-act="run" type="button">▶ Chạy</button>
-      <button class="primary-button" data-act="check" type="button">⭐ Kiểm tra & nhận sao</button>`;
+      <button class="primary-button" data-act="check" type="button">⭐ Kiểm tra test case & nhận sao</button>`;
   }
 
   const hints = c.hints || (c.hint ? [c.hint] : []);
@@ -691,7 +691,8 @@ function bindChallenge(c) {
       updateBugs(c, card, ed.value);
     };
     sync();
-    ed.addEventListener("input", () => { state.drafts[c.id] = ed.value; save(); sync(); });
+    ed.addEventListener("input", () => { state.drafts[c.id] = ed.value; save(); sync(); result(card, "info", "Mã đã thay đổi. Bấm Kiểm tra test case để chấm lại."); });
+    if (stdin) stdin.addEventListener("input", () => { result(card, "info", "Dữ liệu nhập đã thay đổi. Bấm Chạy để xem kết quả hoặc Kiểm tra test case để chấm lại."); });
     guardTyping(ed);
     // Chèn chữ bằng insertText để Ctrl+Z (hoàn tác) vẫn dùng được; xoá trước `back` ký tự nếu cần.
     const put = (text, back = 0) => {
@@ -727,7 +728,7 @@ function bindChallenge(c) {
     });
     $('[data-act="run"]', card).addEventListener("click", async () => {
       if(cppBusy||!CppCloud.allowed())return;cppBusy=true;const buttons=[...card.querySelectorAll("button")];buttons.forEach(b=>b.disabled=true);
-      try{const r=await runCpp(ed.value,stdin?stdin.value:"");if(state&&CppCloud.allowed()&&card.isConnected)showRun(out,r)}finally{cppBusy=false;buttons.forEach(b=>b.disabled=false)}
+      try{const invalid=inputError(c,stdin?stdin.value:"");const r=invalid?{ok:false,output:"",error:invalid}:await runCpp(ed.value,stdin?stdin.value:"");if(state&&CppCloud.allowed()&&card.isConnected){showRun(out,r);result(card,r.ok?"info":"bad",r.ok?"Đã chạy với dữ liệu bạn nhập. Bấm Kiểm tra test case để chấm mã C++.":r.error)}}finally{cppBusy=false;buttons.forEach(b=>b.disabled=false)}
     });
     $(' [data-act="check"]'.trim(), card).addEventListener("click", async ev => {
       if(cppBusy||!CppCloud.allowed())return;cppBusy=true;const buttons=[...card.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);
@@ -798,8 +799,30 @@ function firstDiff(actual, expected) {
   return "";
 }
 
+// These lessons read integers. Infer arity only from consistent authored tests.
+function inputError(c, input) {
+  const samples = (c.tests || []).map(t => String(t.input || "").trim()).filter(Boolean);
+  if (!samples.length || !samples.every(s => s.split(/\s+/).every(t => /^[+-]?\d+$/.test(t)))) return "";
+  const tokens = String(input ?? "").trim().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return "Dữ liệu nhập đang trống. Hãy nhập số nguyên trước khi chạy hoặc kiểm tra.";
+  if (tokens.some(t => !/^[+-]?\d+$/.test(t))) return "Dữ liệu nhập phải là số nguyên, cách nhau bằng dấu cách. Không nhập chữ hoặc số thập phân.";
+  const values = tokens.map(Number);
+  if (values.some(n => !Number.isSafeInteger(n) || n < -2147483648 || n > 2147483647)) return "Số nhập vượt phạm vi kiểu int. Hãy nhập số từ -2147483648 đến 2147483647.";
+  const lengths = samples.map(s => s.split(/\s+/).length);
+  if (lengths.every(n => n === lengths[0]) && tokens.length !== lengths[0]) return `Bài này cần đúng ${lengths[0]} số nguyên; bạn đang nhập ${tokens.length} số.`;
+  if (!lengths.every(n => n === lengths[0]) && samples.every(s => { const a = s.split(/\s+/).map(Number); return a[0] >= 0 && a.length === a[0] + 1; }) && (values[0] < 0 || tokens.length !== values[0] + 1)) return "Số đầu tiên là n; hãy nhập đúng n số tiếp theo.";
+  if (c.inputSpec?.min != null && values.some(n => n < c.inputSpec.min)) return `Dữ liệu nhập phải từ ${c.inputSpec.min} trở lên.`;
+  return "";
+}
+
 async function checkCode(c, code, currentInput) {
+  const invalid = inputError(c, currentInput);
+  if (invalid) return { ok: false, run: { ok: false, output: "", error: invalid }, msg: invalid };
   const tests = c.tests || [{ input: currentInput, expected: c.expected }];
+  if (!tests.length || tests.some(t => t.expected == null)) {
+    const msg = "Nhiệm vụ chưa có đủ test case để chấm. Hãy báo giáo viên.";
+    return { ok: false, run: { ok: false, output: "", error: msg }, msg };
+  }
   let lastRun = null;
   for (const [n, t] of tests.entries()) {
     const r = await runCpp(code, t.input || "");
@@ -808,7 +831,7 @@ async function checkCode(c, code, currentInput) {
     if (t.expected != null) {
       const a = normalizeOutput(r.output), e = normalizeOutput(t.expected);
       if (a !== e) {
-        const where = tests.length > 1 ? `Ca ${n + 1} (nhập ${t.input || "không"}) chưa đúng.\n` : "";
+        const where = tests.length > 1 ? `Test case ${n + 1} (nhập ${t.input || "không"}) chưa đúng.\n` : "";
         return { ok: false, run: r, input: t.input, msg: where + (firstDiff(a, e) || "Màn hình chưa khớp mẫu.") };
       }
     }
@@ -819,7 +842,12 @@ async function checkCode(c, code, currentInput) {
   if (c.bugs && !c.bugs.every(b => b.fixed(code))) {
     return { ok: false, run: lastRun, msg: "Màn hình đúng rồi, nhưng vẫn còn bọ trốn trong code! Xem con 🐛 nào chưa nổ nhé." };
   }
-  return { ok: true, run: lastRun, msg: c.why || "Chính xác! Màn hình khớp mẫu." + (tests.length > 1 ? ` Đạt cả ${tests.length} ca.` : "") };
+  if ((c.tests || []).some(t => t.input)) {
+    const currentRun = await runCpp(code, currentInput);
+    if (!currentRun.ok) return { ok: false, run: currentRun, msg: "Mã đã qua các test case, nhưng chưa chạy được với dữ liệu bạn nhập. Đọc lỗi trong ô MÀN HÌNH rồi sửa nhé." };
+    return { ok: true, run: currentRun, msg: `Mã C++ đạt ${tests.length} test case trong bảng. MÀN HÌNH đang hiển thị lần chạy với dữ liệu bạn nhập.` };
+  }
+  return { ok: true, run: lastRun, msg: c.why || `Mã C++ đạt ${tests.length} test case. Màn hình khớp mẫu.` };
 }
 
 function attempt(id) { state.attempts[id] = (state.attempts[id] || 0) + 1; save(); }

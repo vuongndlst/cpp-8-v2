@@ -10,9 +10,9 @@
  * Âm thanh tự tạo bằng Web Audio (không tải file nhạc). Máy yếu: tự chuyển chế độ nhẹ.
  */
 import * as THREE from "three";
-import {upgradeActor,addLandmark} from "./blender-art.js?v=4753a04700cc";
-import {stationGame} from './quest-games.js?v=4753a04700cc';
-import {assignStation,startStation,finishStation} from './arcade-selection.js?v=4753a04700cc';
+import {upgradeActor,addLandmark} from "./blender-art.js?v=00d16112a840";
+import {stationGame} from './quest-games.js?v=00d16112a840';
+import {assignStation,startStation,finishStation} from './arcade-selection.js?v=00d16112a840';
 
 const B = window.BAI;
 const CFG = Object.assign({ ten: "Thế giới " + B.tieu_de, trang_doc: "index.html",
