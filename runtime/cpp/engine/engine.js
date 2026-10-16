@@ -380,6 +380,14 @@ function renderStage(step) {
   const next = STEPS[idx + 1];
   const required = step.challenges.filter(c => !c.advanced && !c.bonus);
   const advanced = step.challenges.filter(c => c.advanced);
+  const optional = step.challenges.filter(c => c.bonus && !c.advanced && !c.waitingBank);
+  const inlineTaskIds = new Set();
+  const lessonHTML = (step.lesson || "").replace(/<div data-inline-task="([^"]+)"><\/div>/g, (_slot, id) => {
+    const task = step.challenges.find(c => c.id === id && !c.waitingBank);
+    if (!task || inlineTaskIds.has(id)) return "";
+    inlineTaskIds.add(id);
+    return `<div class="challenge-list inline-practice" data-inline-practice="${esc(id)}">${renderChallenge(task)}</div>`;
+  });
   $("#stepContainer").innerHTML = `
   <article class="stage-page ${isBoss ? "boss-stage" : ""}" data-stage="${esc(step.id)}">
     <header class="stage-hero">
@@ -389,12 +397,16 @@ function renderStage(step) {
       ${isBoss ? bossBar(step) : ""}
     </header>
     <div class="lesson-body">
-      ${step.lesson || ""}
+      ${lessonHTML}
       <section class="challenge-section">
         <h3 class="section-heading"><span class="doodle">${isBoss ? "👾" : "⚡"}</span>${isBoss ? "Hạ BOSS" : "Nhiệm vụ của chặng"}
           <span class="section-count">${required.filter(c => state.passed[c.id]).length}/${required.length} xong</span></h3>
-        <div class="challenge-list">${required.map(renderChallenge).join("")}</div>
+        <div class="challenge-list">${required.filter(c => !inlineTaskIds.has(c.id)).map(renderChallenge).join("")}</div>
       </section>
+      ${optional.length ? `<section class="challenge-section bonus-section">
+        <h3 class="section-heading">Thử thêm · không bắt buộc</h3>
+        <div class="challenge-list">${optional.filter(c => !inlineTaskIds.has(c.id)).map(renderChallenge).join("")}</div>
+      </section>` : ""}
       ${advanced.length ? `<section class="challenge-section advanced-section">
         <h3 class="section-heading"><span class="doodle">🥇</span>Nâng cao — xong sớm thì làm, đạt cả ${advanced.length} để có huy hiệu vàng</h3>
         <div class="challenge-list">${advanced.map(renderChallenge).join("")}</div>

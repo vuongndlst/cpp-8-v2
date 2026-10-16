@@ -42,7 +42,7 @@ window.LessonLearning=(C)=>{
  function summarySection(title,body,id){const box=document.createElement('details');box.className='learning-panel';box.id=id;box.innerHTML=`<summary>${esc(title)}</summary>${body}`;return box;}
  const video=summarySection('Tóm tắt tiếng Việt · gợi ý xem video',`<ol>${M.video_summary.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`,'learning-video');
  const submit=summarySection('Sản phẩm của bài',`<ol>${M.submission.filter(x=>!/bản sao|ban sao|backup/i.test(x)).map(x=>`<li>${esc(x)}</li>`).join('')}</ol><label>Điều con làm được / điều còn khó</label><textarea id="learning-feedback" maxlength="1000" rows="2"></textarea>`,'learning-submit');
- const support=document.createElement('section');support.id='learning-support';support.append(video,submit);document.body.append(support);
+ const support=document.createElement('section');support.id='learning-support';if(!M.hide_video_summary)support.append(video);support.append(submit);document.body.append(support);
  const feedback=support.querySelector('#learning-feedback');feedback.value=C.peek().lessonFeedback||'';feedback.oninput=()=>C.save(key,{...C.peek(),lessonFeedback:feedback.value});
  if(M.catchup){const help=summarySection('Tự học bù · web và HeidiSQL',M.catchup.html,'learning-catchup');support.prepend(help);}
  if(M.differentiation){const d=M.differentiation;support.prepend(summarySection('Cốt lõi và mở rộng của buổi học',`<h3>Cốt lõi</h3><ul>${d.core.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3>Thử sức khi có thời gian</h3><ul>${d.extension.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p>Checkpoint hiện hành được giữ để ôn kiến thức; không bắt chạy toàn bộ phần mở rộng trong một buổi.</p>`,'learning-differentiation'));}
