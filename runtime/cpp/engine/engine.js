@@ -857,18 +857,12 @@ async function checkCode(c, code, currentInput) {
   if ((c.tests || []).some(t => t.input)) {
     const currentRun = await runCpp(code, currentInput);
     if (!currentRun.ok) return { ok: false, run: currentRun, msg: "Mã đã qua các test case, nhưng chưa chạy được với dữ liệu bạn nhập. Đọc lỗi trong ô MÀN HÌNH rồi sửa nhé." };
-    return { ok: true, run: currentRun, msg: `Mã C++ đạt ${tests.length} test case trong bảng. MÀN HÌNH đang hiển thị lần chạy với dữ liệu bạn nhập.` };
+    return { ok: true, run: currentRun, msg: `Đạt ${tests.length} test case. ` + (c.feedback ? c.feedback(String(currentInput ?? "")) : c.why || "Màn hình đang hiển thị lần chạy với dữ liệu em nhập.") };
   }
   return { ok: true, run: lastRun, msg: c.why || `Mã C++ đạt ${tests.length} test case. Màn hình khớp mẫu.` };
 }
 
 function attempt(id) { state.attempts[id] = (state.attempts[id] || 0) + 1; save(); }
-
-function nextOpenCard(card) {
-  const all = $$(".challenge-card", $("#stepContainer"));
-  const i = all.indexOf(card);
-  return [...all.slice(i + 1), ...all.slice(0, i)].find(el => !el.classList.contains("passed") && !el.classList.contains("advanced") && !el.classList.contains("bonus"));
-}
 
 function pass(c, card, msg, btn, starNow = false) {
   if(!state||!CppCloud.allowed())return;
@@ -894,14 +888,7 @@ function pass(c, card, msg, btn, starNow = false) {
   $('[data-act="hint"]', card)?.remove();
 
   const step = activeStep();
-  const nextCard = nextOpenCard(card);
-  const stageNowDone = step.kind !== "gate" && stepDone(step);
-  let cta = "";
-  if (nextCard) cta = `<button class="mini-cta" type="button" data-go-next>Nhiệm vụ còn lại →</button>`;
-  else if (stageNowDone && step.kind !== "boss") cta = `<button class="mini-cta" type="button" data-go-step>${nextLabel(STEPS[STEPS.indexOf(step) + 1])}</button>`;
-  result(card, "good", msg + extra, cta);
-  $("[data-go-next]", card)?.addEventListener("click", () => nextCard.scrollIntoView({ block: "start", behavior: "smooth" }));
-  $("[data-go-step]", card)?.addEventListener("click", () => go(STEPS[STEPS.indexOf(step) + 1].id));
+  result(card, "good", msg + extra);
 
   const r = btn ? btn.getBoundingClientRect() : null;
   confetti(r ? { x: r.left + r.width / 2, y: r.top } : null, starNow);

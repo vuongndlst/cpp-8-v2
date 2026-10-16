@@ -10,10 +10,10 @@
  * Âm thanh tự tạo bằng Web Audio (không tải file nhạc). Máy yếu: tự chuyển chế độ nhẹ.
  */
 import * as THREE from "three";
-import {upgradeActor,addLandmark} from "./blender-art.js?v=ae4a32214e57";
-import {stationGame} from './quest-games.js?v=ae4a32214e57';
-import {assignStation,startStation,finishStation} from './arcade-selection.js?v=ae4a32214e57';
-import {levelFor} from './arcade-rules.js?v=ae4a32214e57';
+import {upgradeActor,addLandmark} from "./blender-art.js?v=061ca3f1c88c";
+import {stationGame} from './quest-games.js?v=061ca3f1c88c';
+import {assignStation,startStation,finishStation} from './arcade-selection.js?v=061ca3f1c88c';
+import {levelFor} from './arcade-rules.js?v=061ca3f1c88c';
 // Cấp game của một trạm (13/10/2026): bài sau, chặng sau khó hơn; tính theo vị trí bài trong cả khoá.
 function capTram(i){try{const C=window.PortalCloud,ds=window.STANDALONE?.lessons||[],key=C?.packet?.lesson?.lesson_key,me=ds.find(x=>x.key===key),pos=Number(me?.position??C?.packet?.lesson?.position)||1,max=Math.max(pos,...ds.map(x=>Number(x.position)||0));return levelFor(pos,max,i,B.chang.length);}catch{return 3;}}
 
