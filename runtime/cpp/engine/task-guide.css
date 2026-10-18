@@ -1,0 +1,24 @@
+.task-intro{margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid #d8e1ec;color:#263b53}
+.task-intro p{margin:7px 0;line-height:1.6;max-width:90ch}
+.task-intro strong{color:#173a60}
+.requirement-title,.expected-label{font-size:1rem;line-height:1.4;text-transform:none;letter-spacing:0}
+.task-grid{align-items:start;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.task-grid .given-code{margin:10px 0;padding:10px 12px;background:#fff;border-left:3px solid #2777b6;color:#37506b;font-size:.92rem;line-height:1.6}
+.task-grid .task-steps{margin:12px 0 0;padding-left:24px;line-height:1.65}
+.task-steps li{padding-left:4px;margin:9px 0}
+.task-input-spec{margin:9px 0 12px;font-size:.92rem;line-height:1.55}
+.target-box .test-table{width:100%;font-size:.88rem}
+.target-box .test-table th{white-space:normal}
+.target-box .test-table pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.test-explanation{margin:12px 0 0;font-size:.85rem;line-height:1.55;color:#435c76}
+.task-example{margin:18px 0;border:1px solid #a9c5dd;border-radius:12px;background:#f5faff;overflow:hidden}
+.task-example summary{padding:14px 16px;cursor:pointer;font-weight:750;color:#174e7d;line-height:1.4}
+.task-example[open] summary{border-bottom:1px solid #cbdfee}
+.task-example-content{padding:16px}
+.task-example-content>p{margin-top:0;line-height:1.6}
+.task-example .pair-view{margin:12px 0}
+.task-example .screen-card pre{overflow-x:auto;white-space:pre}
+.task-writing-title{margin:20px 0 12px;font-size:1.03rem;color:#193b60}
+.task-example .example-input{margin:10px 0;font-size:.9rem}
+.task-example .example-input code{padding:3px 7px;border-radius:4px;background:#e4eff8;color:#193b60}
+@media(max-width:900px){.task-grid{grid-template-columns:1fr}.task-example-content{padding:12px}.task-steps li{margin:10px 0}}

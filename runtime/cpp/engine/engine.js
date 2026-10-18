@@ -521,6 +521,11 @@ function mountWaitingBank(step){
  filter.querySelector('select').onchange=e=>{const filtered=tasks.filter(c=>!e.target.value||c.tier===e.target.value),old=select.value;select.innerHTML=filtered.map(c=>`<option value="${esc(c.id)}">${esc(c.tier)} · ${c.minutes} phút · ${esc(c.title)}${state.passed[c.id]?" ✓":""}</option>`).join('');select.value=filtered.some(c=>c.id===old)?old:filtered[0].id;show()};show();
 }
 
+function taskExample(guide) {
+  const e=guide?.example;if(!e)return "";
+  return `<details class="task-example"><summary>Xem ví dụ mẫu · ${esc(e.title)}</summary><div class="task-example-content"><p>${esc(e.explain)}</p><p class="example-input"><strong>Dữ liệu chạy ví dụ:</strong> <code>${esc(e.input || "Không nhập dữ liệu")}</code></p><div class="pair-view">${codeBlock(e.code)}<div class="screen-card"><div class="screen-head">Màn hình của ví dụ</div><pre data-example-output role="status">${esc(e.expected)}</pre></div></div><button type="button" class="secondary-button" data-act="run-example">▶ Chạy ví dụ mẫu</button><p>Áp dụng cách làm của ví dụ cho yêu cầu và dữ liệu của nhiệm vụ bên dưới.</p></div></details>`;
+}
+
 function renderChallenge(c) {
   const passed = Boolean(state.passed[c.id]);
   const tag = c.waitingBank ? "🚀 "+c.tier : c.bonus ? "+XP" : c.advanced ? "🥇 NÂNG CAO" : "1 SAO";
@@ -556,19 +561,22 @@ function renderChallenge(c) {
     const needInput = Boolean(c.tests && c.tests.some(t => t.input));
     const inputVal = state.inputs[c.id] ?? (c.tests && c.tests[0] ? c.tests[0].input || "" : "");
     const tests = c.tests || [{ input: "", expected: c.expected }];
-    const target = tests.length > 1
-      ? `<table class="test-table"><tr><th>Nhập</th><th>Màn hình cần đạt</th></tr>
-          ${tests.map(t => `<tr><td><code>${esc(t.input || "(không)")}</code></td><td><pre>${esc(t.expected)}</pre></td></tr>`).join("")}</table>`
-      : `<pre class="expected-output">${esc(tests[0].expected)}</pre>`;
+    const guide=c.guide;
+    const target = `<table class="test-table"><thead><tr><th>Nhập</th><th>Màn hình cần đạt</th></tr></thead><tbody>
+          ${tests.map((t,i) => `<tr><td><small>Test case ${i+1}</small><br><code>${esc(t.input || "Không nhập")}</code></td><td><pre>${esc(t.expected || "(Không in gì)")}</pre></td></tr>`).join("")}</tbody></table>`;
     body = `
+      ${guide ? `<div class="task-intro" data-task-guide="${esc(c.id)}"><p><strong>Bối cảnh:</strong> ${esc(guide.context)}</p><p><strong>Nhiệm vụ:</strong> ${esc(guide.mission)}</p></div>` : ""}
       <div class="task-grid">
         <div class="requirement-box">
-          <div class="requirement-title">🎯 BIT NHỜ BẠN</div>
-          <ul>${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+          <h5 class="requirement-title">1. Yêu cầu chương trình</h5>
+          ${guide ? `<p class="given-code"><strong>Phần có sẵn:</strong> ${esc(guide.given)}</p>` : ""}
+          <ol class="task-steps">${(c.requirements || []).map(r => `<li>${esc(r)}</li>`).join("")}</ol>
         </div>
-        <div class="target-box"><div class="expected-label">${tests.length > 1 ? "Các test case" : "Màn hình Bit cần thấy"}${tests[0].input && tests.length === 1 ? ` (nhập <code>${esc(tests[0].input)}</code>)` : ""}</div>${target}</div>
+        <div class="target-box"><h5 class="expected-label">2. Dữ liệu và test case</h5>${guide ? `<p class="task-input-spec">${esc(guide.input)}</p>` : ""}${target}${needInput ? `<p class="test-explanation">Màn hình hiển thị cả số em gõ khi cin nhận dữ liệu. Phần nhập được web hiện tự động; em viết cout cho phần kết quả theo yêu cầu. Mỗi hàng là một lần chạy riêng.</p>` : ""}</div>
       </div>
+      ${taskExample(guide)}
       ${c.bugs ? `<div class="bug-board">${c.bugs.map((b, i) => `<span class="bug" data-bug="${i}">🐛 <small>${esc(b.label)}</small></span>`).join("")}</div>` : ""}
+      <h5 class="task-writing-title">3. Hoàn thiện mã và chạy thử</h5>
       <div class="code-lab">
         <div class="editor-shell">
           <div class="editor-toolbar"><span>main.cpp</span>
@@ -595,7 +603,7 @@ function renderChallenge(c) {
   <article class="challenge-card ${passed ? "passed" : ""} ${c.advanced ? "advanced" : ""} ${c.bonus ? "bonus" : ""}" data-card="${c.id}">
     <header class="challenge-header">
       <div class="challenge-title-wrap"><div class="challenge-icon">${passed ? "✅" : c.icon || "⭐"}</div>
-        <div><h4>${esc(c.title)}</h4><p>${c.prompt}</p></div></div>
+        <div><h4>${esc(c.title)}</h4>${c.guide ? "" : `<p>${c.prompt}</p>`}</div></div>
       <span class="challenge-badge">${passed ? "⭐ ĐÃ XONG" : tag}</span>
     </header>
     <div class="challenge-content">
@@ -696,6 +704,11 @@ function bindChallenge(c) {
 
   if (c.type === "code") {
     const ed = $(".code-editor", card), gut = $(".gutter", card), out = $(".console-output", card), stdin = $(".stdin-box", card);
+    $('[data-act="run-example"]',card)?.addEventListener('click',async()=>{
+      if(cppBusy||!CppCloud.allowed())return;cppBusy=true;
+      const button=$('[data-act="run-example"]',card);button.disabled=true;
+      try{const e=c.guide.example,r=await runCpp(e.code,e.input);if(card.isConnected)showRun($('[data-example-output]',card),r);}finally{cppBusy=false;button.disabled=false;}
+    });
     const sync = () => {
       const n = ed.value.split("\n").length;
       ed.rows = Math.max(6, n + 1);
